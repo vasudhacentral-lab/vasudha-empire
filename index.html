@@ -897,35 +897,44 @@
         warranty: finalTermsText
       };
 
-      var resp = { invoiceNo: Date.now().toString().slice(-4) }; (function(resp) {
-        btn.innerText = "💾 डेटा सेव करें एवं बिल प्रिंट करें";
-        btn.disabled = false;
+     fetch("https://script.google.com/macros/s/AKfycbxa_h6vlLe2OlGLJn6w0O4tzCsrBsg-V5ws8MpuEeVX1V7Kj0k_UALmrgk-s0ZgdZCJ/exec", {
+      method: "POST",
+      mode: "no-cors",
+      headers: { "Content-Type": "text/plain" },
+      body: JSON.stringify({ action: "submitBillOrder", data: billPayload })
+    }).then(function() {
+      btn.innerText = "💾 डेटा सेव करें एवं बिल प्रिंट करें";
+      btn.disabled = false;
 
-        document.getElementById('printInvoiceNo').innerText = "#" + resp.invoiceNo;
-        var barcodeVal = imei ? ("" + imei) : ("INV" + resp.invoiceNo);
-        
-        try {
-          if (window.JsBarcode) {
-            JsBarcode("#billBarcodeCanvas", barcodeVal, {
-              format: "CODE128",
-              width: 1.8,
-              height: 40,
-              displayValue: true,
-              fontSize: 12
-            });
-          }
-        } catch(e) {}
+      var invNo = Date.now().toString().slice(-4);
+      if (document.getElementById('printInvoiceNo')) {
+        document.getElementById('printInvoiceNo').innerText = "#" + invNo;
+      }
+      var barcodeVal = imei ? ("" + imei) : ("INV" + invNo);
 
-        setTimeout(function() {
-          window.print();
-        }, 80);
+      try {
+        if (window.JsBarcode) {
+          JsBarcode("#billBarcodeCanvas", barcodeVal, {
+            format: "CODE128",
+            width: 1.8,
+            height: 40,
+            displayValue: true,
+            fontSize: 12
+          });
+        }
+      } catch(e) {}
 
-      }).withFailureHandler(function(err) {
-        alert("त्रुटि: " + err.message);
-        btn.innerText = "💾 डेटा सेव करें एवं बिल प्रिंट करें";
-        btn.disabled = false;
-      }).submitBillOrder(billPayload);
-    }
+      setTimeout(function() {
+        window.print();
+      }, 80);
+    }).catch(function(err) {
+      btn.innerText = "💾 डेटा सेव करें एवं बिल प्रिंट करें";
+      btn.disabled = false;
+      setTimeout(function() {
+        window.print();
+      }, 80);
+    });
+  }
 
     function openCropper(inp, key) {
       if (!inp.files || !inp.files[0]) return;
