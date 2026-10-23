@@ -899,22 +899,21 @@
         warranty: finalTermsText
       };
 
-      fetch(API_ENDPOINT, {
-        method: "POST",
-        headers: { "Content-Type": "text/plain" },
-        body: JSON.stringify({ action: "submitBillOrder", data: billPayload })
-      })
-      .then(function(res) { return res.json(); })
-      .then(function(resp) {
+// JSONP call to bypass CORS and receive real sequential Invoice Number
+      var callbackName = "jsonp_bill_" + Date.now();
+      window[callbackName] = function(resp) {
+        delete window[callbackName];
+        if (script.parentNode) script.parentNode.removeChild(script);
+
         btn.innerText = "💾 डेटा सेव करें एवं बिल प्रिंट करें";
         btn.disabled = false;
 
         if (!resp || !resp.success) {
-          alert("त्रुटि: बिल सेव नहीं हो सका। " + (resp && resp.error ? resp.error : ""));
+          alert("त्रुटि: डेटा सेव नहीं हो सका। " + (resp && resp.error ? resp.error : ""));
           return;
         }
 
-        // Exact server-generated sequential invoice number from Google Sheet
+        // Sheet se aaya asli sequential invoice number
         document.getElementById('printInvoiceNo').innerText = "#" + resp.invoiceNo;
         var barcodeVal = imei ? ("" + imei) : ("INV" + resp.invoiceNo);
 
@@ -933,12 +932,19 @@
         setTimeout(function() {
           window.print();
         }, 80);
-      })
-      .catch(function(err) {
+      };
+
+      var script = document.createElement('script');
+      var encodedData = encodeURIComponent(JSON.stringify(billPayload));
+      script.src = API_ENDPOINT + "?action=submitBillOrder&callback=" + callbackName + "&data=" + encodedData;
+      script.onerror = function() {
         btn.innerText = "💾 डेटा सेव करें एवं बिल प्रिंट करें";
         btn.disabled = false;
-        alert("त्रुटि: सर्वर से संपर्क नहीं हो पाया - " + err.message);
-      });
+        alert("त्रुटि: सर्वर से कनेक्ट नहीं हो पाया।");
+        if (window[callbackName]) delete window[callbackName];
+        if (script.parentNode) script.parentNode.removeChild(script);
+      };
+      document.body.appendChild(script);
     }
 
     function openCropper(inp, key) {
