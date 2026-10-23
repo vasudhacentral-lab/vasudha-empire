@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Tools Desk | Vasudha Kendra</title>
+  
+  <meta name="theme-color" content="#0d6efd">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="application-name" content="Vasudha Tools">
+
+  <!-- Manifest JSON for PWA Install Button -->
+  <link rel="manifest" href="data:application/manifest+json;utf-8,%7B%22name%22%3A%22Vasudha%20Kendra%20Tools%22%2C%22short_name%22%3A%22VK%20Tools%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23f1f5f9%22%2C%22theme_color%22%3A%22%230d6efd%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22https%3A%2F%2Flh3.googleusercontent.com%2Fd%2F1_HuK6cSbUY8NRMBwvvO7feSnNOowD42v%22%2C%22sizes%22%3A%22192x192%22%2C%22type%22%3A%22image%2Fpng%22%7D%2C%7B%22src%22%3A%22https%3A%2F%2Flh3.googleusercontent.com%2Fd%2F1_HuK6cSbUY8NRMBwvvO7feSnNOowD42v%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fpng%22%7D%5D%7D">
+
+  <!-- Cropper CSS & JS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+
+  <!-- PDF Engine -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+
+  <style>
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body { background: #f1f5f9; margin: 0; padding: 18px 12px 30px; display: flex; justify-content: center; }
+    .card { background: #ffffff; max-width: 680px; width: 100%; border-radius: 16px; padding: 20px; border: 1px solid #e2e8f0; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+    h2 { margin: 0 0 6px; font-size: 20px; color: #0d6efd; }
+    p { margin: 0 0 16px; font-size: 13px; color: #64748b; }
+    
+    .section-title { font-size: 14px; font-weight: 800; color: #0f172a; margin: 18px 0 10px; display: flex; align-items: center; gap: 6px; }
+    .field-box { background: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: 10px; padding: 12px; margin-bottom: 12px; }
+    .field-label { display: block; font-size: 13px; font-weight: 700; color: #1e293b; margin-bottom: 6px; }
+    input[type="file"] { width: 100%; font-size: 13px; cursor: pointer; }
+    
+    .pdf-mini-preview-wrap { display: none; margin-top: 10px; padding: 8px; background: #ffffff; border: 1.5px solid #0d6efd; border-radius: 8px; text-align: center; }
+    .pdf-mini-preview-canvas { max-width: 100%; height: auto; max-height: 220px; border: 1px solid #e2e8f0; border-radius: 4px; box-shadow: 0 2px 6px rgba(0,0,0,0.08); }
+    .pdf-mini-title { font-size: 12px; font-weight: 700; color: #0284c7; margin-bottom: 6px; }
+
+    /* Auto-Zoomed Previews */
+    .preview-thumb { width: 95px; height: 115px; object-fit: cover; border-radius: 8px; border: 2px solid #0d6efd; margin-top: 10px; display: none; background: #fff; box-shadow: 0 4px 10px rgba(13,110,253,0.18); transition: transform 0.2s; }
+    .preview-sign-thumb { width: 150px; height: 60px; object-fit: contain; border-radius: 8px; border: 2px dashed #0d6efd; margin-top: 10px; display: none; background: #f8fafc; padding: 3px; box-shadow: 0 4px 10px rgba(0,0,0,0.06); }
+    .preview-doc-thumb { width: 100%; max-height: 200px; object-fit: contain; border-radius: 8px; border: 2px solid #0d6efd; margin-top: 10px; display: none; background: #fff; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+    
+    .btn-submit { width: 100%; background: #10b981; color: #ffffff; padding: 14px; font-size: 15px; font-weight: 700; border: none; border-radius: 10px; cursor: pointer; margin-top: 14px; }
+    .btn-submit:disabled { background: #94a3b8; cursor: not-allowed; }
+    #statusBox { margin-top: 12px; font-size: 13px; font-weight: 600; text-align: center; }
+
+    /* Modal for Cropping & Adjustment */
+    #cropModal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.94); z-index: 99999; flex-direction: column; justify-content: space-between; padding: 12px 14px 20px; }
+    #cropContainer { flex: 1; max-height: 60vh; display: flex; align-items: center; justify-content: center; position: relative; }
+    #cropImageEl { max-width: 100%; max-height: 60vh; }
+    
+    /* Improved Modern Crop Box */
+    .cropper-view-box { outline: 2.5px solid #38bdf8 !important; outline-color: #38bdf8 !important; }
+    .cropper-line { background-color: rgba(56, 189, 248, 0.6) !important; }
+    .cropper-point { width: 12px !important; height: 12px !important; background-color: #0d6efd !important; border: 1.5px solid #ffffff !important; border-radius: 50% !important; }
+    .cropper-point.point-se { width: 16px !important; height: 16px !important; }
+
+    /* Widely Spaced Non-Overlapping Sliders */
+    .slider-box { background: rgba(255,255,255,0.08); padding: 14px 16px; border-radius: 12px; margin: 10px 0; display: flex; flex-direction: column; gap: 14px; }
+    .slider-row { display: flex; align-items: center; justify-content: space-between; color: #ffffff; font-size: 13px; font-weight: 700; gap: 12px; height: 32px; }
+    .slider-row input[type="range"] { flex: 1; height: 18px; cursor: pointer; accent-color: #38bdf8; margin: 0; padding: 0; touch-action: pan-x; }
+    
+    .crop-actions { display: flex; gap: 10px; margin-top: 6px; }
+    .crop-actions button { flex: 1; padding: 12px; border: none; border-radius: 10px; font-weight: 700; font-size: 14px; cursor: pointer; }
+    .tag-clean { display: inline-block; font-size: 11px; background: #e0f2fe; color: #0369a1; padding: 2px 6px; border-radius: 4px; font-weight: 600; margin-left: 6px; }
+    .tag-opt { font-size: 11px; font-weight: 500; color: #64748b; background: #e2e8f0; padding: 1px 6px; border-radius: 4px; margin-left: 6px; }
+  </style>
+</head>
+<body>
+
+  <div class="card">
+    <h2>📄 PAN 49A & दस्तावेज मर्जर डेस्क</h2>
+    <p>फॉर्म 49A स्टैम्पिंग के साथ ओरिजिनल कलर में साफ दस्तावेज जोड़ें (साइज 2 MB के अंदर)।</p>
+
+    <!-- SECTION 1: PAN 49A STAMPING -->
+    <div class="section-title">📌 1. पैन फॉर्म एवं आवेदक विवरण</div>
+
+    <div class="field-box">
+      <label class="field-label">1. फॉर्म 49A PDF चुनें (2 Page PDF) *</label>
+      <input type="file" id="pdfInput" accept="application/pdf" onchange="previewUploadedPdf(this)">
+      <div id="pdfMiniPreviewWrap" class="pdf-mini-preview-wrap">
+        <div class="pdf-mini-title">🔍 अपलोड किए गए फॉर्म का पेज 1 प्रीव्यू:</div>
+        <canvas id="pdfMiniPreviewCanvas" class="pdf-mini-preview-canvas"></canvas>
+      </div>
+    </div>
+
+    <div class="field-box">
+      <label class="field-label">2. आवेदक की Photo (Passport 3.5 × 4.5 Ratio) *</label>
+      <input type="file" id="photoInput" accept="image/*" onchange="initCrop(this, 'photo')">
+      <img id="photoThumb" class="preview-thumb" alt="Cropped Photo">
+    </div>
+
+    <div class="field-box">
+      <label class="field-label">
+        3. आवेदक का Signature / अंगूठा * 
+        <span class="tag-clean">✨ Auto Ink Extractor</span>
+      </label>
+      <input type="file" id="signInput" accept="image/*" onchange="initCrop(this, 'sign')">
+      <img id="signThumb" class="preview-sign-thumb" alt="Cropped Sign">
+    </div>
+
+    <!-- SECTION 2: ATTACHED DOCUMENTS -->
+    <div class="section-title">📎 2. सहायक दस्तावेज (रंगीन एवं साफ)</div>
+
+    <div class="field-box">
+      <label class="field-label">4. आधार कार्ड (Aadhaar Card) *</label>
+      <input type="file" id="docAadhaarInput" accept="image/*" capture="environment" onchange="initCrop(this, 'aadhaar')">
+      <img id="docAadhaarThumb" class="preview-doc-thumb" alt="Color Aadhaar">
+    </div>
+
+    <div class="field-box">
+      <label class="field-label">5. Supportive Docs 1 <span class="tag-opt">ऐच्छिक (Optional)</span></label>
+      <input type="file" id="docSupport1Input" accept="image/*" capture="environment" onchange="initCrop(this, 'support1')">
+      <img id="docSupport1Thumb" class="preview-doc-thumb" alt="Color Support 1">
+    </div>
+
+    <div class="field-box">
+      <label class="field-label">6. Supportive Docs 2 <span class="tag-opt">ऐच्छिक (Optional)</span></label>
+      <input type="file" id="docSupport2Input" accept="image/*" capture="environment" onchange="initCrop(this, 'support2')">
+      <img id="docSupport2Thumb" class="preview-doc-thumb" alt="Color Support 2">
+    </div>
+
+    <button type="button" id="btnProcess" class="btn-submit" onclick="processAndStampPdf()">
+      ⚡ प्रोसेस करें एवं सम्पूर्ण PDF डाउनलोड करें (< 2 MB)
+    </button>
+
+    <div id="statusBox"></div>
+  </div>
+
+  <!-- Crop Modal with Live Sliders & Double Click Enable -->
+  <div id="cropModal">
+    <div style="color:#fff; font-size:14px; font-weight:bold; text-align:center; padding-bottom:4px;" id="cropTitle">क्रॉप एवं एडजस्ट करें</div>
+    <div style="color:#94a3b8; font-size:11px; text-align:center; margin-bottom:6px;">💡 डबल-क्लिक (या डबल-टैप) करके तुरंत सेव कर सकते हैं</div>
+    
+    <div id="cropContainer"><img id="cropImageEl" src=""></div>
+    
+    <!-- Widely Spaced Distinct Sliders -->
+    <div class="slider-box" id="sliderControls">
+      <div class="slider-row">
+        <span>☀️ Brightness</span>
+        <input type="range" id="sliderBright" min="70" max="150" value="100" oninput="applyLiveFilter()">
+        <span id="valBright" style="width:42px; text-align:right;">100%</span>
+      </div>
+      <div class="slider-row">
+        <span>🌓 Contrast</span>
+        <input type="range" id="sliderContrast" min="80" max="170" value="100" oninput="applyLiveFilter()">
+        <span id="valContrast" style="width:42px; text-align:right;">100%</span>
+      </div>
+    </div>
+
+    <div class="crop-actions">
+      <button onclick="rotateCrop(-90)" style="background:#334155; color:#fff;">↺ घुमाएं</button>
+      <button onclick="closeCropper()" style="background:#ef4444; color:#fff;">रद्द करें</button>
+      <button onclick="confirmCrop()" style="background:#10b981; color:#fff;">✅ सेव करें</button>
+    </div>
+  </div>
+
+  <script>
+    // Service Worker for Installable PWA support
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function() {
+        const swBlob = new Blob([
+          "self.addEventListener('install', e => e.waitUntil(self.skipWaiting()));\n" +
+          "self.addEventListener('activate', e => e.waitUntil(self.clients.claim()));\n" +
+          "self.addEventListener('fetch', e => e.respondWith(fetch(e.request).catch(() => new Response('Offline'))));"
+        ], { type: 'application/javascript' });
+        navigator.serviceWorker.register(URL.createObjectURL(swBlob)).catch(() => {});
+      });
+    }
+
+    if (window.pdfjsLib) {
+      pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js";
+    }
+
+    let cropper = null;
+    let currentCropTarget = '';
+    let finalPhotoImg = null;
+    let finalSignImg = null;
+    let finalAadhaarImg = null;
+    let finalSupport1Img = null;
+    let finalSupport2Img = null;
+
+    async function previewUploadedPdf(input) {
+      if (!input.files || !input.files[0]) return;
+      const file = input.files[0];
+      try {
+        const arrayBuffer = await readFileAsArrayBuffer(file);
+        const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
+        const pdf = await loadingTask.promise;
+        const page = await pdf.getPage(1);
+
+        const viewport = page.getViewport({ scale: 0.8 });
+        const canvas = document.getElementById('pdfMiniPreviewCanvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = viewport.width;
+        canvas.height = viewport.height;
+
+        await page.render({ canvasContext: ctx, viewport: viewport }).promise;
+        document.getElementById('pdfMiniPreviewWrap').style.display = 'block';
+      } catch (err) {
+        console.error("PDF Preview Error:", err);
+      }
+    }
+
+    function initCrop(input, target) {
+      if (!input.files || !input.files[0]) return;
+      currentCropTarget = target;
+      
+      const file = input.files[0];
+      const reader = new FileReader();
+      
+      reader.onload = function(e) {
+        const image = document.getElementById('cropImageEl');
+        image.src = e.target.result;
+        
+        let defaultB = 100, defaultC = 100;
+        if (target !== 'photo' && target !== 'sign') {
+          defaultB = 105;
+          defaultC = 115;
+        }
+
+        document.getElementById('sliderBright').value = defaultB;
+        document.getElementById('sliderContrast').value = defaultC;
+        document.getElementById('valBright').innerText = defaultB + "%";
+        document.getElementById('valContrast').innerText = defaultC + "%";
+
+        let title = "दस्तावेज क्रॉप एवं एडजस्ट करें";
+        let ratio = NaN;
+
+        const sliderBox = document.getElementById('sliderControls');
+        if (target === 'photo') {
+          title = "📷 पासपोर्ट फोटो साइज (3.5 × 4.5 Ratio)";
+          ratio = 3.5 / 4.5;
+          sliderBox.style.display = 'flex';
+        } else if (target === 'sign') {
+          title = "✍️ सिग्नेचर बॉक्स (2 : 1 Ratio)";
+          ratio = 2 / 1;
+          sliderBox.style.display = 'none';
+        } else {
+          title = "📄 दस्तावेज क्रॉप करें (Brightness / Contrast सेट करें)";
+          sliderBox.style.display = 'flex';
+        }
+
+        document.getElementById('cropTitle').innerText = title;
+        document.getElementById('cropModal').style.display = 'flex';
+        
+        if (cropper) cropper.destroy();
+
+        cropper = new Cropper(image, {
+          aspectRatio: ratio,
+          viewMode: 1,
+          autoCropArea: 0.95,
+          background: false,
+          movable: true,
+          zoomable: true,
+          rotatable: true,
+          scalable: false,
+          ready: function() {
+            applyLiveFilter();
+            
+            // Feature 1: Double Click / Double Tap to Confirm Crop
+            const cropBox = document.querySelector('.cropper-crop-box');
+            if (cropBox) {
+              cropBox.addEventListener('dblclick', function(ev) {
+                ev.preventDefault();
+                confirmCrop();
+              });
+
+              let lastTap = 0;
+              cropBox.addEventListener('touchend', function(ev) {
+                const now = new Date().getTime();
+                const diff = now - lastTap;
+                if (diff < 350 && diff > 0) {
+                  ev.preventDefault();
+                  confirmCrop();
+                }
+                lastTap = now;
+              });
+            }
+          }
+        });
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function applyLiveFilter() {
+      const b = document.getElementById('sliderBright').value;
+      const c = document.getElementById('sliderContrast').value;
+      document.getElementById('valBright').innerText = b + "%";
+      document.getElementById('valContrast').innerText = c + "%";
+
+      const container = document.querySelector('.cropper-container');
+      if (container && currentCropTarget !== 'sign') {
+        const cropperImg = container.querySelector('.cropper-view-box img');
+        const cropperCanvas = container.querySelector('.cropper-canvas img');
+        const filterVal = `brightness(${b}%) contrast(${c}%)`;
+        if (cropperImg) cropperImg.style.filter = filterVal;
+        if (cropperCanvas) cropperCanvas.style.filter = filterVal;
+      }
+    }
+
+    function rotateCrop(deg) {
+      if (cropper) cropper.rotate(deg);
+    }
+
+    function closeCropper() {
+      document.getElementById('cropModal').style.display = 'none';
+      if (cropper) cropper.destroy();
+    }
+
+    // High-Precision True-Color Ink Extractor
+    function removePaperBackground(canvas) {
+      const ctx = canvas.getContext('2d');
+      const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const data = imgData.data;
+
+      // 1. Calculate Average Paper Luminance
+      let sum = 0, count = 0;
+      for (let i = 0; i < data.length; i += 16) {
+        sum += (data[i] * 0.299 + data[i + 1] * 0.587 + data[i + 2] * 0.114);
+        count++;
+      }
+      const avgLum = count > 0 ? (sum / count) : 180;
+      const paperCutoff = Math.max(145, avgLum - 18);
+
+      // 2. Clear Background while preserving pure original ink
+      for (let i = 0; i < data.length; i += 4) {
+        const r = data[i];
+        const g = data[i + 1];
+        const b = data[i + 2];
+        const lum = (r * 0.299 + g * 0.587 + b * 0.114);
+
+        if (lum >= paperCutoff) {
+          data[i + 3] = 0;
+        } else {
+          const alphaRatio = (paperCutoff - lum) / paperCutoff;
+          data[i + 3] = Math.min(255, Math.round(alphaRatio * 380));
+        }
+      }
+      ctx.putImageData(imgData, 0, 0);
+      return canvas;
+    }
+
+    function applyColorDocumentFilter(canvas, brightPercent, contrastPercent) {
+      const tempCanvas = document.createElement('canvas');
+      tempCanvas.width = canvas.width;
+      tempCanvas.height = canvas.height;
+      const ctx = tempCanvas.getContext('2d');
+
+      ctx.filter = `brightness(${brightPercent}%) contrast(${contrastPercent}%)`;
+      ctx.drawImage(canvas, 0, 0);
+      return tempCanvas;
+    }
+
+    function confirmCrop() {
+      if (!cropper) return;
+      const b = parseFloat(document.getElementById('sliderBright').value) || 100;
+      const c = parseFloat(document.getElementById('sliderContrast').value) || 100;
+
+      if (currentCropTarget === 'photo') {
+        let canvas = cropper.getCroppedCanvas({ width: 350, height: 450 });
+        canvas = applyColorDocumentFilter(canvas, b, c);
+        const img = new Image();
+        img.onload = () => { finalPhotoImg = img; };
+        img.src = canvas.toDataURL('image/jpeg', 0.88);
+        const thumb = document.getElementById('photoThumb');
+        thumb.src = img.src;
+        thumb.style.display = 'block';
+
+      } else if (currentCropTarget === 'sign') {
+        let canvas = cropper.getCroppedCanvas({ width: 400, height: 200 });
+        canvas = removePaperBackground(canvas);
+        const img = new Image();
+        img.onload = () => { finalSignImg = img; };
+        img.src = canvas.toDataURL('image/png');
+        const thumb = document.getElementById('signThumb');
+        thumb.src = img.src;
+        thumb.style.display = 'block';
+
+      } else {
+        let canvas = cropper.getCroppedCanvas({ maxWidth: 1200, maxHeight: 1600 });
+        canvas = applyColorDocumentFilter(canvas, b, c);
+        
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.78);
+        const img = new Image();
+
+        if (currentCropTarget === 'aadhaar') {
+          img.onload = () => { finalAadhaarImg = img; };
+          const thumb = document.getElementById('docAadhaarThumb');
+          thumb.src = dataUrl;
+          thumb.style.display = 'block';
+        } else if (currentCropTarget === 'support1') {
+          img.onload = () => { finalSupport1Img = img; };
+          const thumb = document.getElementById('docSupport1Thumb');
+          thumb.src = dataUrl;
+          thumb.style.display = 'block';
+        } else if (currentCropTarget === 'support2') {
+          img.onload = () => { finalSupport2Img = img; };
+          const thumb = document.getElementById('docSupport2Thumb');
+          thumb.src = dataUrl;
+          thumb.style.display = 'block';
+        }
+        img.src = dataUrl;
+      }
+
+      closeCropper();
+    }
+
+    function readFileAsArrayBuffer(file) {
+      return new Promise((resolve, reject) => {
+        const r = new FileReader();
+        r.onload = () => resolve(r.result);
+        r.onerror = reject;
+        r.readAsArrayBuffer(file);
+      });
+    }
+
+    // Converts PDF Form Page to Grayscale/Black-and-White background
+    async function renderPageToGrayscaleCanvas(page) {
+      const viewport = page.getViewport({ scale: 1.75 });
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      canvas.width = viewport.width;
+      canvas.height = viewport.height;
+
+      await page.render({ canvasContext: ctx, viewport: viewport }).promise;
+
+      const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const d = imgData.data;
+      for (let i = 0; i < d.length; i += 4) {
+        const gray = d[i] * 0.299 + d[i + 1] * 0.587 + d[i + 2] * 0.114;
+        d[i] = gray;
+        d[i + 1] = gray;
+        d[i + 2] = gray;
+      }
+      ctx.putImageData(imgData, 0, 0);
+
+      return { canvas, width: viewport.width, height: viewport.height };
+    }
+
+    function appendScannedDocToPdf(pdfInstance, imgObj) {
+      pdfInstance.addPage('a4', 'p');
+      const pageW = 595.28;
+      const pageH = 841.89;
+      const margin = 24;
+
+      const availW = pageW - (margin * 2);
+      const availH = pageH - (margin * 2);
+
+      let w = imgObj.width;
+      let h = imgObj.height;
+
+      const scale = Math.min(availW / w, availH / h);
+      const renderW = w * scale;
+      const renderH = h * scale;
+
+      const posX = (pageW - renderW) / 2;
+      const posY = (pageH - renderH) / 2;
+
+      pdfInstance.addImage(imgObj.src, 'JPEG', posX, posY, renderW, renderH, undefined, 'FAST');
+    }
+
+    async function processAndStampPdf() {
+      const pdfFile = document.getElementById('pdfInput').files[0];
+      const status = document.getElementById('statusBox');
+      const btn = document.getElementById('btnProcess');
+
+      if (!pdfFile || !finalPhotoImg || !finalSignImg) {
+        alert("कृपया 49A PDF चुनें और फोटो व सिग्नेचर क्रॉप करके सेट करें!");
+        return;
+      }
+
+      if (!finalAadhaarImg) {
+        alert("कृपया आधार कार्ड की फोटो भी क्रॉप करके सेट करें!");
+        return;
+      }
+
+      try {
+        btn.disabled = true;
+        btn.innerText = "⏳ फाइलें प्रोसेस एवं ड्राइव पर अपलोड हो रही हैं...";
+        status.style.color = "#0284c7";
+        status.innerText = "PAN फॉर्म को B&W में बदलकर रंगीन फोटो व सिग्नेचर स्टैम्प किए जा रहे हैं...";
+
+        const fileBytes = await readFileAsArrayBuffer(pdfFile);
+        const loadingTask = pdfjsLib.getDocument({ data: fileBytes });
+        const pdf = await loadingTask.promise;
+
+        const numPages = pdf.numPages;
+        const { jsPDF } = window.jspdf;
+        const finalPdf = new jsPDF({ orientation: 'p', unit: 'pt', format: 'a4', compress: true });
+
+        // 1. Process 2-Page Form 49A (Form in Grayscale + Photos & Sign in Original Color)
+        for (let i = 1; i <= numPages; i++) {
+          const page = await pdf.getPage(i);
+          const { canvas, width, height } = await renderPageToGrayscaleCanvas(page);
+          const ctx = canvas.getContext('2d');
+
+          if (i === 1) {
+            const sx = width / 595.28;
+            const sy = height / 841.89;
+
+            // Page 1 Left Photo (Coloured)
+            ctx.drawImage(finalPhotoImg, 13 * sx, 110 * sy, 98 * sx, 126 * sy);
+
+            // Page 1 Cross Sign/Thumb (Coloured 2:1)
+            ctx.drawImage(finalSignImg, 10 * sx, 192 * sy, 104 * sx, 52 * sy);
+
+            // Page 1 Right Photo (Coloured)
+            ctx.drawImage(finalPhotoImg, 484 * sx, 110 * sy, 98 * sx, 126 * sy);
+          }
+
+          if (i === 2) {
+            const sx = width / 595.28;
+            const sy = height / 841.89;
+
+            // Page 2 Declaration Signature Line (Coloured 2:1)
+            ctx.drawImage(finalSignImg, 400 * sx, 730 * sy, 120 * sx, 60 * sy);
+          }
+
+          const pageDataUrl = canvas.toDataURL('image/jpeg', 0.82);
+          if (i > 1) finalPdf.addPage('a4', 'p');
+          finalPdf.addImage(pageDataUrl, 'JPEG', 0, 0, 595.28, 841.89, undefined, 'FAST');
+        }
+
+        // 2. Append Color Supporting Document Pages
+        appendScannedDocToPdf(finalPdf, finalAadhaarImg);
+
+        if (finalSupport1Img) {
+          appendScannedDocToPdf(finalPdf, finalSupport1Img);
+        }
+
+        if (finalSupport2Img) {
+          appendScannedDocToPdf(finalPdf, finalSupport2Img);
+        }
+
+        // Output File Name = <OriginalName>_final upload.pdf
+        const rawBaseName = pdfFile.name.replace(/\.pdf$/i, '');
+        const outFileName = rawBaseName + "_final upload.pdf";
+
+        // Download to Device
+        finalPdf.save(outFileName);
+
+        // Background Auto-Upload to Google Drive Target Folder
+        status.innerText = "✅ फाइल डाउनलोड हो गई! गूगल ड्राइव फोल्डर में सुरक्षित सेव किया जा रहा है...";
+        const finalPdfBase64 = finalPdf.output('datauristring');
+
+        google.script.run
+          .withSuccessHandler(function(uploadRes) {
+            status.style.color = "#15803d";
+            status.innerText = "✅ सम्पूर्ण सेट डाउनलोड हो गया और ड्राइव में सुरक्षित सेव हो गया!";
+            
+            setTimeout(function() {
+              window.location.reload();
+            }, 2500);
+          })
+          .withFailureHandler(function(err) {
+            status.style.color = "#f59e0b";
+            status.innerText = "✅ फाइल डाउनलोड हो गई! (ड्राइव बैकअप चेतावनी: " + err.message + ")";
+            setTimeout(function() {
+              window.location.reload();
+            }, 3000);
+          })
+          .uploadFinalPanPdfToDrive({
+            fileName: outFileName,
+            base64Data: finalPdfBase64
+          });
+
+      } catch (err) {
+        console.error(err);
+        status.style.color = "#dc2626";
+        status.innerText = "त्रुटि: " + err.message;
+        btn.disabled = false;
+        btn.innerText = "⚡ प्रोसेस करें एवं सम्पूर्ण PDF डाउनलोड करें (< 2 MB)";
+      }
+    }
+  </script>
+</body>
+</html>
