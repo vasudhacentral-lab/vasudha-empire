@@ -531,6 +531,8 @@
   </div>
 
   <script>
+    var API_ENDPOINT = "https://script.google.com/macros/s/AKfycbySxs2vjLjxXsZHUzgNTxG6BVBWajPk86UwtNtCG2hwjl1PjgvSrwd5Vt5sY_KLs-Q/exec";
+
     var cropperInstance = null;
     var targetKey = '';
     var isBarcodeCropMode = false;
@@ -897,21 +899,173 @@
         warranty: finalTermsText
       };
 
-    fetch("https://script.google.com/macros/s/AKfycbxa_h6vlLe2OlGLJn6w0O4tzCsrBsg-V5ws8MpuEeVX1V7Kj0k_UALmrgk-s0ZgdZCJ/exec", {
+      fetch(API_ENDPOINT, {
         method: "POST",
-        mode: "no-cors",
+        headers: { "Content-Type": "text/plain" },
+        body: JSON.stringify({ action: "submitBillOrder", data: billPayload })
+      })
+      .then(function(res) { return res.json(); })
+      .then(function(resp) {
+        btn.innerText = "💾 डेटा सेव करें एवं बिल प्रिंट करें";
+        btn.disabled = false;
+
+        if (!resp || !resp.success) {
+          alert("त्रुटि: बिल सेव नहीं हो सका। " + (resp && resp.error ? resp.error : ""));
+          return;
+        }
+
+        // Exact server-generated sequential invoice number from Google Sheet
+        document.getElementById('printInvoiceNo').innerText = "#" + resp.invoiceNo;
+        var barcodeVal = imei ? ("" + imei) : ("INV" + resp.invoiceNo);
+
+        try {
+          if (window.JsBarcode) {
+            JsBarcode("#billBarcodeCanvas", barcodeVal, {
+              format: "CODE128",
+              width: 1.8,
+              height: 40,
+              displayValue: true,
+              fontSize: 12
+            });
+          }
+        } catch(e) {}
+
+        setTimeout(function() {
+          window.print();
+        }, 80);
+      })
+      .catch(function(err) {
+        btn.innerText = "💾 डेटा सेव करें एवं बिल प्रिंट करें";
+        btn.disabled = false;
+        alert("त्रुटि: सर्वर से संपर्क नहीं हो पाया - " + err.message);
+      });
+    }
+
+    function openCropper(inp, key) {
+      if (!inp.files || !inp.files[0]) return;
+      isBarcodeCropMode = false;
+      targetKey = key;
+
+      document.getElementById('cropModal').style.display = 'flex';
+      document.getElementById('btnCropSave').innerText = "सेव करें";
+
+      var r = new FileReader();
+      r.onload = function(e) {
+        var imgEl = document.getElementById('cropImg');
+        imgEl.src = e.target.result;
+        if (cropperInstance) cropperInstance.destroy();
+        cropperInstance = new Cropper(imgEl, { viewMode: 1, autoCropArea: 0.95, aspectRatio: NaN });
+      };
+      r.readAsDataURL(inp.files[0]);
+    }
+
+    function rotateImg(deg) { if (cropperInstance) cropperInstance.rotate(deg); }
+    
+    function closeCropper() {
+      document.getElementById('cropModal').style.display = 'none';
+      if (cropperInstance) cropperInstance.destroy();
+      isBarcodeCropMode = false;
+    }
+
+    function confirmCrop() {
+      if (!cropperInstance) return;
+
+      if (isBarcodeCropMode) {
+        var canvas = cropperInstance.getCroppedCanvas({ maxWidth: 1000, maxHeight: 1000 });
+        closeCropper();
+        decodeCroppedBarcodeCanvas(canvas);
+        return;
+      }
+
+      var maxDim = 900;
+      var quality = 0.65;
+      if (targetKey === 'photo') { maxDim = 450; quality = 0.60; }
+      
+      var canvas = cropperInstance.getCroppedCanvas({ maxWidth: maxDim, maxHeight: maxDim });
+      var compressedData = canvas.toDataURL('image/jpeg', quality);
+      imagesStore[targetKey] = compressedData;
+      
+      var p = document.getElementById('prev_' + targetKey);
+      p.src = compressedData;
+      p.style.display = 'block';
+      closeCropper();
+    }
+
+    async function makeAadharCollage(fData, bData) {
+      return new Promise(function(res) {
+        var i1 = new Image();
+        var i2 = new Image();
+        i1.onload = function() {
+          i2.onload = function() {
+            var c = document.createElement('canvas');
+            c.width = Math.max(i1.width, i2.width);
+            c.height = i1.height + i2.height + 20;
+            var ctx = c.getContext('2d');
+            ctx.fillStyle = '#fff';
+            ctx.fillRect(0, 0, c.width, c.height);
+            ctx.drawImage(i1, (c.width - i1.width) / 2, 0);
+            ctx.drawImage(i2, (c.width - i2.width) / 2, i1.height + 20);
+            res(c.toDataURL('image/jpeg', 0.65));
+          };
+          i2.src = bData;
+        };
+        i1.src = fData;
+      });
+    }
+
+    async function submitData(e) {
+      e.preventDefault();
+      var mobVal = document.getElementById('cMob').value.trim();
+      if (mobVal !== "" && !/^[6-9]\d{9}$/.test(mobVal)) {
+        alert("कृपया सही मोबाइल नंबर लिखें!\n\nभारतीय मोबाइल नंबर केवल 6, 7, 8 या 9 से शुरू होना चाहिए और पूरे 10 अंकों का होना चाहिए।");
+        document.getElementById('cMob').focus();
+        return;
+      }
+      if (!imagesStore.parchi) { alert("कृपया पर्ची अपलोड करें!"); return; }
+      if (!imagesStore.aadharFront) { alert("कृपया आधार अगला भाग अपलोड करें!"); return; }
+      if (!imagesStore.aadharBack) { alert("कृपया आधार पिछला भाग अपलोड करें!"); return; }
+
+      var btn = document.getElementById('subBtn');
+      btn.innerText = "अपलोड हो रहा है...";
+      btn.disabled = true;
+
+      var aadharCollage = await makeAadharCollage(imagesStore.aadharFront, imagesStore.aadharBack);
+
+      var payload = {
+        customerName: document.getElementById('cName').value || "सामान्य ग्राहक",
+        mobile: document.getElementById('cMob').value || "N/A",
+        serviceName: document.getElementById('cService').value,
+        photo: imagesStore.photo,
+        parchi: imagesStore.parchi,
+        jatiDoc: imagesStore.jatiDoc,
+        aayDoc: imagesStore.aayDoc,
+        niwasDoc: imagesStore.niwasDoc,
+        aadhar: aadharCollage
+      };
+
+      fetch(API_ENDPOINT, {
+        method: "POST",
         headers: { "Content-Type": "text/plain" },
         body: JSON.stringify({ action: "submitOrder", data: payload })
-      }).then(function() {
+      })
+      .then(function(res) { return res.json(); })
+      .then(function(r) {
         btn.innerText = "⚡ आवेदन जमा करें और ऑर्डर नंबर पाएं";
         btn.disabled = false;
-        alert("सफल! आवेदन जमा हो गया है एवं फाइलें ड्राइव में सेव हो गई हैं!");
+
+        if (!r || !r.success) {
+          alert("त्रुटि: " + (r && r.error ? r.error : "आवेदन सेव नहीं हुआ"));
+          return;
+        }
+
+        alert("सफल! आवेदन जमा हो गया है!\nऑर्डर आईडी: " + r.orderId);
         document.getElementById('docForm').reset();
         document.querySelectorAll('.preview-box').forEach(function(el) { el.style.display = 'none'; });
-      }).catch(function(err) {
+      })
+      .catch(function(err) {
         btn.innerText = "⚡ आवेदन जमा करें और ऑर्डर नंबर पाएं";
         btn.disabled = false;
-        alert("त्रुटि: " + err.message);
+        alert("त्रुटि: सर्वर से संपर्क नहीं हो पाया - " + err.message);
       });
     }
 
@@ -922,7 +1076,7 @@
       b.style.display = 'block';
       b.innerHTML = "खोज रहा है...";
 
-      fetch("https://script.google.com/macros/s/AKfycbxa_h6vlLe2OlGLJn6w0O4tzCsrBsg-V5ws8MpuEeVX1V7Kj0k_UALmrgk-s0ZgdZCJ/exec", {
+      fetch(API_ENDPOINT, {
         method: "POST",
         headers: { "Content-Type": "text/plain" },
         body: JSON.stringify({ action: "trackOrder", data: { query: q } })
