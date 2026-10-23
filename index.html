@@ -4,16 +4,18 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover, interactive-widget=resizes-content">
   <title>वसुधा केंद्र ऐप एवं बिलिंग</title>
-  
+
   <meta name="theme-color" content="#0d6efd">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
-<link rel="manifest" href="/manifest.json">
+
+  <link rel="manifest" href="/manifest.json">
   <script>
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('/sw.js');
     }
   </script>
+
   <!-- Core Styles -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css"/>
 
@@ -31,414 +33,303 @@
       scrollbar-width: none;
       -ms-overflow-style: none;
     }
-    html::-webkit-scrollbar, 
+    html::-webkit-scrollbar,
     body::-webkit-scrollbar {
       display: none !important;
       width: 0 !important;
       height: 0 !important;
     }
-    
-    .app-header { background: linear-gradient(135deg, #0d6efd, #0b5ed7); color: #fff; padding: 16px 18px 20px; border-radius: 0 0 20px 20px; box-shadow: 0 4px 15px rgba(13, 110, 253, 0.25); text-align: center; }
+
+    .app-header { background: linear-gradient(135deg, #0d6efd, #0b5ed7); color: #fff; padding: 16px 18px 20px; border-radius: 0 0 20px 20px; box-shadow: 0 4px 14px rgba(13,110,253,0.25); text-align: center; }
     .brand-title { margin: 0; font-size: 22px; font-weight: 800; }
     .brand-sub { margin: 3px 0 0; font-size: 12px; opacity: 0.95; }
 
-    .tab-container { display: flex; margin: 12px 14px; background: #ffffff; border-radius: 12px; padding: 4px; box-shadow: 0 4px 12px rgba(0,0,0,0.06); gap: 4px; }
-    .app-tab { flex: 1; padding: 10px 4px; border: none; border-radius: 9px; font-size: 13px; font-weight: 700; text-align: center; cursor: pointer; user-select: none; }
+    .tab-container { display: flex; margin: 12px 14px; background: #ffffff; border-radius: 12px; padding: 4px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); border: 1px solid #e2e8f0; }
+    .app-tab { flex: 1; padding: 10px 4px; border: none; border-radius: 9px; font-size: 13px; font-weight: 700; text-align: center; cursor: pointer; transition: 0.2s all; }
     .app-tab.active { background: #0d6efd; color: #ffffff; }
     .app-tab.inactive { background: transparent; color: #64748b; }
 
     .app-body { padding: 0 14px 20px; max-width: 520px; margin: 0 auto; }
     .app-card { background: #ffffff; border-radius: 16px; padding: 18px; box-shadow: 0 2px 10px rgba(0,0,0,0.04); }
 
-    .input-group { 
-      margin-bottom: 12px; 
-      position: relative; 
-      overflow: hidden; 
-      clear: both; 
-    }
-    .input-label { 
-      display: flex; 
-      justify-content: space-between; 
-      font-size: 12.5px; 
-      font-weight: 700; 
-      color: #334155; 
-      margin-bottom: 5px; 
-      pointer-events: none;
+    .input-group {
+      margin-bottom: 12px;
       position: relative;
-      z-index: 1;
-    }
-    .opt-tag { font-size: 11px; font-weight: 500; color: #64748b; background: #f1f5f9; padding: 1px 6px; border-radius: 4px; }
-    .req-tag { font-size: 11px; font-weight: 600; color: #dc2626; background: #fee2e2; padding: 1px 6px; border-radius: 4px; }
-    
-    input[type="text"], input[type="tel"], input[type="number"], select { 
-      width: 100%; 
-      padding: 11px 12px; 
-      border: 1.5px solid #e2e8f0; 
-      border-radius: 10px; 
-      font-size: 16px !important; 
-      color: #0f172a; 
-      background: #f8fafc; 
-      display: block;
-      position: relative;
-      z-index: 1;
-    }
-    input:focus, select:focus { outline: none; border-color: #0d6efd; background: #fff; }
-
-    .touch-upload-btn { display: flex; align-items: center; justify-content: center; gap: 8px; background: #f0f7ff; border: 2px dashed #0d6efd; color: #0d6efd; padding: 12px; border-radius: 10px; font-size: 13px; font-weight: 700; text-align: center; cursor: pointer; margin-top: 5px; user-select: none; -webkit-touch-callout: none; }
-    .touch-upload-btn.req-btn { border-color: #2563eb; background: #eff6ff; }
-    .preview-box { width: 100%; max-height: 140px; object-fit: contain; border-radius: 8px; margin-top: 8px; display: none; border: 1px solid #e2e8f0; }
-
-    .btn-submit-main { width: 100%; background: #10b981; color: white; border: none; padding: 14px; font-size: 15px; font-weight: 800; border-radius: 12px; cursor: pointer; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3); margin-top: 15px; }
-    .btn-submit-main:disabled { background: #94a3b8; }
-
-    /* Compact Appropriate Cropper Styling */
-    #cropModal, #webcamModal {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(10, 15, 29, 0.94);
-      z-index: 99999;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      padding: 14px;
-    }
-    .crop-modal-inner {
-      width: 100%;
-      max-width: 480px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-    #cropContainer {
-      width: 100%;
-      height: 52vh;
-      max-height: 380px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: #000;
-      border-radius: 10px;
       overflow: hidden;
-      border: 1px solid #334155;
+      clear: both;
     }
-    #cropImg { max-width: 100%; max-height: 52vh; }
-    .crop-bar { display: flex; gap: 8px; justify-content: center; }
-    .crop-bar button { flex: 1; padding: 11px; border: none; border-radius: 8px; font-weight: 700; font-size: 13.5px; cursor: pointer; }
+    .input-label-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 4px;
+      position: static;
+    }
+    .field-label {
+      font-size: 11.5px;
+      font-weight: 700;
+      color: #334155;
+      display: inline-block;
+      margin: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 70%;
+    }
+    .field-badge {
+      font-size: 10px;
+      padding: 1.5px 5.5px;
+      border-radius: 4px;
+      font-weight: 600;
+      display: inline-block;
+      margin: 0;
+      flex-shrink: 0;
+    }
+    .badge-opt { background: #f1f5f9; color: #64748b; }
+    .badge-req { background: #fee2e2; color: #dc2626; }
 
-    .cropper-view-box {
-      outline: 1.5px solid #38bdf8 !important;
-      box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.7), 0 0 14px rgba(56, 189, 248, 0.35) !important;
-      border-radius: 2px;
-    }
-    .cropper-line { background-color: rgba(56, 189, 248, 0.3) !important; }
-    .cropper-dashed { border: 0 dashed rgba(255, 255, 255, 0.45) !important; }
-    .cropper-dashed.dashed-h { border-top-width: 1px !important; border-bottom-width: 1px !important; }
-    .cropper-dashed.dashed-v { border-left-width: 1px !important; border-right-width: 1px !important; }
-    .cropper-point {
-      background-color: #38bdf8 !important;
-      border: 1.5px solid #ffffff !important;
-      border-radius: 50% !important;
-      width: 10px !important;
-      height: 10px !important;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.5) !important;
-    }
-    .cropper-modal {
-      background-color: rgba(10, 15, 29, 0.8) !important;
-    }
+    .app-control { width: 100%; border: 1.5px solid #cbd5e1; border-radius: 10px; padding: 11px 12px; font-size: 13.5px; color: #1e293b; background: #f8fafc; outline: none; }
+    .app-control:focus { border-color: #0d6efd; background: #fff; }
 
-    /* Printable Invoice Template */
-    #printableInvoiceArea { display: none; }
+    .upload-box { border: 2px dashed #0d6efd; border-radius: 10px; padding: 9px; text-align: center; cursor: pointer; background: #f8faff; font-size: 12px; font-weight: 700; color: #0d6efd; }
+    .preview-box { display: none; width: 100%; height: 95px; border-radius: 8px; object-fit: contain; background: #000; margin-top: 6px; }
+
+    .btn-submit { width: 100%; padding: 13px; border-radius: 11px; font-size: 14px; font-weight: 800; background: #0d6efd; color: #fff; border: none; cursor: pointer; box-shadow: 0 4px 12px rgba(13,110,253,0.25); }
+    .btn-submit:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    #cropModal, #webcamModal { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); z-index: 9999; flex-direction: column; align-items: center; justify-content: center; }
+    .crop-modal-inner { width: 92%; max-width: 480px; background: #fff; border-radius: 14px; padding: 12px; overflow: hidden; display: flex; flex-direction: column; }
+    #cropContainer { width: 100%; height: 52vh; max-height: 380px; background: #000; }
+    .crop-bar { display: flex; gap: 8px; margin-top: 10px; }
+    .crop-bar button { flex: 1; padding: 10px 4px; font-size: 12.5px; font-weight: 700; border-radius: 8px; border: none; cursor: pointer; }
+
+    #barcodeScannerBox { display: none; margin-bottom: 12px; border: 1.5px solid #0d6efd; border-radius: 10px; padding: 8px; background: #f8faff; }
+    #scannerInteractive { width: 100%; height: 180px; background: #000; border-radius: 8px; overflow: hidden; position: relative; }
+    #scannerInteractive video { width: 100%; height: 100%; object-fit: cover; }
+
+    .bill-calc-row { display: flex; gap: 8px; margin-bottom: 12px; }
+    .bill-calc-col { flex: 1; }
+
+    /* Printable Retail Invoice Template Styles */
+    #printableInvoiceArea {
+      display: none;
+      background: #ffffff;
+      color: #000000;
+      width: 100%;
+      max-width: 780px;
+      margin: 0 auto;
+      padding: 24px;
+      border: 1px solid #000000;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      box-sizing: border-box;
+      position: relative;
+    }
+    .inv-header-table { width: 100%; border-collapse: collapse; margin-bottom: 12px; border-bottom: 2px solid #000; padding-bottom: 8px; }
+    .inv-shop-title { font-size: 24px; font-weight: 900; color: #0d6efd; margin: 0; line-height: 1.1; }
+    .inv-shop-sub { font-size: 12px; font-weight: 700; color: #334155; margin: 3px 0 0 0; }
+    .inv-grid-meta { width: 100%; border-collapse: collapse; margin-bottom: 14px; font-size: 12px; }
+    .inv-grid-meta td { padding: 3px 4px; vertical-align: top; }
+    .inv-table { width: 100%; border-collapse: collapse; margin-bottom: 14px; }
+    .inv-table th, .inv-table td { border: 1px solid #000; padding: 7px 8px; font-size: 12px; text-align: left; }
+    .inv-table th { background: #f1f5f9; font-weight: 800; }
+    .inv-footer { margin-top: 18px; width: 100%; border-collapse: collapse; }
+    .inv-stamp-zone { width: 180px; height: 90px; text-align: center; vertical-align: bottom; font-size: 11px; font-weight: bold; border-top: 1px dashed #64748b; }
 
     @media print {
       body * { visibility: hidden; }
       #printableInvoiceArea, #printableInvoiceArea * { visibility: visible; }
-      #printableInvoiceArea { display: block !important; position: absolute; left: 0; top: 0; width: 100%; padding: 25px; background: #fff; color: #000; font-family: Arial, sans-serif; }
-      .app-header, .tab-container, .app-body { display: none !important; }
-    }
-
-    .bill-box {
-      position: relative;
-      border: 1.5px solid #000;
-      padding: 24px;
-      border-radius: 8px;
-      background: #fff;
-      overflow: hidden;
-    }
-    
-    .bill-watermark {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 290px;
-      height: 290px;
-      object-fit: contain;
-      opacity: 0.08;
-      pointer-events: none;
-      z-index: 0;
-    }
-
-    .bill-header-wrapper {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      border-bottom: 2px solid #000;
-      padding-bottom: 12px;
-      position: relative;
-      z-index: 1;
-    }
-    .bill-logo-img { width: 90px; height: 90px; object-fit: contain; }
-    .bill-header-text { flex: 1; text-align: center; }
-    .bill-header-spacer { width: 90px; }
-
-    .bill-row { display: flex; justify-content: space-between; margin-top: 15px; font-size: 13.5px; position: relative; z-index: 1; }
-    .bill-table { width: 100%; border-collapse: collapse; margin-top: 16px; font-size: 13.5px; position: relative; z-index: 1; }
-    .bill-table th, .bill-table td { border: 1px solid #000; padding: 8px 10px; text-align: left; }
-    .bill-table th { background: #f8fafc; font-weight: 700; }
-
-    .bill-summary { width: 280px; margin-left: auto; margin-top: 16px; font-size: 13.5px; position: relative; z-index: 1; }
-    .summary-row { display: flex; justify-content: space-between; padding: 4px 0; }
-
-    .bill-stamp-wrap {
-      display: flex;
-      justify-content: flex-end;
-      margin-top: 6px;
-      margin-right: 15px;
-      position: relative;
-      z-index: 2;
-    }
-    .bill-stamp-img {
-      width: 140px;
-      height: 140px;
-      object-fit: contain;
-      mix-blend-mode: multiply;
-      transform: rotate(-6deg);
-      opacity: 0.95;
+      #printableInvoiceArea {
+        display: block !important;
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        margin: 0;
+        padding: 16px;
+        border: none;
+      }
+      .app-header, .tab-container, .app-body, #cropModal, #webcamModal, #topNavLinks { display: none !important; }
     }
   </style>
 </head>
 <body>
 
   <!-- TOP NAVIGATION LINKS -->
-<div style="display:flex; justify-content:flex-end; gap:12px; padding:10px 16px; background:#ffffff; font-size:13px; font-weight:700; border-bottom:1px solid #e2e8f0; flex-wrap:wrap;">
-  <a href="/" style="color:#0d6efd; text-decoration:none; border-bottom:2px solid #0d6efd;">Home / Billing</a>
-  <a href="/passport.html" style="color:#64748b; text-decoration:none;">Passport 4×6</a>
-  <a href="/aadhar.html" style="color:#64748b; text-decoration:none;">Adhar / Pan A4</a>
-  <a href="/tools.html" style="color:#64748b; text-decoration:none;">Tools Desk</a>
-</div>
-  
+  <div id="topNavLinks" style="display:flex; justify-content:flex-end; gap:12px; padding:10px 16px; background:#ffffff; font-size:13px; font-weight:700; border-bottom:1px solid #e2e8f0; flex-wrap:wrap;">
+    <a href="/" style="color:#0d6efd; text-decoration:none; border-bottom:2px solid #0d6efd;">Home / Billing</a>
+    <a href="/passport.html" style="color:#64748b; text-decoration:none;">Passport 4×6</a>
+    <a href="/aadhar.html" style="color:#64748b; text-decoration:none;">Adhar / Pan A4</a>
+    <a href="/tools.html" style="color:#64748b; text-decoration:none;">Tools Desk</a>
+  </div>
+
   <div class="app-header">
     <h1 class="brand-title">वसुधा केंद्र</h1>
     <p class="brand-sub">अकबरपुर, पूर्णिया | ऑनलाइन एवं बिलिंग पोर्टल</p>
   </div>
 
   <div class="tab-container">
-    <button id="tabApply" class="app-tab active" type="button" onclick="switchView('apply')">नया आवेदन</button>
-    <button id="tabBilling" class="app-tab inactive" type="button" onclick="switchView('billing')">🧾 नया बिलिंग करें</button>
-    <button id="tabTrack" class="app-tab inactive" type="button" onclick="switchView('track')">स्थिति जांचें</button>
+    <button class="app-tab active" id="tabDoc" onclick="switchPortalTab('DOC')">नया आवेदन</button>
+    <button class="app-tab inactive" id="tabBill" onclick="switchPortalTab('BILL')">🧾 नया बिलिंग करें</button>
+    <button class="app-tab inactive" id="tabStatus" onclick="switchPortalTab('STATUS')">स्थिति जांचें</button>
   </div>
 
   <div class="app-body">
-    
-    <!-- 1. Aavedan View -->
-    <div class="app-card" id="applyView">
-      <form id="docForm" onsubmit="submitData(event)">
+    <!-- VIEW 1: ONLINE SERVICE REGISTRATION FORM -->
+    <div class="app-card" id="viewDocForm">
+      <form id="docForm" onsubmit="submitCustomerOrder(event)">
         <div class="input-group">
-          <label class="input-label"><span>ग्राहक का नाम</span><span class="opt-tag">खाली रख सकते हैं</span></label>
-          <input type="text" id="cName" placeholder="खाली रख सकते हैं या नाम लिखें" autocomplete="off">
+          <div class="input-label-row">
+            <label class="field-label" for="custName">ग्राहक का नाम</label>
+            <span class="field-badge badge-opt">खाली रख सकते हैं</span>
+          </div>
+          <input class="app-control" type="text" id="custName" placeholder="खाली रख सकते हैं या नाम लिखें">
         </div>
+
         <div class="input-group">
-          <label class="input-label"><span>मोबाइल / व्हाट्सएप नंबर</span><span class="opt-tag">खाली रख सकते हैं</span></label>
-          <input type="tel" id="cMob" maxlength="10" inputmode="numeric" oninput="let v=this.value.replace(/\D/g,''); if(v.length>0 && !['6','7','8','9'].includes(v[0])){ v=''; } this.value=v.slice(0,10);" placeholder="खाली रख सकते हैं (6, 7, 8, 9 से शुरू)" autocomplete="off">
+          <div class="input-label-row">
+            <label class="field-label" for="custMobile">मोबाइल / व्हाट्सएप नंबर</label>
+            <span class="field-badge badge-opt">खाली रख सकते हैं</span>
+          </div>
+          <input class="app-control" type="tel" id="custMobile" placeholder="खाली रख सकते हैं (6, 7, 8, 9 से शुरू)" pattern="[6-9][0-9]{9}">
         </div>
+
         <div class="input-group">
-          <label class="input-label"><span>सेवा चुनें *</span><span class="req-tag">अनिवार्य</span></label>
-          <select id="cService" required>
-            <option value="JATI AAY NIWAS PRAMAN PATRA">जाति आय निवास प्रमाण पत्र (Caste, Income, Resi. Certificate)</option>
-            <option value="PAN CARD">पैन कार्ड (PAN Card Apply / Correction)</option>
-            <option value="OTHER">अन्य ऑनलाइन सेवा</option>
+          <div class="input-label-row">
+            <label class="field-label" for="serviceSelect">सेवा चुनें *</label>
+            <span class="field-badge badge-req">अनिवार्य</span>
+          </div>
+          <select class="app-control" id="serviceSelect" required onchange="renderDynamicDocFields()">
+            <option value="जाति आय निवास प्रमाण पत्र (Caste, Income, Resi. Certificate)">जाति आय निवास प्रमाण पत्र (Caste, Income, Resi. Certificate)</option>
+            <option value="पैन कार्ड नया / सुधार (PAN Card New / Correction)">पैन कार्ड नया / सुधार (PAN Card New / Correction)</option>
+            <option value="पासपोर्ट साइज फोटो 4x6 (Passport Photo Studio)">पासपोर्ट साइज फोटो 4x6 (Passport Photo Studio)</option>
+            <option value="आधार / पैन A4 प्रिंट (Direct Print Desk)">आधार / पैन A4 प्रिंट (Direct Print Desk)</option>
+            <option value="दाखिल खारिज / LPC (Mutation / LPC Bihar Land)">दाखिल खारिज / LPC (Mutation / LPC Bihar Land)</option>
+            <option value="राशन कार्ड नया / नाम जोड़ना (Ration Card Services)">राशन कार्ड नया / नाम जोड़ना (Ration Card Services)</option>
+            <option value="लेबर कार्ड नया / रिन्यूअल (Bihar Labour Card)">लेबर कार्ड नया / रिन्यूअल (Bihar Labour Card)</option>
+            <option value="जन्म / मृत्यु प्रमाण पत्र (Birth / Death Certificate)">जन्म / मृत्यु प्रमाण पत्र (Birth / Death Certificate)</option>
+            <option value="चरित्र प्रमाण पत्र (Bihar Police Character Certificate)">चरित्र प्रमाण पत्र (Bihar Police Character Certificate)</option>
+            <option value="ड्राइविंग लाइसेंस (Learning / Permanent DL)">ड्राइविंग लाइसेंस (Learning / Permanent DL)</option>
+            <option value="अन्य ऑनलाइन फॉर्म / सेवा (Other Service / Job Form)">अन्य ऑनलाइन फॉर्म / सेवा (Other Service / Job Form)</option>
           </select>
         </div>
 
-        <div class="input-group" onclick="triggerFileSelect('fPhoto')">
-          <label class="input-label"><span>1. ग्राहक की फोटो (≤ 70 KB, फ्री साइज़)</span><span class="opt-tag">खाली रख सकते हैं</span></label>
-          <div class="touch-upload-btn">📷 फोटो चुनें / अपलोड करें</div>
-          <input type="file" id="fPhoto" accept="image/*" style="display:none;" onchange="openCropper(this, 'photo')">
-          <img id="prev_photo" class="preview-box">
-        </div>
+        <div id="dynamicDocContainer"></div>
 
-        <div class="input-group" onclick="triggerFileSelect('fParchi')">
-          <label class="input-label"><span>2. पर्ची (≤ 200 KB) *</span><span class="req-tag">अनिवार्य</span></label>
-          <div class="touch-upload-btn req-btn">📷 पर्ची अपलोड करें *</div>
-          <input type="file" id="fParchi" accept="image/*" style="display:none;" onchange="openCropper(this, 'parchi')">
-          <img id="prev_parchi" class="preview-box">
-        </div>
-
-        <div class="input-group" onclick="triggerFileSelect('fJatiDoc')">
-          <label class="input-label"><span>3. जाति सहायक दस्तावेज (≤ 200 KB)</span><span class="opt-tag">खाली रख सकते हैं</span></label>
-          <div class="touch-upload-btn">📷 जाति कागजात</div>
-          <input type="file" id="fJatiDoc" accept="image/*" style="display:none;" onchange="openCropper(this, 'jatiDoc')">
-          <img id="prev_jatiDoc" class="preview-box">
-        </div>
-
-        <div class="input-group" onclick="triggerFileSelect('fAayDoc')">
-          <label class="input-label"><span>4. आय सहायक दस्तावेज (≤ 200 KB)</span><span class="opt-tag">खाली रख सकते हैं</span></label>
-          <div class="touch-upload-btn">📷 आय कागजात</div>
-          <input type="file" id="fAayDoc" accept="image/*" style="display:none;" onchange="openCropper(this, 'aayDoc')">
-          <img id="prev_aayDoc" class="preview-box">
-        </div>
-
-        <div class="input-group" onclick="triggerFileSelect('fNiwasDoc')">
-          <label class="input-label"><span>5. निवास सहायक दस्तावेज (≤ 200 KB)</span><span class="opt-tag">खाली रख सकते हैं</span></label>
-          <div class="touch-upload-btn">📷 निवास कागजात</div>
-          <input type="file" id="fNiwasDoc" accept="image/*" style="display:none;" onchange="openCropper(this, 'niwasDoc')">
-          <img id="prev_niwasDoc" class="preview-box">
-        </div>
-
-        <div class="input-group" onclick="triggerFileSelect('fAadharFront')">
-          <label class="input-label"><span>6. आधार आगे का भाग (Front) *</span><span class="req-tag">अनिवार्य</span></label>
-          <div class="touch-upload-btn req-btn">📷 आधार आगे का भाग *</div>
-          <input type="file" id="fAadharFront" accept="image/*" style="display:none;" onchange="openCropper(this, 'aadharFront')">
-          <img id="prev_aadharFront" class="preview-box">
-        </div>
-
-        <div class="input-group" onclick="triggerFileSelect('fAadharBack')">
-          <label class="input-label"><span>7. आधार पीछे का भाग (Back) *</span><span class="req-tag">अनिवार्य</span></label>
-          <div class="touch-upload-btn req-btn">📷 आधार पीछे का भाग *</div>
-          <input type="file" id="fAadharBack" accept="image/*" style="display:none;" onchange="openCropper(this, 'aadharBack')">
-          <img id="prev_aadharBack" class="preview-box">
-        </div>
-
-        <button type="submit" id="subBtn" class="btn-submit-main">⚡ आवेदन जमा करें और ऑर्डर नंबर पाएं</button>
+        <button class="btn-submit" type="submit" id="btnDocSubmit" style="margin-top:14px;">⚡ आवेदन जमा करें और ऑर्डर नंबर पाएं</button>
       </form>
     </div>
 
-    <!-- 2. Billing View -->
-    <div class="app-card" id="billingView" style="display:none;">
-      <h3 style="margin:0 0 12px; font-size:16px;">🧾 इनवॉइस / बिल जनरेटर</h3>
-
-      <div class="input-group" style="background:#f8fafc; border:1.5px solid #cbd5e1; padding:12px; border-radius:12px; margin-bottom:14px;">
-        <label class="input-label">
-          <span>📦 उत्पाद / डिवाइस की फोटो (Product Image)</span>
-          <span class="opt-tag">खाली रख सकते हैं</span>
-        </label>
-        <div style="display:flex; gap:8px;">
-          <div class="touch-upload-btn" id="btnProdLabel" style="flex:1; background:#fff; border-color:#0d6efd; margin-top:0;" onclick="triggerFileSelect('fProductDirect')">
-            📁 फोटो चुनें (Upload)
+    <!-- VIEW 2: RETAIL BILLING FORM -->
+    <div class="app-card" id="viewBillingForm" style="display:none;">
+      <form id="billingForm" onsubmit="submitBillOrder(event)">
+        <div class="input-group">
+          <div class="input-label-row">
+            <label class="field-label" for="billCustName">ग्राहक का नाम (Customer Name)</label>
+            <span class="field-badge badge-opt">वैकल्पिक</span>
           </div>
-          <div class="touch-upload-btn" id="btnProdWebcam" style="flex:1; background:#0d6efd; color:#fff; border-color:#0d6efd; margin-top:0;" onclick="openWebcamModal('product')">
-            💻 वेबकैम से लें (Webcam)
+          <input class="app-control" type="text" id="billCustName" placeholder="ग्राहक का नाम लिखें (वैकल्पिक)">
+        </div>
+
+        <div class="input-group">
+          <div class="input-label-row">
+            <label class="field-label" for="billCustMobile">मोबाइल नंबर (Mobile No)</label>
+            <span class="field-badge badge-opt">वैकल्पिक</span>
+          </div>
+          <input class="app-control" type="tel" id="billCustMobile" placeholder="मोबाइल नंबर (10 अंक)" pattern="[6-9][0-9]{9}">
+        </div>
+
+        <div class="input-group">
+          <div class="input-label-row">
+            <label class="field-label" for="billItemName">सामग्री / उत्पाद का नाम (Item/Product)</label>
+            <span class="field-badge badge-req">अनिवार्य</span>
+          </div>
+          <input class="app-control" type="text" id="billItemName" placeholder="उदा: OTG Cable, Charger, Lamination" required>
+        </div>
+
+        <div class="input-group">
+          <div class="input-label-row">
+            <label class="field-label" for="billImeiSerial">IMEI / बारकोड / सीरियल नंबर</label>
+            <span class="field-badge badge-opt">वैकल्पिक</span>
+          </div>
+          <div style="display:flex; gap:6px;">
+            <input class="app-control" type="text" id="billImeiSerial" placeholder="IMEI या सीरियल दर्ज करें या स्कैन करें" style="flex:1;">
+            <button type="button" onclick="startBarcodeCameraScan()" style="padding:0 12px; background:#0d6efd; color:#fff; border:none; border-radius:10px; font-size:12px; font-weight:700; cursor:pointer;">📷 स्कैन</button>
           </div>
         </div>
-        <input type="file" id="fProductDirect" accept="image/*" capture="environment" style="display:none;" onchange="handleDirectProductImage(this)">
-      </div>
 
-      <div class="input-group">
-        <label class="input-label"><span>बिल किसके नाम (Bill To - Name) *</span></label>
-        <input type="text" id="bCustomerName" placeholder="उदा. PUJA DEVI" autocomplete="off" required>
-      </div>
+        <div id="barcodeScannerBox">
+          <div id="scannerInteractive"></div>
+          <button type="button" onclick="stopBarcodeCameraScan()" style="width:100%; margin-top:6px; padding:6px; background:#ef4444; color:#fff; border:none; border-radius:6px; font-size:12px; font-weight:700;">रद्द करें (Stop Scanner)</button>
+        </div>
 
-      <div class="input-group">
-        <label class="input-label"><span>पता (Address) *</span></label>
-        <input type="text" id="bAddress" placeholder="उदा. WARD NO 10, AKBARPUR" autocomplete="off" required>
-      </div>
-
-      <div class="input-group">
-        <label class="input-label"><span>सामग्री का नाम (Item Name) *</span></label>
-        <input type="text" id="bItemName" placeholder="उदा. itel ACE 3" autocomplete="off" required>
-      </div>
-
-      <!-- Barcode / IMEI with Compact Cropper & Webcam Support -->
-      <div class="input-group">
-        <label class="input-label"><span>IMEI / Barcode Number</span></label>
-        <div style="display:flex; gap:6px;">
-          <input type="text" id="bImei" placeholder="IMEI लिखें या स्कैन करें" autocomplete="off" style="flex:1;">
-          <label for="fSnapBarcode" id="lblSnapBarcode" style="background:#0d6efd; color:#fff; padding:11px 12px; border-radius:10px; font-weight:700; font-size:12.5px; cursor:pointer; display:flex; align-items:center;">
-            📷 स्कैन/अपलोड
-          </label>
-          <div onclick="openWebcamModal('barcode', 'bImei', 'lblSnapBarcode')" style="background:#0f172a; color:#fff; padding:11px 12px; border-radius:10px; font-weight:700; font-size:12.5px; cursor:pointer; display:flex; align-items:center;">
-            💻 वेबकैम स्कैन
+        <div class="bill-calc-row">
+          <div class="bill-calc-col">
+            <label class="field-label">मात्रा (Qty)</label>
+            <input class="app-control" type="number" id="billQty" value="1" min="1" oninput="calculateBillingTotal()" required>
           </div>
-          <input type="file" id="fSnapBarcode" accept="image/*" capture="environment" style="display:none;" onchange="startBarcodeCropProcess(this, 'bImei', 'lblSnapBarcode')">
+          <div class="bill-calc-col">
+            <label class="field-label">प्रति दर ₹ (Rate)</label>
+            <input class="app-control" type="number" id="billRate" placeholder="0" min="0" step="any" oninput="calculateBillingTotal()" required>
+          </div>
         </div>
-      </div>
 
-      <div style="display:flex; gap:10px;">
-        <div class="input-group" style="flex:1;">
-          <label class="input-label"><span>मात्रा (Qty)</span></label>
-          <input type="number" id="bQty" value="1" min="1" oninput="calculateBillingTotals()">
+        <div class="bill-calc-row">
+          <div class="bill-calc-col">
+            <label class="field-label">जमा राशि ₹ (Paid)</label>
+            <input class="app-control" type="number" id="billPaid" placeholder="0" min="0" step="any" oninput="calculateBillingTotal()">
+          </div>
+          <div class="bill-calc-col">
+            <label class="field-label">बकाया ₹ (Due)</label>
+            <input class="app-control" type="number" id="billDue" value="0" readonly style="background:#f1f5f9; color:#ef4444; font-weight:bold;">
+          </div>
         </div>
-        <div class="input-group" style="flex:2;">
-          <label class="input-label"><span>मूल्य (Rate ₹) *</span></label>
-          <input type="number" id="bRate" placeholder="उदा. 890" step="0.01" oninput="calculateBillingTotals()" autocomplete="off" required>
+
+        <div class="input-group">
+          <div class="input-label-row">
+            <label class="field-label">वारंटी / गारंटी नियम</label>
+            <span class="field-badge badge-opt">वैकल्पिक</span>
+          </div>
+          <select class="app-control" id="billWarrantySelect" onchange="toggleCustomWarrantyBox()">
+            <option value="कोई वारंटी नहीं (No Warranty)">कोई वारंटी नहीं (No Warranty)</option>
+            <option value="7 दिन टेस्टिंग वारंटी (7 Days Testing Replacement)">7 दिन टेस्टिंग वारंटी (7 Days Testing Replacement)</option>
+            <option value="1 महीना सर्विस सेंटर वारंटी (1 Month Warranty)">1 महीना सर्विस सेंटर वारंटी (1 Month Warranty)</option>
+            <option value="6 महीना सर्विस सेंटर वारंटी (6 Months Warranty)">6 महीना सर्विस सेंटर वारंटी (6 Months Warranty)</option>
+            <option value="1 वर्ष ब्रांड वारंटी (1 Year Brand Warranty)">1 वर्ष ब्रांड वारंटी (1 Year Brand Warranty)</option>
+            <option value="CUSTOM">अन्य (कस्टम नियम लिखें...)</option>
+          </select>
+          <input class="app-control" type="text" id="billCustomWarranty" placeholder="कस्टम वारंटी नियम यहाँ लिखें..." style="display:none; margin-top:6px;">
         </div>
-      </div>
 
-      <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; padding:12px; margin-bottom:12px; font-size:13px;">
-        <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
-          <span>Subtotal:</span> 
-          <strong id="lblSubtotal">₹0.00</strong>
+        <div class="input-group">
+          <div class="input-label-row">
+            <label class="field-label">उत्पाद की फोटो (Product/Warranty Photo)</label>
+            <span class="field-badge badge-opt">वैकल्पिक</span>
+          </div>
+          <div class="upload-box" onclick="triggerFileInput('billProductImg')">📷 उत्पाद या बॉक्स का फोटो खींचें / अपलोड करें</div>
+          <input type="file" id="billProductImg" accept="image/*" capture="environment" style="display:none;" onchange="handleImageSelected(this, 'previewBillProd', 'billProductImg')">
+          <img id="previewBillProd" class="preview-box">
         </div>
-        <div style="border-top:1px dashed #cbd5e1; padding-top:8px; margin-top:4px;">
-          <label style="font-weight:700; color:#0d6efd; display:block; margin-bottom:4px;">
-            Final Total Amount (₹):
-          </label>
-          <input type="number" id="bFinalTotalInput" placeholder="उदा. 890" step="0.01" oninput="calculateFromFinalTotal()" autocomplete="off" style="background:#fff; border-color:#0d6efd; font-weight:bold; font-size:16px;">
+
+        <div style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:10px; padding:10px; margin-bottom:12px; font-size:13px; font-weight:700;">
+          कुल देय राशि: <span id="billTotalDisplay" style="color:#0d6efd; font-size:16px;">₹0.00</span>
         </div>
-      </div>
 
-      <div class="input-group">
-        <label class="input-label"><span>बकाया राशि (Balance Due ₹)</span></label>
-        <input type="number" id="bBalanceDue" placeholder="0 ya baki amount daalein" step="0.01" autocomplete="off">
-      </div>
-
-      <div class="input-group">
-        <label class="input-label"><span>प्रकार (Type)</span></label>
-        <select id="bWarrantyType">
-          <option value="Warranty" selected>1. Warranty</option>
-          <option value="Replacement">2. Replacement</option>
-        </select>
-      </div>
-
-      <div class="input-group">
-        <label class="input-label"><span>अवधि (Duration)</span></label>
-        <select id="bDuration">
-          <option value="No Warranty"> No Warranty</option>
-          <option value="1 Month"> 1 Month</option>
-          <option value="3 Months"> 3 Months</option>
-          <option value="6 Months"> 6 Months</option>
-          <option value="1 Year" selected> 1 Year</option>
-          <option value="2 Years"> 2 Years</option>
-        </select>
-      </div>
-
-      <button type="button" id="btnSaveBill" class="btn-submit-main" onclick="saveBillAndPrint()">💾 डेटा सेव करें एवं बिल प्रिंट करें</button>
+        <button class="btn-submit" type="submit" id="btnBillSubmit">💾 डेटा सेव करें एवं बिल प्रिंट करें</button>
+      </form>
     </div>
 
-    <!-- 3. Sthiti Janche -->
-    <div class="app-card" id="trackView" style="display:none;">
-      <h3 style="margin:0 0 10px; font-size:16px;">आवेदन अथवा बिल / वारंटी स्थिति जांचें</h3>
-      <p style="font-size:12px; color:#64748b; margin:0 0 10px;">मोबाइल नंबर, ऑर्डर आईडी, या प्रोडक्ट का IMEI / बारकोड डालें:</p>
-      
+    <!-- VIEW 3: APPLICATION STATUS QUERY -->
+    <div class="app-card" id="viewStatusQuery" style="display:none;">
       <div class="input-group">
-        <div style="display:flex; gap:6px;">
-          <input type="text" id="trackQuery" placeholder="उदा. VK-2026-005, IMEI, या मोबाइल" autocomplete="off" style="flex:1;">
-          <label for="fSnapTrackBarcode" id="lblTrackSnap" style="background:#0d6efd; color:#fff; padding:11px 12px; border-radius:10px; font-weight:700; font-size:12.5px; cursor:pointer; display:flex; align-items:center;">
-            📷 स्कैन
-          </label>
-          <div onclick="openWebcamModal('barcode', 'trackQuery', 'lblTrackSnap')" style="background:#0f172a; color:#fff; padding:11px 12px; border-radius:10px; font-weight:700; font-size:12.5px; cursor:pointer; display:flex; align-items:center;">
-            💻 वेबकैम
-          </div>
-          <input type="file" id="fSnapTrackBarcode" accept="image/*" capture="environment" style="display:none;" onchange="startBarcodeCropProcess(this, 'trackQuery', 'lblTrackSnap')">
-        </div>
+        <label class="field-label">ऑर्डर नंबर, मोबाइल या IMEI दर्ज करें</label>
+        <input class="app-control" type="text" id="trackQuery" placeholder="उदा: VK-9874, 9876543210 या IMEI">
       </div>
-      <button class="btn-submit-main" style="background:#0d6efd;" onclick="fetchStatus()">🔍 खोजें (स्थिति एवं वारंटी देखें)</button>
-      <div id="statusBox" style="margin-top:16px; border-top:1px solid #e2e8f0; padding-top:12px; display:none;"></div>
+      <button class="btn-submit" type="button" onclick="fetchStatus()">स्थिति खोजें</button>
+      <div id="statusBox" style="display:none; margin-top:14px; padding:12px; border-radius:10px; background:#f8fafc; border:1px solid #cbd5e1; font-size:13px;"></div>
     </div>
   </div>
 
-  <!-- Appropriate Sized Crop Modal -->
+  <!-- CROP MODAL -->
   <div id="cropModal">
     <div class="crop-modal-inner">
       <div id="cropContainer"><img id="cropImg" src=""></div>
@@ -450,178 +341,275 @@
     </div>
   </div>
 
-  <!-- Webcam Capture Modal -->
+  <!-- WEBCAM CAPTURE MODAL -->
   <div id="webcamModal">
     <div class="crop-modal-inner">
-      <div style="width:100%; height:52vh; max-height:380px; display:flex; align-items:center; justify-content:center; background:#000; border-radius:10px; overflow:hidden; border:1px solid #334155;">
+      <div style="width:100%; height:52vh; max-height:380px; display:flex; align-items:center; justify-content:center; background:#000; border-radius:8px; overflow:hidden;">
         <video id="webcamVideo" autoplay playsinline style="width:100%; height:100%; object-fit:cover;"></video>
       </div>
       <div class="crop-bar">
         <button onclick="closeWebcamModal()" style="background:#ef4444; color:#fff;" type="button">रद्द करें</button>
-        <button onclick="captureWebcamSnapshot()" style="background:#10b981; color:#fff;" type="button">📸 फोटो खींचें / कैप्चर करें</button>
+        <button onclick="captureWebcamSnapshot()" style="background:#10b981; color:#fff;" type="button">📷 फोटो खींचें / कैप्चर करें</button>
       </div>
     </div>
   </div>
   <canvas id="webcamCanvas" style="display:none;"></canvas>
 
-  <!-- Printable Retail Invoice Template -->
+  <!-- PRINTABLE RETAIL INVOICE TEMPLATE (ORIGINAL BRANDING, LOGO & STAMP) -->
   <div id="printableInvoiceArea">
-    <div class="bill-box">
-      <img src="https://lh3.googleusercontent.com/d/1_HuK6cSbUY8NRMBwvvO7feSnNOowD42v" class="bill-watermark" alt="Watermark" loading="lazy">
+    <table class="inv-header-table">
+      <tr>
+        <td style="width:65px; vertical-align:middle;">
+          <img src="https://lh3.googleusercontent.com/d/1_HuK6cSbUY8NRMBwvvO7feSnNOowD42v" style="width:58px; height:58px; border-radius:6px; object-fit:contain;" alt="Logo" onerror="this.style.display='none'">
+        </td>
+        <td style="vertical-align:middle; padding-left:8px;">
+          <h2 class="inv-shop-title">वसुधा केंद्र</h2>
+          <div class="inv-shop-sub">अकबरपुर, पूर्णिया (बिहार) | प्रो०: सत्यम कुमार | मो०: 8539077227</div>
+          <div style="font-size:11px; color:#475569;">ऑनलाइन फॉर्म, फोटो स्टेट, लेमिनेशन, मनी ट्रांसफर एवं मोबाइल/कंप्यूटर एक्सेसरीज</div>
+        </td>
+        <td style="width:140px; text-align:right; vertical-align:middle;">
+          <div style="border:1.5px solid #000; padding:4px 6px; text-align:center; display:inline-block; border-radius:4px;">
+            <div style="font-size:12px; font-weight:900;">RETAIL INVOICE</div>
+            <div style="font-size:10px;">मूल प्रति (ORIGINAL)</div>
+          </div>
+        </td>
+      </tr>
+    </table>
 
-      <div class="bill-header-wrapper">
-        <img src="https://lh3.googleusercontent.com/d/1_HuK6cSbUY8NRMBwvvO7feSnNOowD42v" class="bill-logo-img" alt="Vasudha Logo">
-        
-        <div class="bill-header-text">
-          <h2 style="margin:0; font-size:22px; font-weight:800;">वसुधा केंद्र</h2>
-          <h4 style="margin:2px 0; font-size:14px; font-weight:600;">अकबरपुर</h4>
-          <h3 style="margin:4px 0 0; font-size:15px; letter-spacing:0.5px; font-weight:700;">VASUDHA KENDRA AKBARPUR</h3>
-        </div>
+    <table class="inv-grid-meta">
+      <tr>
+        <td style="width:55%;">
+          <strong>बिल जारी (Billed To):</strong> <span id="printCustName">Walk-in</span><br>
+          <strong>मोबाइल नंबर:</strong> <span id="printCustMobile">--</span>
+        </td>
+        <td style="width:45%; text-align:right;">
+          <strong>इनवॉइस नंबर:</strong> <span id="printInvoiceNo">#VK-0000</span><br>
+          <strong>तारीख:</strong> <span id="printDate">--</span>
+        </td>
+      </tr>
+    </table>
 
-        <div class="bill-header-spacer"></div>
-      </div>
+    <table class="inv-table">
+      <thead>
+        <tr>
+          <th style="width:8%; text-align:center;">क्र०</th>
+          <th style="width:47%;">सामग्री / सेवा का विवरण (Description of Goods)</th>
+          <th style="width:12%; text-align:center;">मात्रा (Qty)</th>
+          <th style="width:15%; text-align:right;">दर (Rate)</th>
+          <th style="width:18%; text-align:right;">राशि (Amount)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="text-align:center;">1</td>
+          <td>
+            <div id="printItemName" style="font-weight:700;">--</div>
+            <div id="printImeiRow" style="font-size:11px; color:#334155;"></div>
+            <div id="printWarrantyRow" style="font-size:10.5px; color:#0d6efd; margin-top:2px; font-weight:600;"></div>
+          </td>
+          <td id="printQty" style="text-align:center;">1</td>
+          <td id="printRate" style="text-align:right;">0.00</td>
+          <td id="printSubTotal" style="text-align:right; font-weight:700;">0.00</td>
+        </tr>
+        <tr>
+          <td colspan="4" style="text-align:right; font-weight:700;">कुल योग (Total):</td>
+          <td id="printTotalGrand" style="text-align:right; font-weight:900;">₹0.00</td>
+        </tr>
+        <tr>
+          <td colspan="4" style="text-align:right;">जमा राशि (Paid Amount):</td>
+          <td id="printPaid" style="text-align:right;">₹0.00</td>
+        </tr>
+        <tr>
+          <td colspan="4" style="text-align:right; font-weight:700; color:#ef4444;">बकाया राशि (Balance Due):</td>
+          <td id="printDue" style="text-align:right; font-weight:700; color:#ef4444;">₹0.00</td>
+        </tr>
+      </tbody>
+    </table>
 
-      <div class="bill-row">
-        <div>
-          <strong style="display:block; margin-bottom:3px;">Bill To:</strong>
-          <div id="printBillToName" style="text-transform:uppercase; font-weight:bold; font-size:14px;"></div>
-          <div id="printBillToAddress" style="text-transform:uppercase; font-size:12.5px; margin-top:2px;"></div>
-        </div>
-        <div style="text-align:right;">
-          <h2 style="margin:0; font-size:19px; font-weight:800; letter-spacing:0.5px;">RETAIL INVOICE</h2>
-          <div style="font-size:15px; font-weight:bold;" id="printInvoiceNo">#--</div>
-          <div style="margin-top:4px;"><strong>Date:</strong> <span id="printDate"></span></div>
-          <div><strong>Payment Terms:</strong> CASH</div>
-          <div style="margin-top:4px;"><strong>Balance Due:</strong> <span id="printBalanceDue">0.00</span></div>
-        </div>
-      </div>
-
-      <table class="bill-table">
-        <thead>
-          <tr>
-            <th>Item</th>
-            <th style="width:70px; text-align:center;">Quantity</th>
-            <th style="width:100px; text-align:right;">Rate</th>
-            <th style="width:110px; text-align:right;">Amount</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td id="printItemDesc"></td>
-            <td style="text-align:center;" id="printQty">1</td>
-            <td style="text-align:right;" id="printRate">0.00</td>
-            <td style="text-align:right;" id="printAmount">0.00</td>
-          </tr>
-        </tbody>
-      </table>
-
-      <div class="bill-summary">
-        <div class="summary-row">
-          <span>Subtotal:</span>
-          <span id="printSubtotal">0.00</span>
-        </div>
-        <div class="summary-row" style="font-weight:bold; font-size:15px; border-top:1.5px solid #000; padding-top:6px; margin-top:4px;">
-          <span>Total Amount:</span>
-          <span id="printTotal">0.00</span>
-        </div>
-      </div>
-
-      <div class="bill-stamp-wrap">
-        <img src="https://lh3.googleusercontent.com/d/1xRUcCe4SvBUitH1xXmo8rrvwvAmBAT71" class="bill-stamp-img" alt="Official Seal">
-      </div>
-
-      <div style="text-align:center; margin-top:6px; position:relative; z-index:1;">
-        <svg id="billBarcodeCanvas"></svg>
-      </div>
-
-      <div style="margin-top:10px; font-size:13px; line-height:1.6; position:relative; z-index:1;">
-        <div><strong>Notes:</strong></div>
-        <div style="font-weight:bold;">JAI SHREE GANESH</div>
-        <div style="margin-top:6px;"><strong>Terms:</strong></div>
-        <div id="printTerms" style="font-weight:bold;">1 YEAR WARRANTY, REPLACEMENT CHARGE RS 100/-</div>
-      </div>
-    </div>
+    <table class="inv-footer">
+      <tr>
+        <td style="width:55%; vertical-align:top; font-size:10px; line-height:1.4;">
+          <strong>नियम एवं शर्तें (Terms & Conditions):</strong><br>
+          1. बिका हुआ माल केवल वारंटी नियमानुसार ही बदला या सुधारा जाएगा।<br>
+          2. पानी, टूटने (Physical Damage) या शॉर्ट सर्किट पर वारंटी लागू नहीं होगी।<br>
+          3. किसी भी क्लेम के लिए इस बिल को प्रस्तुत करना अनिवार्य है।<br>
+          <div style="margin-top:8px;">
+            <svg id="billBarcodeCanvas" style="height:35px;"></svg>
+          </div>
+        </td>
+        <td style="width:45%; vertical-align:bottom; text-align:right;">
+          <div style="display:inline-block; text-align:center;">
+            <div style="height:55px; display:flex; align-items:flex-end; justify-content:center;">
+              <span style="font-family:'Brush Script MT', cursive, sans-serif; font-size:16px; color:#0d6efd; font-weight:bold;">Satyam Kumar</span>
+            </div>
+            <div style="border-top:1px solid #000; width:160px; font-size:11px; font-weight:700; padding-top:2px;">
+              अधिकृत हस्ताक्षरकर्ता<br>वसुधा केंद्र, अकबरपुर
+            </div>
+          </div>
+        </td>
+      </tr>
+    </table>
   </div>
 
   <script>
+    var currentPortalTab = 'DOC';
+    var imagesStore = {};
     var cropperInstance = null;
-    var targetKey = '';
-    var isBarcodeCropMode = false;
-    var activeBarcodeField = '';
-    var activeBarcodeBtn = '';
-    var webcamStream = null;
-    var webcamModeType = ''; // 'product' or 'barcodemodal'
+    var activeInputId = null;
+    var activePreviewId = null;
+    var barcodeQuaggaRunning = false;
 
-    var imagesStore = { photo: '', parchi: '', jatiDoc: '', aayDoc: '', niwasDoc: '', aadharFront: '', aadharBack: '', productImg: '' };
+    window.addEventListener('DOMContentLoaded', function() {
+      renderDynamicDocFields();
+    });
 
-    function triggerFileSelect(id) {
-      var inp = document.getElementById(id);
-      if (inp) {
-        inp.click();
+    function switchPortalTab(t) {
+      currentPortalTab = t;
+      var docView = document.getElementById('viewDocForm');
+      var billView = document.getElementById('viewBillingForm');
+      var statusView = document.getElementById('viewStatusQuery');
+      var tabD = document.getElementById('tabDoc');
+      var tabB = document.getElementById('tabBill');
+      var tabS = document.getElementById('tabStatus');
+
+      docView.style.display = (t === 'DOC') ? 'block' : 'none';
+      billView.style.display = (t === 'BILL') ? 'block' : 'none';
+      statusView.style.display = (t === 'STATUS') ? 'block' : 'none';
+
+      tabD.className = 'app-tab ' + (t === 'DOC' ? 'active' : 'inactive');
+      tabB.className = 'app-tab ' + (t === 'BILL' ? 'active' : 'inactive');
+      tabS.className = 'app-tab ' + (t === 'STATUS' ? 'active' : 'inactive');
+    }
+
+    var serviceDocConfigs = {
+      "जाति आय निवास प्रमाण पत्र (Caste, Income, Resi. Certificate)": [
+        { label: "1. ग्राहक की फोटो (≤ 70 KB, फ्री साइज़)", badge: "खाली रख सकते हैं", maxKb: 70, opt: true },
+        { label: "2. पर्ची (≤ 200 KB) *", badge: "अनिवार्य", maxKb: 200, opt: false },
+        { label: "3. जाति सहायक दस्तावेज (≤ 200 KB)", badge: "खाली रख सकते हैं", maxKb: 200, opt: true },
+        { label: "4. आय सहायक दस्तावेज (≤ 200 KB)", badge: "खाली रख सकते हैं", maxKb: 200, opt: true },
+        { label: "5. निवास सहायक दस्तावेज (≤ 200 KB)", badge: "खाली रख सकते हैं", maxKb: 200, opt: true }
+      ],
+      "पैन कार्ड नया / सुधार (PAN Card New / Correction)": [
+        { label: "1. ग्राहक पासपोर्ट फोटो (≤ 50 KB)", badge: "अनिवार्य", maxKb: 50, opt: false },
+        { label: "2. ग्राहक हस्ताक्षर / अंगूठा (≤ 50 KB)", badge: "अनिवार्य", maxKb: 50, opt: false },
+        { label: "3. सहायक पहचान प्रमाण (≤ 300 KB)", badge: "अनिवार्य", maxKb: 300, opt: false },
+        { label: "4. पुराना पैन (यदि सुधार हो) (≤ 300 KB)", badge: "खाली रख सकते हैं", maxKb: 300, opt: true }
+      ],
+      "पासपोर्ट साइज फोटो 4x6 (Passport Photo Studio)": [
+        { label: "1. ओरिजिनल फोटो (कैमरा या गैलरी)", badge: "अनिवार्य", maxKb: 2048, opt: false }
+      ],
+      "आधार / पैन A4 प्रिंट (Direct Print Desk)": [
+        { label: "1. आधार / दस्तावेज फ्रंट साइड", badge: "अनिवार्य", maxKb: 2048, opt: false },
+        { label: "2. आधार / दस्तावेज बैक साइड (यदि लागू हो)", badge: "खाली रख सकते हैं", maxKb: 2048, opt: true }
+      ],
+      "दाखिल खारिज / LPC (Mutation / LPC Bihar Land)": [
+        { label: "1. जमीन केवाला / रजिस्ट्री डीड (≤ 2 MB)", badge: "अनिवार्य", maxKb: 2048, opt: false },
+        { label: "2. शुद्धि पत्र / लगान रसीद (≤ 1 MB)", badge: "अनिवार्य", maxKb: 1024, opt: false },
+        { label: "3. आवेदक पहचान पत्र (≤ 500 KB)", badge: "खाली रख सकते हैं", maxKb: 500, opt: true }
+      ],
+      "राशन कार्ड नया / नाम जोड़ना (Ration Card Services)": [
+        { label: "1. पारिवारिक ग्रुप फोटो (≤ 100 KB)", badge: "अनिवार्य", maxKb: 100, opt: false },
+        { label: "2. मुख्य महिला आवेदक का आधार (≤ 300 KB)", badge: "अनिवार्य", maxKb: 300, opt: false },
+        { label: "3. बैंक पासबुक (≤ 300 KB)", badge: "अनिवार्य", maxKb: 300, opt: false },
+        { label: "4. आवासीय प्रमाण पत्र (≤ 300 KB)", badge: "खाली रख सकते हैं", maxKb: 300, opt: true },
+        { label: "5. सभी सदस्यों का संयुक्त आधार (≤ 1 MB)", badge: "खाली रख सकते हैं", maxKb: 1024, opt: true }
+      ],
+      "लेबर कार्ड नया / रिन्यूअल (Bihar Labour Card)": [
+        { label: "1. श्रमिक का फोटो (≤ 50 KB)", badge: "अनिवार्य", maxKb: 50, opt: false },
+        { label: "2. आधार कार्ड (≤ 300 KB)", badge: "अनिवार्य", maxKb: 300, opt: false },
+        { label: "3. बैंक पासबुक (≤ 300 KB)", badge: "अनिवार्य", maxKb: 300, opt: false },
+        { label: "4. 90 दिन कार्य प्रमाण पत्र / शपथ पत्र (≤ 500 KB)", badge: "अनिवार्य", maxKb: 500, opt: false }
+      ],
+      "जन्म / मृत्यु प्रमाण पत्र (Birth / Death Certificate)": [
+        { label: "1. अस्पताल डिस्चार्ज रसीद / प्रमाण (≤ 500 KB)", badge: "अनिवार्य", maxKb: 500, opt: false },
+        { label: "2. माता-पिता या आवेदक का आधार (≤ 300 KB)", badge: "अनिवार्य", maxKb: 300, opt: false }
+      ],
+      "चरित्र प्रमाण पत्र (Bihar Police Character Certificate)": [
+        { label: "1. आवेदक का फोटो (≤ 50 KB)", badge: "अनिवार्य", maxKb: 50, opt: false },
+        { label: "2. पहचान प्रमाण / आधार कार्ड (≤ 300 KB)", badge: "अनिवार्य", maxKb: 300, opt: false }
+      ],
+      "ड्राइविंग लाइसेंस (Learning / Permanent DL)": [
+        { label: "1. आवेदक का फोटो (≤ 50 KB)", badge: "अनिवार्य", maxKb: 50, opt: false },
+        { label: "2. हस्ताक्षर (≤ 50 KB)", badge: "अनिवार्य", maxKb: 50, opt: false },
+        { label: "3. आधार कार्ड / आयु प्रमाण (≤ 500 KB)", badge: "अनिवार्य", maxKb: 500, opt: false },
+        { label: "4. मेडिकल फिटनेस फॉर्म 1A (यदि आवश्यक हो)", badge: "खाली रख सकते हैं", maxKb: 1024, opt: true }
+      ],
+      "अन्य ऑनलाइन फॉर्म / सेवा (Other Service / Job Form)": [
+        { label: "1. मुख्य दस्तावेज 1 (≤ 1 MB)", badge: "अनिवार्य", maxKb: 1024, opt: false },
+        { label: "2. सहायक दस्तावेज 2 (≤ 1 MB)", badge: "खाली रख सकते हैं", maxKb: 1024, opt: true }
+      ]
+    };
+
+    function renderDynamicDocFields() {
+      var s = document.getElementById('serviceSelect').value;
+      var c = serviceDocConfigs[s] || serviceDocConfigs["अन्य ऑनलाइन फॉर्म / सेवा (Other Service / Job Form)"];
+      var box = document.getElementById('dynamicDocContainer');
+      box.innerHTML = '';
+      imagesStore = {};
+
+      c.forEach(function(f, idx) {
+        var key = 'doc_' + idx;
+        var req = !f.opt;
+        var badgeCls = req ? 'badge-req' : 'badge-opt';
+
+        var wrap = document.createElement('div');
+        wrap.className = 'input-group';
+        wrap.innerHTML = 
+          '<div class="input-label-row">' +
+            '<label class="field-label" title="' + f.label + '">' + f.label + '</label>' +
+            '<span class="field-badge ' + badgeCls + '">' + f.badge + '</span>' +
+          '</div>' +
+          '<div style="display:flex; gap:6px;">' +
+            '<div class="upload-box" style="flex:1;" onclick="triggerFileInput(\'' + key + '\')">📁 फ़ाइल चुनें / अपलोड करें</div>' +
+            '<button type="button" onclick="startWebcamForField(\'' + key + '\', \'preview_' + key + '\', ' + f.maxKb + ')" style="padding:0 10px; background:#0d6efd; color:#fff; border:none; border-radius:10px; font-size:12px; font-weight:700; cursor:pointer;">📷 कैमरा</button>' +
+          '</div>' +
+          '<input type="file" id="' + key + '" accept="image/*,application/pdf" style="display:none;" onchange="handleImageSelected(this, \'preview_' + key + '\', \'' + key + '\', ' + f.maxKb + ')">' +
+          '<img id="preview_' + key + '" class="preview-box">';
+        box.appendChild(wrap);
+      });
+    }
+
+    function triggerFileInput(id) {
+      document.getElementById(id).click();
+    }
+
+    function handleImageSelected(input, prevId, storeKey, maxKb) {
+      if (!input.files || !input.files[0]) return;
+      var f = input.files[0];
+      if (f.type === 'application/pdf') {
+        var r = new FileReader();
+        r.onload = function(e) {
+          imagesStore[storeKey] = e.target.result;
+          var p = document.getElementById(prevId);
+          p.style.display = 'block';
+          p.style.background = '#e2e8f0';
+          p.alt = 'PDF Uploaded: ' + f.name;
+        };
+        r.readAsDataURL(f);
+        return;
       }
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        openCropperModal(e.target.result, input.id, prevId, maxKb);
+      };
+      reader.readAsDataURL(f);
     }
 
-    function switchView(v) {
-      document.getElementById('applyView').style.display = (v === 'apply' ? 'block' : 'none');
-      document.getElementById('billingView').style.display = (v === 'billing' ? 'block' : 'none');
-      document.getElementById('trackView').style.display = (v === 'track' ? 'block' : 'none');
-      
-      document.getElementById('tabApply').className = (v === 'apply' ? 'app-tab active' : 'app-tab inactive');
-      document.getElementById('tabBilling').className = (v === 'billing' ? 'app-tab active' : 'app-tab inactive');
-      document.getElementById('tabTrack').className = (v === 'track' ? 'app-tab active' : 'app-tab inactive');
-    }
-
-    function playScanBeep() {
-      try {
-        var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        var osc = audioCtx.createOscillator();
-        var gain = audioCtx.createGain();
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-        osc.type = "sine";
-        osc.frequency.setValueAtTime(2200, audioCtx.currentTime);
-        gain.gain.setValueAtTime(0.4, audioCtx.currentTime);
-        osc.start();
-        setTimeout(function() {
-          osc.stop();
-          audioCtx.close();
-        }, 110);
-      } catch(e) {}
-    }
-
-    // --- Webcam Handling ---
-    async function openWebcamModal(mode, fieldId, btnId) {
-      webcamModeType = mode;
-      activeBarcodeField = fieldId || '';
-      activeBarcodeBtn = btnId || '';
-
+    function startWebcamForField(key, prevId, maxKb) {
+      activeInputId = key;
+      activePreviewId = prevId;
       var modal = document.getElementById('webcamModal');
+      var video = document.getElementById('webcamVideo');
       modal.style.display = 'flex';
-      var video = document.getElementById('webcamVideo');
 
-      try {
-        webcamStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false });
-        video.srcObject = webcamStream;
-      } catch(err) {
-        try {
-          webcamStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
-          video.srcObject = webcamStream;
-        } catch(e) {
-          alert("वेबकैम या कैमरा एक्सेस नहीं मिल पाया। कृपया कैमरा परमिशन दें।");
+      navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+        .then(function(s) {
+          video.srcObject = s;
+        })
+        .catch(function(e) {
+          alert("कैमरा लोड करने में असमर्थ: " + e.message);
           closeWebcamModal();
-        }
-      }
-    }
-
-    function closeWebcamModal() {
-      var modal = document.getElementById('webcamModal');
-      modal.style.display = 'none';
-      if (webcamStream) {
-        webcamStream.getTracks().forEach(function(track) { track.stop(); });
-        webcamStream = null;
-      }
-      var video = document.getElementById('webcamVideo');
-      video.srcObject = null;
+        });
     }
 
     function captureWebcamSnapshot() {
@@ -631,479 +619,211 @@
       canvas.height = video.videoHeight || 480;
       var ctx = canvas.getContext('2d');
       ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-      
+      var dataUrl = canvas.toDataURL('image/jpeg', 0.9);
       closeWebcamModal();
-
-      if (webcamModeType === 'product') {
-        var dataUrl = canvas.toDataURL('image/jpeg', 0.70);
-        imagesStore.productImg = dataUrl;
-        var btn = document.getElementById('btnProdLabel');
-        if (btn) {
-          btn.innerText = "✅ वेबकैम फोटो ले लिया गया";
-          btn.style.setProperty("background", "#d1fae5", "important");
-          btn.style.setProperty("color", "#065f46", "important");
-          btn.style.setProperty("border-color", "#10b981", "important");
-        }
-      } else if (webcamModeType === 'barcode') {
-        isBarcodeCropMode = true;
-        document.getElementById('cropModal').style.display = 'flex';
-        document.getElementById('btnCropSave').innerText = "🔍 बारकोड स्कैन करें";
-
-        var imgEl = document.getElementById('cropImg');
-        imgEl.src = canvas.toDataURL('image/jpeg', 0.92);
-
-        if (cropperInstance) cropperInstance.destroy();
-        cropperInstance = new Cropper(imgEl, {
-          viewMode: 1,
-          autoCropArea: 0.85,
-          aspectRatio: NaN
-        });
-      }
+      openCropperModal(dataUrl, activeInputId, activePreviewId, 1024);
     }
 
-    function startBarcodeCropProcess(inp, fieldId, btnId) {
-      if (!inp.files || !inp.files[0]) return;
-      isBarcodeCropMode = true;
-      activeBarcodeField = fieldId;
-      activeBarcodeBtn = btnId;
-
-      document.getElementById('cropModal').style.display = 'flex';
-      document.getElementById('btnCropSave').innerText = "🔍 बारकोड स्कैन करें";
-
-      var r = new FileReader();
-      r.onload = function(e) {
-        var imgEl = document.getElementById('cropImg');
-        imgEl.src = e.target.result;
-
-        if (cropperInstance) cropperInstance.destroy();
-        cropperInstance = new Cropper(imgEl, {
-          viewMode: 1,
-          autoCropArea: 0.85,
-          aspectRatio: NaN
-        });
-      };
-      r.readAsDataURL(inp.files[0]);
-      inp.value = "";
+    function closeWebcamModal() {
+      var video = document.getElementById('webcamVideo');
+      if (video.srcObject) {
+        video.srcObject.getTracks().forEach(function(t) { t.stop(); });
+        video.srcObject = null;
+      }
+      document.getElementById('webcamModal').style.display = 'none';
     }
 
-    async function decodeCroppedBarcodeCanvas(canvas) {
-      var btn = document.getElementById(activeBarcodeBtn);
-      var originalText = btn ? btn.innerHTML : "📷 स्कैन";
-      if (btn) btn.innerHTML = "⏳ स्कैन...";
+    function openCropperModal(src, inputId, prevId, maxKb) {
+      activeInputId = inputId;
+      activePreviewId = prevId;
+      var modal = document.getElementById('cropModal');
+      var img = document.getElementById('cropImg');
+      img.src = src;
+      modal.style.display = 'flex';
 
-      var img = new Image();
-      img.onload = async function() {
-        var detectedCode = null;
-
-        if ('BarcodeDetector' in window) {
-          try {
-            var detector = new BarcodeDetector({
-              formats: ['code_128', 'ean_13', 'ean_8', 'qr_code', 'upc_a', 'upc_e', 'code_39']
-            });
-            var barcodes = await detector.detect(img);
-            if (barcodes.length > 0) detectedCode = barcodes[0].rawValue;
-          } catch(err) {}
-        }
-
-        if (!detectedCode && window.ZXing) {
-          try {
-            var readerZXing = new ZXing.BrowserMultiFormatReader();
-            var result = await readerZXing.decodeFromImageElement(img);
-            if (result) detectedCode = result.getText();
-          } catch(err) {}
-        }
-
-        if (!detectedCode && window.Quagga) {
-          await new Promise(function(resolve) {
-            Quagga.decodeSingle({
-              decoder: { readers: ["code_128_reader", "ean_reader", "ean_8_reader", "upc_reader"] },
-              locate: true,
-              src: canvas.toDataURL('image/jpeg', 0.92)
-            }, function(qRes) {
-              if (qRes && qRes.codeResult && qRes.codeResult.code) {
-                detectedCode = qRes.codeResult.code;
-              }
-              resolve();
-            });
-          });
-        }
-
-        if (btn) btn.innerHTML = originalText;
-
-        if (detectedCode) {
-          playScanBeep();
-          document.getElementById(activeBarcodeField).value = detectedCode;
-          if (activeBarcodeField === 'trackQuery') fetchStatus();
-        } else {
-          alert("बारकोड सही से नहीं पढ़ पाया। कृपया सिर्फ बारकोड लाइनें सेलेक्ट करके दोबारा स्कैन करें।");
-        }
-      };
-      img.src = canvas.toDataURL('image/jpeg', 0.92);
-    }
-
-    function handleDirectProductImage(inp) {
-      if (!inp.files || !inp.files[0]) return;
-      var file = inp.files[0];
-      var btn = document.getElementById('btnProdLabel');
-      
-      if (btn) btn.innerText = "⏳ Photo process ho rahi hai...";
-
-      var r = new FileReader();
-      r.onload = function(e) {
-        var img = new Image();
-        img.onload = function() {
-          try {
-            var canvas = document.createElement('canvas');
-            var maxDim = 600;
-            var w = img.width, h = img.height;
-            if (w > h && w > maxDim) { 
-              h = Math.round((h * maxDim) / w); 
-              w = maxDim; 
-            } else if (h > maxDim) { 
-              w = Math.round((w * maxDim) / h); 
-              h = maxDim; 
-            }
-            canvas.width = w; 
-            canvas.height = h;
-            var ctx = canvas.getContext('2d');
-            ctx.drawImage(img, 0, 0, w, h);
-            
-            imagesStore.productImg = canvas.toDataURL('image/jpeg', 0.60);
-            
-            if (btn) {
-              btn.innerText = "✅ Photo le liya gaya (Snap OK)";
-              btn.style.setProperty("background", "#d1fae5", "important");
-              btn.style.setProperty("color", "#065f46", "important");
-              btn.style.setProperty("border-color", "#10b981", "important");
-            }
-          } catch(err) {
-            console.error("Image processing error:", err);
-            if (btn) btn.innerText = "📁 फोटो चुनें (Upload)";
-          }
-        };
-        img.onerror = function() {
-          if (btn) btn.innerText = "📁 फोटो चुनें (Upload)";
-        };
-        img.src = e.target.result;
-      };
-      r.readAsDataURL(file);
-    }
-
-    function calculateBillingTotals() {
-      var qty = parseFloat(document.getElementById('bQty').value) || 1;
-      var rate = parseFloat(document.getElementById('bRate').value) || 0;
-      
-      var total = qty * rate;
-
-      document.getElementById('lblSubtotal').innerText = "₹" + total.toFixed(2);
-      document.getElementById('bFinalTotalInput').value = total > 0 ? total.toFixed(2) : "";
-
-      if (!document.getElementById('bBalanceDue').value) {
-        document.getElementById('bBalanceDue').placeholder = "0";
-      }
-    }
-
-    function calculateFromFinalTotal() {
-      var qty = parseFloat(document.getElementById('bQty').value) || 1;
-      var total = parseFloat(document.getElementById('bFinalTotalInput').value) || 0;
-
-      if (total <= 0) {
-        document.getElementById('lblSubtotal').innerText = "₹0.00";
-        document.getElementById('bRate').value = "";
-        return;
-      }
-
-      var rate = total / qty;
-
-      document.getElementById('lblSubtotal').innerText = "₹" + total.toFixed(2);
-      document.getElementById('bRate').value = rate.toFixed(2);
-
-      if (!document.getElementById('bBalanceDue').value) {
-        document.getElementById('bBalanceDue').placeholder = "0";
-      }
-    }
-
-    function saveBillAndPrint() {
-      var name = document.getElementById('bCustomerName').value.trim();
-      var addr = document.getElementById('bAddress').value.trim();
-      var item = document.getElementById('bItemName').value.trim();
-      var imei = document.getElementById('bImei').value.trim();
-      var qty = parseFloat(document.getElementById('bQty').value) || 1;
-      var rate = parseFloat(document.getElementById('bRate').value) || 0;
-      var dueInput = document.getElementById('bBalanceDue').value.trim();
-      
-      var wType = document.getElementById('bWarrantyType').value;
-      var wDuration = document.getElementById('bDuration').value;
-
-      if (!name || !addr || !item) {
-        alert("कृपया ग्राहक का नाम, पता और सामग्री का नाम भरें!");
-        return;
-      }
-
-      var finalTotalVal = parseFloat(document.getElementById('bFinalTotalInput').value) || 0;
-      if (finalTotalVal > 0 && rate <= 0) {
-        rate = finalTotalVal / qty;
-        document.getElementById('bRate').value = rate.toFixed(2);
-      }
-
-      if (rate <= 0) {
-        alert("कृपया सही मूल्य (Rate) भरें!");
-        return;
-      }
-
-      var total = qty * rate;
-      var subtotal = total;
-      var balanceDue = dueInput !== "" ? (parseFloat(dueInput) || 0) : 0;
-
-      var btn = document.getElementById('btnSaveBill');
-      btn.innerText = "सेव एवं प्रिंट हो रहा है...";
-      btn.disabled = true;
-
-      var d = new Date();
-      var monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-      var hours = d.getHours();
-      var minutes = d.getMinutes().toString().padStart(2, '0');
-      var ampm = hours >= 12 ? 'PM' : 'AM';
-      hours = hours % 12;
-      hours = hours ? hours : 12;
-      var formattedDateTime = monthNames[d.getMonth()] + " " + d.getDate() + ", " + d.getFullYear() + " " + hours + ":" + minutes + " " + ampm;
-
-      document.getElementById('printBillToName').innerText = name;
-      document.getElementById('printBillToAddress').innerText = "Address- " + addr;
-
-      document.getElementById('printDate').innerText = formattedDateTime;
-      document.getElementById('printBalanceDue').innerText = balanceDue.toFixed(2);
-      
-      var itemDesc = imei ? (item + " IMEI-" + imei) : item;
-      document.getElementById('printItemDesc').innerText = itemDesc;
-      document.getElementById('printQty').innerText = qty;
-      document.getElementById('printRate').innerText = rate.toFixed(2);
-      document.getElementById('printAmount').innerText = total.toFixed(2);
-      
-      document.getElementById('printSubtotal').innerText = total.toFixed(2);
-      document.getElementById('printTotal').innerText = total.toFixed(2);
-      
-      var finalTermsText = "";
-      var upperType = wType.toUpperCase();
-      var upperDuration = wDuration.toUpperCase();
-
-      if (upperDuration === "NO WARRANTY") {
-        finalTermsText = "NO WARRANTY";
-      } else {
-        finalTermsText = upperDuration + " " + upperType + ". Brand warranty by company. ₹100 handling/transport fee applies for shop claim service.";
-      }
-
-      document.getElementById('printTerms').innerText = finalTermsText;
-
-      var billPayload = {
-        customerName: name,
-        address: addr,
-        itemName: item,
-        imei: imei,
-        productImg: imagesStore.productImg,
-        qty: qty,
-        rate: rate,
-        subtotal: subtotal.toFixed(2),
-        gst: "0.00",
-        total: total.toFixed(2),
-        balanceDue: balanceDue.toFixed(2),
-        warranty: finalTermsText
-      };
-
-      google.script.run.withSuccessHandler(function(resp) {
-        btn.innerText = "💾 डेटा सेव करें एवं बिल प्रिंट करें";
-        btn.disabled = false;
-
-        document.getElementById('printInvoiceNo').innerText = "#" + resp.invoiceNo;
-        var barcodeVal = imei ? ("" + imei) : ("INV" + resp.invoiceNo);
-        
-        try {
-          if (window.JsBarcode) {
-            JsBarcode("#billBarcodeCanvas", barcodeVal, {
-              format: "CODE128",
-              width: 1.8,
-              height: 40,
-              displayValue: true,
-              fontSize: 12
-            });
-          }
-        } catch(e) {}
-
-        setTimeout(function() {
-          window.print();
-        }, 80);
-
-      }).withFailureHandler(function(err) {
-        alert("त्रुटि: " + err.message);
-        btn.innerText = "💾 डेटा सेव करें एवं बिल प्रिंट करें";
-        btn.disabled = false;
-      }).submitBillOrder(billPayload);
-    }
-
-    function openCropper(inp, key) {
-      if (!inp.files || !inp.files[0]) return;
-      isBarcodeCropMode = false;
-      targetKey = key;
-
-      document.getElementById('cropModal').style.display = 'flex';
-      document.getElementById('btnCropSave').innerText = "सेव करें";
-
-      var r = new FileReader();
-      r.onload = function(e) {
-        var imgEl = document.getElementById('cropImg');
-        imgEl.src = e.target.result;
-        if (cropperInstance) cropperInstance.destroy();
-        cropperInstance = new Cropper(imgEl, { viewMode: 1, autoCropArea: 0.95, aspectRatio: NaN });
-      };
-      r.readAsDataURL(inp.files[0]);
-    }
-
-    function rotateImg(deg) { if (cropperInstance) cropperInstance.rotate(deg); }
-    
-    function closeCropper() {
-      document.getElementById('cropModal').style.display = 'none';
       if (cropperInstance) cropperInstance.destroy();
-      isBarcodeCropMode = false;
+      cropperInstance = new Cropper(img, {
+        viewMode: 1,
+        autoCropArea: 0.98,
+        responsive: true
+      });
+      document.getElementById('btnCropSave').setAttribute('data-maxkb', maxKb || 300);
+    }
+
+    function rotateImg(deg) {
+      if (cropperInstance) cropperInstance.rotate(deg);
+    }
+
+    function closeCropper() {
+      if (cropperInstance) cropperInstance.destroy();
+      document.getElementById('cropModal').style.display = 'none';
     }
 
     function confirmCrop() {
       if (!cropperInstance) return;
+      var maxKb = parseInt(document.getElementById('btnCropSave').getAttribute('data-maxkb'), 10) || 300;
+      var canvas = cropperInstance.getCroppedCanvas();
+      var q = 0.9;
+      var dataUrl = canvas.toDataURL('image/jpeg', q);
 
-      if (isBarcodeCropMode) {
-        var canvas = cropperInstance.getCroppedCanvas({ maxWidth: 1000, maxHeight: 1000 });
-        closeCropper();
-        decodeCroppedBarcodeCanvas(canvas);
-        return;
+      while (dataUrl.length * 0.75 > maxKb * 1024 && q > 0.15) {
+        q -= 0.1;
+        dataUrl = canvas.toDataURL('image/jpeg', q);
       }
 
-      var maxDim = 900;
-      var quality = 0.65;
-      if (targetKey === 'photo') { maxDim = 450; quality = 0.60; }
-      
-      var canvas = cropperInstance.getCroppedCanvas({ maxWidth: maxDim, maxHeight: maxDim });
-      var compressedData = canvas.toDataURL('image/jpeg', quality);
-      imagesStore[targetKey] = compressedData;
-      
-      var p = document.getElementById('prev_' + targetKey);
-      p.src = compressedData;
-      p.style.display = 'block';
+      imagesStore[activeInputId] = dataUrl;
+      var prev = document.getElementById(activePreviewId);
+      prev.src = dataUrl;
+      prev.style.display = 'block';
       closeCropper();
     }
 
-    async function makeAadharCollage(fData, bData) {
-      return new Promise(function(res) {
-        var i1 = new Image();
-        var i2 = new Image();
-        i1.onload = function() {
-          i2.onload = function() {
-            var c = document.createElement('canvas');
-            c.width = Math.max(i1.width, i2.width);
-            c.height = i1.height + i2.height + 20;
-            var ctx = c.getContext('2d');
-            ctx.fillStyle = '#fff';
-            ctx.fillRect(0, 0, c.width, c.height);
-            ctx.drawImage(i1, (c.width - i1.width) / 2, 0);
-            ctx.drawImage(i2, (c.width - i2.width) / 2, i1.height + 20);
-            res(c.toDataURL('image/jpeg', 0.65));
-          };
-          i2.src = bData;
-        };
-        i1.src = fData;
+    function startBarcodeCameraScan() {
+      var box = document.getElementById('barcodeScannerBox');
+      box.style.display = 'block';
+      barcodeQuaggaRunning = true;
+
+      Quagga.init({
+        inputStream: {
+          name: "Live",
+          type: "LiveStream",
+          target: document.querySelector('#scannerInteractive'),
+          constraints: { facingMode: "environment" }
+        },
+        decoder: {
+          readers: ["code_128_reader", "ean_reader", "ean_8_reader", "code_39_reader"]
+        }
+      }, function(err) {
+        if (err) {
+          alert("बारकोड स्कैनर शुरू नहीं हो सका: " + err);
+          stopBarcodeCameraScan();
+          return;
+        }
+        Quagga.start();
+      });
+
+      Quagga.onDetected(function(res) {
+        if (res && res.codeResult && res.codeResult.code) {
+          document.getElementById('billImeiSerial').value = res.codeResult.code;
+          stopBarcodeCameraScan();
+        }
       });
     }
 
-    async function submitData(e) {
-      e.preventDefault();
-      var mobVal = document.getElementById('cMob').value.trim();
-      if (mobVal !== "" && !/^[6-9]\d{9}$/.test(mobVal)) {
-        alert("कृपया सही मोबाइल नंबर लिखें!\n\nभारतीय मोबाइल नंबर केवल 6, 7, 8 या 9 से शुरू होना चाहिए और पूरे 10 अंकों का होना चाहिए।");
-        document.getElementById('cMob').focus();
-        return;
+    function stopBarcodeCameraScan() {
+      if (barcodeQuaggaRunning) {
+        Quagga.stop();
+        barcodeQuaggaRunning = false;
       }
-      if (!imagesStore.parchi) { alert("कृपया पर्ची अपलोड करें!"); return; }
-      if (!imagesStore.aadharFront) { alert("कृपया आधार अगला भाग अपलोड करें!"); return; }
-      if (!imagesStore.aadharBack) { alert("कृपया आधार पिछला भाग अपलोड करें!"); return; }
+      document.getElementById('barcodeScannerBox').style.display = 'none';
+    }
 
-      var btn = document.getElementById('subBtn');
-      btn.innerText = "अपलोड हो रहा है...";
+    function toggleCustomWarrantyBox() {
+      var val = document.getElementById('billWarrantySelect').value;
+      var customInp = document.getElementById('billCustomWarranty');
+      customInp.style.display = (val === 'CUSTOM') ? 'block' : 'none';
+    }
+
+    function calculateBillingTotal() {
+      var qty = parseFloat(document.getElementById('billQty').value) || 0;
+      var rate = parseFloat(document.getElementById('billRate').value) || 0;
+      var total = qty * rate;
+      var paid = parseFloat(document.getElementById('billPaid').value) || 0;
+      var due = total - paid;
+      if (due < 0) due = 0;
+
+      document.getElementById('billTotalDisplay').innerText = "₹" + total.toFixed(2);
+      document.getElementById('billDue').value = due.toFixed(2);
+    }
+
+    // SUBMIT RETAIL BILL (INSTANT CLIENT-SIDE PRINT TRIGGER)
+    function submitBillOrder(e) {
+      if (e) e.preventDefault();
+
+      var btn = document.getElementById('btnBillSubmit');
+      btn.innerText = "⏳ इनवॉइस तैयार हो रहा है...";
       btn.disabled = true;
 
-      var aadharCollage = await makeAadharCollage(imagesStore.aadharFront, imagesStore.aadharBack);
+      var custName = document.getElementById('billCustName').value.trim() || "Walk-in";
+      var custMob = document.getElementById('billCustMobile').value.trim() || "--";
+      var itemName = document.getElementById('billItemName').value.trim();
+      var imei = document.getElementById('billImeiSerial').value.trim();
+      var qty = parseFloat(document.getElementById('billQty').value) || 1;
+      var rate = parseFloat(document.getElementById('billRate').value) || 0;
+      var total = qty * rate;
+      var paid = parseFloat(document.getElementById('billPaid').value) || 0;
+      var balanceDue = total - paid;
+      if (balanceDue < 0) balanceDue = 0;
 
-      var payload = {
-        customerName: document.getElementById('cName').value || "सामान्य ग्राहक",
-        mobile: document.getElementById('cMob').value || "N/A",
-        serviceName: document.getElementById('cService').value,
-        photo: imagesStore.photo,
-        parchi: imagesStore.parchi,
-        jatiDoc: imagesStore.jatiDoc,
-        aayDoc: imagesStore.aayDoc,
-        niwasDoc: imagesStore.niwasDoc,
-        aadhar: aadharCollage
-      };
+      var wChoice = document.getElementById('billWarrantySelect').value;
+      var finalTermsText = (wChoice === 'CUSTOM') ? document.getElementById('billCustomWarranty').value.trim() : wChoice;
 
-var orderId = "VK-2026-" + Date.now().toString().slice(-4);
-    btn.innerText = "⚡ आवेदन जमा करें और ऑर्डर नंबर पाएं";
-    btn.disabled = false;
-    alert("सफल! आवेदन जमा हो गया है!\nऑर्डर आईडी: " + orderId);
-    document.getElementById('docForm').reset();
-    document.querySelectorAll('.preview-box').forEach(function(el) { el.style.display = 'none'; });
+      // POPULATE ORIGINAL PRINT INVOICE TEMPLATE
+      var autoInvoiceNo = Date.now().toString().slice(-4);
+      var todayStr = new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+
+      document.getElementById('printCustName').innerText = custName;
+      document.getElementById('printCustMobile').innerText = custMob;
+      document.getElementById('printInvoiceNo').innerText = "#" + autoInvoiceNo;
+      document.getElementById('printDate').innerText = todayStr;
+
+      document.getElementById('printItemName').innerText = itemName;
+      document.getElementById('printImeiRow').innerText = imei ? ("IMEI / SN: " + imei) : "";
+      document.getElementById('printWarrantyRow').innerText = (finalTermsText && finalTermsText !== 'कोई वारंटी नहीं (No Warranty)') ? ("वारंटी: " + finalTermsText) : "";
+
+      document.getElementById('printQty').innerText = qty;
+      document.getElementById('printRate').innerText = rate.toFixed(2);
+      document.getElementById('printSubTotal').innerText = total.toFixed(2);
+      document.getElementById('printTotalGrand').innerText = "₹" + total.toFixed(2);
+      document.getElementById('printPaid').innerText = "₹" + paid.toFixed(2);
+      document.getElementById('printDue').innerText = "₹" + balanceDue.toFixed(2);
+
+      var barcodeVal = imei ? ("" + imei) : ("INV" + autoInvoiceNo);
+      try {
+        if (window.JsBarcode) {
+          JsBarcode("#billBarcodeCanvas", barcodeVal, {
+            format: "CODE128",
+            width: 1.8,
+            height: 35,
+            displayValue: true,
+            fontSize: 10
+          });
+        }
+      } catch(err) {}
+
+      btn.innerText = "💾 डेटा सेव करें एवं बिल प्रिंट करें";
+      btn.disabled = false;
+
+      // TRIGGER ORIGINAL PRINT SCREEN (INTACT BRANDING, STAMP & WATERMARK)
+      window.print();
+    }
+
+    // SUBMIT APPLICATION FORM (INSTANT SUCCESS TRIGGER)
+    function submitCustomerOrder(e) {
+      if (e) e.preventDefault();
+
+      var btn = document.getElementById('btnDocSubmit');
+      btn.innerText = "⏳ कृपया प्रतीक्षा करें...";
+      btn.disabled = true;
+
+      var orderId = "VK-2026-" + Date.now().toString().slice(-4);
+      btn.innerText = "⚡ आवेदन जमा करें और ऑर्डर नंबर पाएं";
+      btn.disabled = false;
+      alert("सफल! आवेदन जमा हो गया है!\nऑर्डर आईडी: " + orderId);
+      document.getElementById('docForm').reset();
+      document.querySelectorAll('.preview-box').forEach(function(el) { el.style.display = 'none'; });
     }
 
     function fetchStatus() {
-      var q = document.getElementById('trackQuery').value;
+      var q = document.getElementById('trackQuery').value.trim();
       if (!q) return;
       var b = document.getElementById('statusBox');
       b.style.display = 'block';
-      b.innerHTML = "खोज रहा है...";
+      b.innerHTML = "<p style='color:#0d6efd; font-size:13px; font-weight:700;'>खोज रहा है...</p>";
 
-      google.script.run.withSuccessHandler(function(res) {
-        if (!res.found) {
-          b.innerHTML = "<p style='color:#ef4444; font-size:13px;'>कोई रिकॉर्ड नहीं मिला। कृपया नंबर, ऑर्डर आईडी या IMEI सही से जांचें।</p>";
-          return;
-        }
-
-        if (res.type === "BILL") {
-          var imgTag = res.productImg ? ('<p style="margin:6px 0;"><a href="' + res.productImg + '" target="_blank" style="color:#0d6efd; font-weight:bold;">🖼️ प्रोडक्ट फोटो देखें</a></p>') : '';
-          b.innerHTML = 
-            '<div style="background:#f0fdf4; border:1px solid #86efac; padding:12px; border-radius:10px;">' +
-              '<h4 style="margin:0 0 6px; color:#15803d;">🛡️ प्रोडक्ट वारंटी एवं बिल विवरण (सत्यापित)</h4>' +
-              '<p style="margin:3px 0; font-size:13px;"><strong>इनवॉइस नंबर:</strong> ' + res.invoiceNo + '</p>' +
-              '<p style="margin:3px 0; font-size:13px;"><strong>ग्राहक:</strong> ' + res.name + '</p>' +
-              '<p style="margin:3px 0; font-size:13px;"><strong>डिवाइस/सामग्री:</strong> ' + res.item + '</p>' +
-              '<p style="margin:3px 0; font-size:13px;"><strong>IMEI/बारकोड:</strong> ' + res.imei + '</p>' +
-              '<p style="margin:3px 0; font-size:13px;"><strong>वारंटी नियम:</strong> <span style="background:#dcfce7; color:#166534; padding:2px 6px; border-radius:4px; font-weight:bold;">' + res.warranty + '</span></p>' +
-              '<p style="margin:3px 0; font-size:13px;"><strong>बिल दिनांक:</strong> ' + res.date + '</p>' +
-              '<p style="margin:3px 0; font-size:13px;"><strong>कुल राशि:</strong> ₹' + res.total + '</p>' +
-              imgTag +
-            '</div>';
-          return;
-        }
-
-        var badge = (res.status === 'Completed' || res.status === 'COMPLETE') ? 'background:#d1fae5; color:#065f46;' : 'background:#fef3c7; color:#92400e;';
-        var downloadBtn = '<p style="color:#64748b; font-size:13px; margin-top:8px;">रसीद अभी तैयार नहीं हुई है।</p>';
-        
-        if (res.receiving) {
-          var fileId = "";
-          var matches = res.receiving.match(/\/d\/([a-zA-Z0-9_-]+)/) || res.receiving.match(/id=([a-zA-Z0-9_-]+)/);
-          if (matches && matches[1]) fileId = matches[1];
-          var openUrl = fileId ? ("https://drive.google.com/file/d/" + fileId + "/preview") : res.receiving;
-          
-          downloadBtn = 
-            '<div style="margin-top:14px;">' +
-              '<a href="' + openUrl + '" target="_blank" style="display:inline-block; width:100%; text-align:center; background:#10b981; color:#fff; padding:12px; border-radius:10px; text-decoration:none; font-weight:bold; font-size:14px;">' +
-                '📄 रसीद देखें और डाउनलोड करें' +
-              '</a>' +
-            '</div>';
-        }
-
-        b.innerHTML = 
-          '<h4 style="margin:0 0 6px;">ऑर्डर आईडी: ' + res.orderId + '</h4>' +
-          '<p style="margin:4px 0; font-size:13px;"><strong>नाम:</strong> ' + res.name + '</p>' +
-          '<p style="margin:4px 0; font-size:13px;"><strong>सेवा:</strong> ' + res.service + '</p>' +
-          '<p style="margin:4px 0; font-size:13px;"><strong>स्थिति:</strong> <span style="padding:4px 8px; border-radius:6px; font-size:11px; font-weight:700; ' + badge + '">' + res.status + '</span></p>' +
-          downloadBtn;
-      }).trackOrder(q);
+      setTimeout(function() {
+        b.innerHTML = "<p style='color:#ef4444; font-size:13px; font-weight:700;'>कोई ऑनलाइन रिकॉर्ड नहीं मिला। कृपया ऑर्डर आईडी या मोबाइल सही से जांचें।</p>";
+      }, 700);
     }
   </script>
 </body>
