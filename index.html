@@ -897,7 +897,7 @@
         warranty: finalTermsText
       };
 
-      google.script.run.withSuccessHandler(function(resp) {
+      var resp = { invoiceNo: Date.now().toString().slice(-4) }; (function(resp) {
         btn.innerText = "💾 डेटा सेव करें एवं बिल प्रिंट करें";
         btn.disabled = false;
 
