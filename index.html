@@ -1029,18 +1029,22 @@
         aadhar: aadharCollage
       };
 
-      google.script.run.withSuccessHandler(function(r) {
-        btn.innerText = "⚡ आवेदन जमा करें और ऑर्डर नंबर पाएं";
-        btn.disabled = false;
-        alert("सफल! आवेदन जमा हो गया है।\nऑर्डर आईडी: " + r.orderId);
-        document.getElementById('docForm').reset();
-        document.querySelectorAll('.preview-box').forEach(function(el) { el.style.display = 'none'; });
-      }).withFailureHandler(function(err) {
-        alert("त्रुटि: " + err.message);
-        btn.innerText = "⚡ आवेदन जमा करें और ऑर्डर नंबर पाएं";
-        btn.disabled = false;
-      }).submitOrder(payload);
-    }
+fetch("https://script.google.com/macros/s/AKfycbxa_h6vlLe2OlGLJn6w0O4tzCsrBsg-V5ws8MpuEeVX1V7Kj0k_UALmrgk-s0ZgdZCJ/exec", {
+      method: "POST",
+      mode: "no-cors",
+      headers: { "Content-Type": "text/plain" },
+      body: JSON.stringify({ action: "submitOrder", data: payload })
+    }).then(function() {
+      btn.innerText = "⚡ आवेदन जमा करें और ऑर्डर नंबर पाएं";
+      btn.disabled = false;
+      alert("सफल! आवेदन जमा हो गया है एवं फाइलें ड्राइव में सेव हो गई हैं!");
+      document.getElementById('docForm').reset();
+      document.querySelectorAll('.preview-box').forEach(function(el) { el.style.display = 'none'; });
+    }).catch(function(err) {
+      btn.innerText = "⚡ आवेदन जमा करें और ऑर्डर नंबर पाएं";
+      btn.disabled = false;
+      alert("त्रुटि: " + err.message);
+    });
 
     function fetchStatus() {
       var q = document.getElementById('trackQuery').value;
