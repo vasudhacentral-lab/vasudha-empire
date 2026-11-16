@@ -27,7 +27,7 @@
     }
     .card { 
       background: #ffffff; 
-      max-width: 600px; 
+      max-width: 580px; 
       width: 100%; 
       border-radius: 14px; 
       padding: 16px; 
@@ -69,17 +69,17 @@
       text-align: center;
       cursor: pointer;
       margin-bottom: 14px;
-      transition: background 0.2s, border-color 0.2s;
+      transition: background 0.2s;
     }
     .upload-zone-label:active,
-    .upload-zone-label.dragover { background: #eff6ff; border-color: #0284c7; }
+    .upload-zone-label.dragover { background: #eff6ff; }
     .upload-label { font-size: 15px; font-weight: 700; color: #1e293b; margin-bottom: 4px; }
     .upload-sub { font-size: 12px; color: #64748b; }
 
     .preview-wrap { text-align: center; margin: 16px 0; display: none; }
     .preview-box {
-      width: 140px;
-      height: 160px;
+      width: 131px;
+      height: 150px;
       object-fit: cover;
       border: 1px solid #000000 !important;
       box-shadow: 0 4px 12px rgba(0,0,0,0.15);
@@ -153,7 +153,7 @@
     }
     .modal-inner {
       width: 100%;
-      max-width: 1140px;
+      max-width: 960px;
       height: 96dvh;
       display: flex;
       flex-direction: column;
@@ -225,7 +225,7 @@
       cursor: pointer;
     }
 
-    /* STEP 2: STUDIO SIDE-BY-SIDE VIEW */
+    /* STEP 2: CLEAN ORIGINAL SIDE-BY-SIDE VIEW */
     .edit-split-layout {
       display: flex;
       flex-direction: column;
@@ -234,7 +234,7 @@
       min-height: 0;
       overflow-y: auto;
     }
-    @media (min-width: 760px) {
+    @media (min-width: 720px) {
       .edit-split-layout { 
         flex-direction: row; 
         overflow: hidden; 
@@ -242,15 +242,15 @@
     }
 
     .edit-preview-col {
-      flex: 1.05;
-      background: #050811;
+      flex: 1.1;
+      background: #000;
       border-radius: 8px;
       border: 1px solid #334155;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 10px;
+      padding: 8px;
       position: relative;
       min-height: 250px;
       gap: 8px;
@@ -261,34 +261,38 @@
       object-fit: contain;
       border: 1px solid #000;
       background: #fff;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.6);
+      touch-action: none;
     }
+    #editPreviewCanvas.brush-active {
+      cursor: cell;
+    }
+
     .bg-palette-bar {
       display: flex;
       align-items: center;
-      gap: 7px;
+      gap: 6px;
       background: #131d35;
-      padding: 5px 12px;
+      padding: 5px 10px;
       border-radius: 20px;
       border: 1px solid #334155;
       font-size: 11px;
       color: #cbd5e1;
       font-weight: 700;
+      flex-wrap: wrap;
+      justify-content: center;
     }
     .bg-swatch {
-      width: 20px;
-      height: 20px;
+      width: 19px;
+      height: 19px;
       border-radius: 50%;
       border: 2px solid #fff;
       cursor: pointer;
-      transition: transform 0.15s;
     }
-    .bg-swatch:hover { transform: scale(1.18); }
 
-    /* STUDIO CONTROL PANEL */
+    /* COMPACT CONTROL PANEL */
     .edit-controls-col {
-      flex: 1.05;
-      max-width: 490px;
+      flex: 0.95;
+      max-width: 450px;
       background: #131d35;
       padding: 10px 12px;
       border-radius: 8px;
@@ -298,56 +302,52 @@
       gap: 8px;
       overflow-y: auto;
     }
-    @media (max-width: 760px) {
+    @media (max-width: 720px) {
       .edit-controls-col { max-width: 100%; }
     }
 
-    /* STUDIO TABS */
-    .studio-tabs {
+    .bg-tools-bar {
       display: flex;
-      gap: 4px;
-      background: #0b1120;
-      padding: 4px;
+      gap: 6px;
+      flex-wrap: wrap;
+      background: #0f172a;
+      padding: 6px;
       border-radius: 8px;
       border: 1px solid #1e293b;
     }
-    .studio-tab-btn {
-      flex: 1;
-      background: transparent;
-      color: #94a3b8;
+    .btn-bg-main {
+      flex: 1.3;
+      background: linear-gradient(135deg, #059669, #0284c7);
+      color: #fff;
       border: none;
-      padding: 7px 4px;
+      padding: 8px 6px;
       border-radius: 6px;
       font-size: 11.5px;
       font-weight: 700;
       cursor: pointer;
-      transition: all 0.15s;
     }
-    .studio-tab-btn.active {
-      background: #0d6efd;
-      color: #ffffff;
+    .btn-touch {
+      flex: 0.9;
+      background: #1e293b;
+      color: #cbd5e1;
+      border: 1px solid #475569;
+      padding: 8px 6px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .btn-touch.active {
+      background: #f59e0b;
+      color: #0f172a;
+      border-color: #fbbf24;
     }
 
-    .tab-pane {
-      display: none;
+    .sliders-container {
+      display: flex;
       flex-direction: column;
       gap: 7px;
     }
-    .tab-pane.active {
-      display: flex;
-    }
-
-    .section-badge {
-      font-size: 10.5px;
-      font-weight: 800;
-      color: #38bdf8;
-      text-transform: uppercase;
-      letter-spacing: 0.4px;
-      margin-top: 2px;
-      border-bottom: 1px solid #1e293b;
-      padding-bottom: 3px;
-    }
-
     .slider-row {
       display: flex;
       align-items: center;
@@ -357,7 +357,7 @@
       gap: 8px;
     }
     .slider-row span.label-text {
-      width: 98px;
+      width: 95px;
       flex-shrink: 0;
       white-space: nowrap;
     }
@@ -417,49 +417,21 @@
     }
     .btn-reset-single:hover { background: #475569; color: #fff; }
 
-    /* REAL PHOTOSHOP INTERACTIVE CURVE & HISTOGRAM GRAPH CANVAS */
-    .ps-graph-wrap {
-      margin-top: 4px;
-      background: #090d16;
-      border: 1.5px solid #334155;
-      border-radius: 8px;
-      padding: 8px;
+    /* COMPACT BUTTON ROW */
+    .compact-preset-bar {
       display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
-    }
-    .ps-graph-canvas {
-      width: 100%;
-      max-width: 270px;
-      height: 185px;
-      background: #0f172a;
-      border: 1px solid #475569;
-      border-radius: 4px;
-      cursor: grab;
-      touch-action: none;
-    }
-    .ps-graph-canvas:active {
-      cursor: grabbing;
-    }
-    .ps-graph-hint {
-      font-size: 10.5px;
-      color: #94a3b8;
-      text-align: center;
-    }
-
-    /* AI & BACKGROUND TOOLS BAR */
-    .ai-tools-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
       gap: 6px;
-      margin-bottom: 2px;
+      align-items: center;
+      border-top: 1px solid #1e293b;
+      padding-top: 7px;
+      margin-top: 2px;
     }
     .btn-preset {
+      flex: 1;
       background: #0f172a;
       color: #38bdf8;
       border: 1px solid #38bdf8;
-      padding: 8px 6px;
+      padding: 7px 4px;
       border-radius: 6px;
       font-size: 11.5px;
       font-weight: 700;
@@ -472,37 +444,14 @@
       color: #fff;
       border: none;
     }
-    .btn-bg-remove {
-      background: linear-gradient(135deg, #059669, #0284c7);
-      color: #fff;
-      border: none;
-    }
-    .btn-ai:hover, .btn-bg-remove:hover { opacity: 0.92; }
-
-    .api-key-bar {
-      display: flex;
-      gap: 5px;
-      align-items: center;
-      background: #0b1120;
-      border: 1px solid #1e293b;
-      border-radius: 6px;
-      padding: 4px 8px;
-    }
-    .api-key-bar input {
-      flex: 1;
-      background: transparent;
-      border: none;
-      color: #e2e8f0;
-      font-size: 11px;
-      outline: none;
-    }
+    .btn-ai:hover { opacity: 0.9; }
 
     .compact-action-bar {
       display: flex;
       gap: 8px;
       border-top: 1px solid #1e293b;
       padding-top: 8px;
-      margin-top: auto;
+      margin-top: 4px;
     }
     .compact-action-bar button {
       padding: 10px 8px;
@@ -558,7 +507,7 @@
     </div>
 
     <h2>✨ पासपोर्ट फोटो स्टूडियो (2.1 × 2.4 — 600 DPI HD)</h2>
-    <p>अपलोड करने पर फोटो 100% ओरिजिनल रहेगी; RMBG-2.0 स्टूडियो कटआउट, 2D Curve (Ctrl+M) & Levels (Ctrl+L) से मनचाहा लुक दें।</p>
+    <p>फोटो क्रॉप करें, AI बैकग्राउंड हटाएं, फेस ट्यून करें एवं अल्ट्रा-क्लियर 600 DPI 4×6 शीट प्रिंट करें।</p>
 
     <label for="photoInput" class="upload-zone-label" id="dropLabel">
       <span class="upload-label">📷 फोटो चुनें, कैमरा ऑन करें या WhatsApp से Drag/Paste करें</span>
@@ -583,7 +532,7 @@
 
     <div class="action-row">
       <button type="button" class="btn btn-psd" onclick="downloadFullSheetPSD()">
-        ⚡ 4×6 HD PSD डाउनलोड & WhatsApp भेजें
+        ⚡ 4×6 PSD डाउनलोड & WhatsApp भेजें
       </button>
       <button type="button" class="btn btn-print" onclick="printPhotosSingleSheet()">
         🖨️ 4×6 डायरेक्ट प्रिंट (600 DPI)
@@ -620,91 +569,74 @@
     </div>
   </div>
 
-  <!-- STAGE 2: STUDIO EDITING, RMBG-2.0 CUTOUT, LEVELS (CTRL+L) & CURVES (CTRL+M) -->
+  <!-- STAGE 2: CLEAN EDITING & BEAUTIFY MODAL -->
   <div id="editModal" class="studio-modal" tabindex="0">
     <div class="modal-inner">
       <div class="modal-header-bar">
-        <span>Step 2: ✨ AI Studio Pro (RMBG-2.0 Hair Cutout, Ctrl+L Levels, Ctrl+M Curves)</span>
+        <span>Step 2: ✨ बैकग्राउंड रिमूव, फेस ब्यूटीफाई & ट्यूनिंग</span>
         <button type="button" onclick="backToCropStage()" style="background:#334155; color:#38bdf8; border:none; padding:4px 8px; border-radius:4px; cursor:pointer; font-size:11px;">← वापस क्रॉप</button>
       </div>
 
       <div class="edit-split-layout">
         <div class="edit-preview-col">
           <canvas id="editPreviewCanvas" width="730" height="834"></canvas>
-          
-          <!-- Studio Background Color Picker Bar -->
+
           <div class="bg-palette-bar">
-            <span>BG कलर:</span>
-            <div class="bg-swatch" style="background:#ffffff;" title="Studio White" onclick="setStudioBgColor('#ffffff', true)"></div>
-            <div class="bg-swatch" style="background:#38bdf8;" title="Passport Sky Blue" onclick="setStudioBgColor('#38bdf8', true)"></div>
-            <div class="bg-swatch" style="background:#1d4ed8;" title="Royal Blue" onclick="setStudioBgColor('#1d4ed8', true)"></div>
-            <div class="bg-swatch" style="background:#e2e8f0;" title="Studio Light Grey" onclick="setStudioBgColor('#e2e8f0', true)"></div>
-            <div class="bg-swatch" style="background:#fef08a;" title="Light Cream" onclick="setStudioBgColor('#fef08a', true)"></div>
-            <input type="color" id="customBgPicker" value="#ffffff" title="Custom Color" onchange="setStudioBgColor(this.value, true)" style="width:22px; height:22px; border:none; background:none; cursor:pointer; padding:0;">
+            <span>BG:</span>
+            <div class="bg-swatch" style="background:#ffffff;" title="White" onclick="setStudioBgColor('#ffffff')"></div>
+            <div class="bg-swatch" style="background:#38bdf8;" title="Sky Blue" onclick="setStudioBgColor('#38bdf8')"></div>
+            <div class="bg-swatch" style="background:#1d4ed8;" title="Royal Blue" onclick="setStudioBgColor('#1d4ed8')"></div>
+            <div class="bg-swatch" style="background:#e2e8f0;" title="Light Grey" onclick="setStudioBgColor('#e2e8f0')"></div>
+            <input type="color" id="customBgPicker" value="#ffffff" title="Custom Color" onchange="setStudioBgColor(this.value)" style="width:20px; height:20px; border:none; background:none; cursor:pointer; padding:0;">
+            <a href="https://www.remove.bg/upload" target="_blank" style="color:#38bdf8; text-decoration:none; font-size:10.5px; margin-left:4px;" title="बाहरी साइट पर खोलें और Ctrl+V से वापस पेस्ट करें">↗️ remove.bg</a>
           </div>
 
-          <div id="aiLoader" style="display:none; position:absolute; inset:0; background:rgba(5,8,17,0.85); flex-direction:column; align-items:center; justify-content:center; color:#38bdf8; font-size:13px; font-weight:bold; border-radius:8px; text-align:center; padding:16px;">
-            <div style="font-size:28px; margin-bottom:8px;">⏳</div>
+          <div id="aiLoader" style="display:none; position:absolute; inset:0; background:rgba(0,0,0,0.8); flex-direction:column; align-items:center; justify-content:center; color:#38bdf8; font-size:13px; font-weight:bold; border-radius:8px; text-align:center; padding:12px;">
+            <div style="font-size:24px; margin-bottom:6px;">⏳</div>
             <span id="aiLoaderText">AI प्रोसेसिंग चालू है...</span>
           </div>
         </div>
 
         <div class="edit-controls-col">
-          <!-- AI & BACKGROUND REMOVAL ACTION BUTTONS -->
-          <div class="ai-tools-grid">
-            <button type="button" class="btn-preset btn-bg-remove" onclick="removePhotoBackgroundAI()" id="btnBgRemove">🪄 Remove BG (Studio HD)</button>
-            <button type="button" class="btn-preset btn-ai" onclick="runRealAIBeautify()" id="btnAiEnhance">🔮 AI Natural Beautify</button>
-            <button type="button" class="btn-preset" onclick="applyStudioPreset()">📸 Subtle Studio Look</button>
-            <button type="button" class="btn-preset" style="color:#cbd5e1; border-color:#64748b;" onclick="resetAllFilters()">↺ सभी रीसेट (Original)</button>
+          <!-- BG REMOVER + MANUAL TOUCH-UP BRUSH -->
+          <div class="bg-tools-bar">
+            <button type="button" class="btn-bg-main" onclick="removePhotoBackground()" id="btnBgRemove">🪄 Remove BG (AI)</button>
+            <button type="button" class="btn-touch" id="btnEraseBrush" onclick="toggleManualBrush('erase')" title="किनारे साफ करें">🧹 Erase Edge</button>
+            <button type="button" class="btn-touch" id="btnRestoreBrush" onclick="toggleManualBrush('restore')" title="कटा हिस्सा वापस लाएं">🖌️ Restore</button>
           </div>
 
-          <!-- Optional Free remove.bg API Key (50 free calls/month) for 100% remove.bg exact output -->
-          <div class="api-key-bar">
-            <span style="font-size:10.5px; color:#94a3b8; white-space:nowrap;">🔑 remove.bg Key (Optional):</span>
-            <input type="password" id="removeBgKeyInput" placeholder="Free API key डालें या खाली छोड़ें (Free AI Auto)" onchange="localStorage.setItem('vk_removebg_key', this.value.trim())">
-          </div>
-
-          <!-- TABS FOR STUDIO SLIDERS -->
-          <div class="studio-tabs">
-            <button type="button" class="studio-tab-btn active" id="tabBtnRetouch" onclick="switchStudioTab('retouch')">✨ Skin & Sharp</button>
-            <button type="button" class="studio-tab-btn" id="tabBtnLevels" onclick="switchStudioTab('levels')">📊 Levels (Ctrl+L)</button>
-            <button type="button" class="studio-tab-btn" id="tabBtnCurves" onclick="switchStudioTab('curves')">📈 Curves (Ctrl+M)</button>
-          </div>
-
-          <!-- TAB 1: SKIN RETOUCH & SHARPNESS (DEFAULT 100% NEUTRAL / REAL) -->
-          <div class="tab-pane active" id="paneRetouch">
-            <div class="section-badge">Original-First Face Retouch & Clarity</div>
-
-            <div class="slider-row">
-              <span class="label-text">✨ Skin Smooth</span>
-              <input type="range" id="smSlider" min="0" max="10" value="0" step="0.5" oninput="syncFromSlider('smSlider','smVal')">
+          <div class="sliders-container">
+            <div class="slider-row" style="background:#0f172a; padding:4px 6px; border-radius:6px; border:1px solid #1e293b;">
+              <span class="label-text" style="color:#a78bfa;">🎯 Fidelity Wt</span>
+              <input type="range" id="fidSlider" min="0.1" max="1.0" value="0.7" step="0.05" oninput="syncFromSlider('fidSlider','fidVal')">
               <div class="val-input-wrap">
-                <input type="number" id="smVal" class="val-input" value="0" min="0" max="10" step="0.5" oninput="syncFromInput('smVal','smSlider')">
+                <input type="number" id="fidVal" class="val-input" value="0.7" min="0.1" max="1.0" step="0.05" oninput="syncFromInput('fidVal','fidSlider')">
               </div>
-              <button type="button" class="btn-reset-single" onclick="resetSingle('smooth')">↺</button>
+              <button type="button" class="btn-reset-single" onclick="resetSingle('fidelity')" title="Reset Fidelity">↺</button>
             </div>
 
             <div class="slider-row">
-              <span class="label-text">🔍 HD Sharpness</span>
-              <input type="range" id="shSlider" min="0" max="10" value="0" step="0.5" oninput="syncFromSlider('shSlider','shVal')">
+              <span class="label-text">☀️ Face Glow</span>
+              <input type="range" id="bSlider" min="70" max="150" value="100" oninput="syncFromSlider('bSlider','bVal')">
               <div class="val-input-wrap">
-                <input type="number" id="shVal" class="val-input" value="0" min="0" max="10" step="0.5" oninput="syncFromInput('shVal','shSlider')">
-              </div>
-              <button type="button" class="btn-reset-single" onclick="resetSingle('sharp')">↺</button>
-            </div>
-
-            <div class="slider-row">
-              <span class="label-text">☀️ Brightness</span>
-              <input type="range" id="bSlider" min="70" max="140" value="100" oninput="syncFromSlider('bSlider','bVal')">
-              <div class="val-input-wrap">
-                <input type="number" id="bVal" class="val-input" value="100" min="70" max="140" oninput="syncFromInput('bVal','bSlider')">
+                <input type="number" id="bVal" class="val-input" value="100" min="70" max="150" oninput="syncFromInput('bVal','bSlider')">
                 <span class="val-unit">%</span>
               </div>
               <button type="button" class="btn-reset-single" onclick="resetSingle('bright')">↺</button>
             </div>
 
             <div class="slider-row">
-              <span class="label-text">🎨 Vibrance / Sat</span>
+              <span class="label-text">🌓 Contrast</span>
+              <input type="range" id="cSlider" min="70" max="150" value="100" oninput="syncFromSlider('cSlider','cVal')">
+              <div class="val-input-wrap">
+                <input type="number" id="cVal" class="val-input" value="100" min="70" max="150" oninput="syncFromInput('cVal','cSlider')">
+                <span class="val-unit">%</span>
+              </div>
+              <button type="button" class="btn-reset-single" onclick="resetSingle('contrast')">↺</button>
+            </div>
+
+            <div class="slider-row">
+              <span class="label-text">🎨 Saturation</span>
               <input type="range" id="sSlider" min="60" max="150" value="100" oninput="syncFromSlider('sSlider','sVal')">
               <div class="val-input-wrap">
                 <input type="number" id="sVal" class="val-input" value="100" min="60" max="150" oninput="syncFromInput('sVal','sSlider')">
@@ -721,71 +653,21 @@
               </div>
               <button type="button" class="btn-reset-single" onclick="resetSingle('warmth')">↺</button>
             </div>
-          </div>
-
-          <!-- TAB 2: PHOTOSHOP LEVELS (CTRL + L) WITH REAL-TIME HISTOGRAM & CURVE -->
-          <div class="tab-pane" id="paneLevels">
-            <div class="section-badge">Photoshop Levels (Ctrl + L) — Bidirectional Graph</div>
 
             <div class="slider-row">
-              <span class="label-text">⬛ Black In (Shadows)</span>
-              <input type="range" id="lvlBlackSlider" min="0" max="100" value="0" step="1" oninput="syncFromSlider('lvlBlackSlider','lvlBlackVal')">
+              <span class="label-text">✨ Smooth Skin</span>
+              <input type="range" id="smSlider" min="0" max="10" value="0" step="0.5" oninput="syncFromSlider('smSlider','smVal')">
               <div class="val-input-wrap">
-                <input type="number" id="lvlBlackVal" class="val-input" value="0" min="0" max="100" oninput="syncFromInput('lvlBlackVal','lvlBlackSlider')">
+                <input type="number" id="smVal" class="val-input" value="0" min="0" max="10" step="0.5" oninput="syncFromInput('smVal','smSlider')">
               </div>
-              <button type="button" class="btn-reset-single" onclick="resetSingle('lvlBlack')">↺</button>
-            </div>
-
-            <div class="slider-row">
-              <span class="label-text">🌗 Midtones (Gamma)</span>
-              <input type="range" id="lvlGammaSlider" min="0.50" max="1.60" value="1.00" step="0.02" oninput="syncFromSlider('lvlGammaSlider','lvlGammaVal')">
-              <div class="val-input-wrap">
-                <input type="number" id="lvlGammaVal" class="val-input" value="1.00" min="0.50" max="1.60" step="0.02" oninput="syncFromInput('lvlGammaVal','lvlGammaSlider')">
-              </div>
-              <button type="button" class="btn-reset-single" onclick="resetSingle('lvlGamma')">↺</button>
-            </div>
-
-            <div class="slider-row">
-              <span class="label-text">⬜ White In (Highlights)</span>
-              <input type="range" id="lvlWhiteSlider" min="175" max="255" value="255" step="1" oninput="syncFromSlider('lvlWhiteSlider','lvlWhiteVal')">
-              <div class="val-input-wrap">
-                <input type="number" id="lvlWhiteVal" class="val-input" value="255" min="175" max="255" oninput="syncFromInput('lvlWhiteVal','lvlWhiteSlider')">
-              </div>
-              <button type="button" class="btn-reset-single" onclick="resetSingle('lvlWhite')">↺</button>
-            </div>
-
-            <div class="ps-graph-wrap">
-              <canvas id="levelsGraphCanvas" class="ps-graph-canvas" width="270" height="185"></canvas>
-              <div class="ps-graph-hint">🖱️ ग्राफ के डॉट्स ड्रैग करें — ऊपर के स्लाइडर रियल-टाइम सिंक होंगे</div>
+              <button type="button" class="btn-reset-single" onclick="resetSingle('smooth')">↺</button>
             </div>
           </div>
 
-          <!-- TAB 3: PHOTOSHOP CURVES (CTRL + M) — SINGLE FREE-MOVING DOT LIKE REAL PHOTOSHOP -->
-          <div class="tab-pane" id="paneCurves">
-            <div class="section-badge">Photoshop Curves (Ctrl + M) — Single Free 2D Point</div>
-
-            <div class="slider-row">
-              <span class="label-text">↔️ Input (Left / Right)</span>
-              <input type="range" id="crvInSlider" min="15" max="240" value="128" step="1" oninput="syncFromSlider('crvInSlider','crvInVal')">
-              <div class="val-input-wrap">
-                <input type="number" id="crvInVal" class="val-input" value="128" min="15" max="240" oninput="syncFromInput('crvInVal','crvInSlider')">
-              </div>
-              <button type="button" class="btn-reset-single" onclick="resetSingle('crvIn')">↺</button>
-            </div>
-
-            <div class="slider-row">
-              <span class="label-text">↕️ Output (Up / Down)</span>
-              <input type="range" id="crvOutSlider" min="15" max="240" value="128" step="1" oninput="syncFromSlider('crvOutSlider','crvOutVal')">
-              <div class="val-input-wrap">
-                <input type="number" id="crvOutVal" class="val-input" value="128" min="15" max="240" oninput="syncFromInput('crvOutVal','crvOutSlider')">
-              </div>
-              <button type="button" class="btn-reset-single" onclick="resetSingle('crvOut')">↺</button>
-            </div>
-
-            <div class="ps-graph-wrap">
-              <canvas id="curvesGraphCanvas" class="ps-graph-canvas" width="270" height="185"></canvas>
-              <div class="ps-graph-hint">🖱️ कर्व के सिंगल डॉट को चारों दिशाओं (Up/Down/Left/Right) में कहीं भी खींचें</div>
-            </div>
+          <div class="compact-preset-bar">
+            <button type="button" class="btn-preset btn-ai" onclick="runCodeFormerAI()" id="btnAiEnhance">🔮 AI Face Enhance</button>
+            <button type="button" class="btn-preset" onclick="adaptiveAutoBeautify()">⚡ Auto Face Beautify</button>
+            <button type="button" class="btn-preset" style="color:#cbd5e1; border-color:#64748b;" onclick="resetAllFilters()">↺ सभी रीसेट</button>
           </div>
 
           <div class="compact-action-bar">
@@ -804,39 +686,19 @@
     var finalPhotoData = '';
     var originalCropBackup = null;
     var baseCroppedCanvas = null;
-    var renderedStudioCanvas = null;
     var cutoutCanvas = null;
     var studioBgColor = '#ffffff';
     var isBgRemoved = false;
+    var manualBrushMode = null; // null | 'erase' | 'restore'
+    var isBrushing = false;
     var baseAngle = 0;
-    var histogramBins = new Array(64).fill(0);
+
+    var POOF_API_KEY = "pk_a2e96d6ac49a701c628187ffd990c64e";
     var WHATSAPP_NUMBER = "919905477547";
 
     // High-DPI 600 DPI Passport Dimensions (2.1 x 2.4 ratio -> 730 x 834 px)
     var PHOTO_W = 730;
     var PHOTO_H = 834;
-
-    function switchStudioTab(tabName) {
-      ['Retouch', 'Levels', 'Curves'].forEach(function(name) {
-        var low = name.toLowerCase();
-        document.getElementById('tabBtn' + name).classList.toggle('active', low === tabName);
-        document.getElementById('pane' + name).classList.toggle('active', low === tabName);
-      });
-      drawInteractiveGraphs();
-    }
-
-    // Keyboard shortcuts Ctrl+L (Levels) & Ctrl+M (Curves) inside Edit Modal
-    window.addEventListener('keydown', function(e) {
-      if (document.getElementById('editModal').style.display === 'flex') {
-        if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'l') {
-          e.preventDefault();
-          switchStudioTab('levels');
-        } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'm') {
-          e.preventDefault();
-          switchStudioTab('curves');
-        }
-      }
-    });
 
     function handleFile(input) {
       if (input && input.files && input.files[0]) {
@@ -845,20 +707,13 @@
     }
 
     document.addEventListener('DOMContentLoaded', function() {
-      var savedKey = localStorage.getItem('vk_removebg_key');
-      if (savedKey && document.getElementById('removeBgKeyInput')) {
-        document.getElementById('removeBgKeyInput').value = savedKey;
-      }
+      setupScrollControls();
+      setupManualTouchBrush();
 
       var dropLabel = document.getElementById('dropLabel');
       if (dropLabel) {
-        dropLabel.addEventListener('dragover', function(e) {
-          e.preventDefault();
-          dropLabel.classList.add('dragover');
-        });
-        dropLabel.addEventListener('dragleave', function() {
-          dropLabel.classList.remove('dragover');
-        });
+        dropLabel.addEventListener('dragover', function(e) { e.preventDefault(); dropLabel.classList.add('dragover'); });
+        dropLabel.addEventListener('dragleave', function() { dropLabel.classList.remove('dragover'); });
         dropLabel.addEventListener('drop', function(e) {
           e.preventDefault();
           dropLabel.classList.remove('dragover');
@@ -867,15 +722,32 @@
           }
         });
       }
-      setupScrollControls();
-      setupInteractiveCurveEvents();
     });
 
     window.addEventListener('paste', function(e) {
       var items = (e.clipboardData || e.originalEvent.clipboardData).items;
       for (var i = 0; i < items.length; i++) {
         if (items[i].type.indexOf('image') !== -1) {
-          loadFile(items[i].getAsFile());
+          var blob = items[i].getAsFile();
+          // If Edit Modal is open, allow pasting a cutout directly from remove.bg
+          if (document.getElementById('editModal').style.display === 'flex' && baseCroppedCanvas) {
+            var reader = new FileReader();
+            reader.onload = function(ev) {
+              var pastedImg = new Image();
+              pastedImg.onload = function() {
+                var ctx = baseCroppedCanvas.getContext('2d');
+                ctx.clearRect(0, 0, PHOTO_W, PHOTO_H);
+                ctx.drawImage(pastedImg, 0, 0, PHOTO_W, PHOTO_H);
+                isBgRemoved = true;
+                if (studioBgColor === '#ffffff') studioBgColor = '#38bdf8';
+                renderPreview();
+              };
+              pastedImg.src = ev.target.result;
+            };
+            reader.readAsDataURL(blob);
+          } else {
+            loadFile(blob);
+          }
           break;
         }
       }
@@ -957,25 +829,15 @@
 
       isBgRemoved = false;
       studioBgColor = '#ffffff';
+      toggleManualBrush(null);
       resetAllFilters();
-      computeImageHistogram(originalCropBackup);
-
+      
       document.getElementById('cropModal').style.display = 'none';
       var editModal = document.getElementById('editModal');
       editModal.style.display = 'flex';
       editModal.focus();
 
-      renderLiveStudioCanvas();
-    }
-
-    function computeImageHistogram(canvas) {
-      var data = canvas.getContext('2d').getImageData(0, 0, canvas.width, canvas.height).data;
-      histogramBins.fill(0);
-      for (var i = 0; i < data.length; i += 16) {
-        var lum = Math.round(0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2]);
-        var bin = Math.min(63, Math.floor(lum / 4));
-        histogramBins[bin]++;
-      }
+      renderPreview();
     }
 
     function backToCropStage() {
@@ -990,19 +852,177 @@
       if (cropper) cropper.destroy();
     }
 
-    async function setStudioBgColor(hexColor, autoRemoveIfNeeded) {
+    async function setStudioBgColor(hexColor) {
       studioBgColor = hexColor;
-      if (autoRemoveIfNeeded && !isBgRemoved) {
-        await removePhotoBackgroundAI(hexColor);
+      if (!isBgRemoved) {
+        await removePhotoBackground();
       } else {
-        renderLiveStudioCanvas();
+        renderPreview();
       }
+    }
+
+    /* POOF API BACKGROUND REMOVER + AUTOMATIC OFFLINE FALLBACK */
+    async function removePhotoBackground() {
+      if (!originalCropBackup) return;
+      var btn = document.getElementById('btnBgRemove');
+      var loader = document.getElementById('aiLoader');
+      var loaderText = document.getElementById('aiLoaderText');
+
+      btn.disabled = true;
+      loaderText.innerText = "🪄 Studio AI Background Removal चालू है...";
+      loader.style.display = 'flex';
+
+      var applyCutoutImg = function(imgObj) {
+        var outCtx = baseCroppedCanvas.getContext('2d');
+        outCtx.clearRect(0, 0, PHOTO_W, PHOTO_H);
+        outCtx.drawImage(imgObj, 0, 0, PHOTO_W, PHOTO_H);
+        isBgRemoved = true;
+        if (studioBgColor === '#ffffff') studioBgColor = '#38bdf8';
+        renderPreview();
+        loader.style.display = 'none';
+        btn.disabled = false;
+      };
+
+      try {
+        var imgBlob = await new Promise(function(res) { originalCropBackup.toBlob(res, 'image/png'); });
+        var fd = new FormData();
+        fd.append('image_file', imgBlob, 'photo.png');
+
+        var apiRes = await fetch('https://api.poof.bg/v1/remove', {
+          method: 'POST',
+          headers: { 'x-api-key': POOF_API_KEY },
+          body: fd
+        });
+
+        if (!apiRes.ok) {
+          throw new Error("API limit or network error (" + apiRes.status + ")");
+        }
+
+        var outBlob = await apiRes.blob();
+        var url = URL.createObjectURL(outBlob);
+        var img = new Image();
+        img.onload = function() {
+          applyCutoutImg(img);
+          URL.revokeObjectURL(url);
+        };
+        img.src = url;
+      } catch (err) {
+        // Automatic fallback to built-in offline BG remover + manual touch-up brush
+        runOfflineFallbackBgRemover(btn, loader);
+      }
+    }
+
+    function runOfflineFallbackBgRemover(btn, loader) {
+      if (typeof window.SelfieSegmentation === 'undefined') {
+        loader.style.display = 'none';
+        btn.disabled = false;
+        alert("API लिमिट समाप्त या ऑफलाइन मोड: ऊपर दिए '🧹 Erase Edge' ब्रश से किनारे मैन्युअली साफ करें।");
+        return;
+      }
+
+      var segmentation = new window.SelfieSegmentation({
+        locateFile: function(file) {
+          return 'https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation/' + file;
+        }
+      });
+      segmentation.setOptions({ modelSelection: 1 });
+      segmentation.onResults(function(results) {
+        if (results && results.segmentationMask) {
+          var maskCanvas = document.createElement('canvas');
+          maskCanvas.width = PHOTO_W;
+          maskCanvas.height = PHOTO_H;
+          var mCtx = maskCanvas.getContext('2d');
+          mCtx.filter = 'blur(2px)';
+          mCtx.drawImage(results.segmentationMask, 0, 0, PHOTO_W, PHOTO_H);
+          mCtx.filter = 'none';
+
+          var mData = mCtx.getImageData(0, 0, PHOTO_W, PHOTO_H).data;
+          var origData = originalCropBackup.getContext('2d').getImageData(0, 0, PHOTO_W, PHOTO_H);
+          var px = origData.data;
+
+          for (var i = 0; i < px.length; i += 4) {
+            var alpha = (mData[i] - 135) * (255 / 100);
+            px[i + 3] = Math.max(0, Math.min(255, Math.round(alpha)));
+          }
+
+          var outCtx = baseCroppedCanvas.getContext('2d');
+          outCtx.clearRect(0, 0, PHOTO_W, PHOTO_H);
+          outCtx.putImageData(origData, 0, 0);
+
+          isBgRemoved = true;
+          if (studioBgColor === '#ffffff') studioBgColor = '#38bdf8';
+          renderPreview();
+          // Automatically activate manual erase touch-up brush so user can polish any edge
+          toggleManualBrush('erase');
+        }
+        loader.style.display = 'none';
+        btn.disabled = false;
+      });
+      segmentation.send({ image: originalCropBackup });
+    }
+
+    /* MANUAL EDGE TOUCH-UP BRUSH (ERASE & RESTORE) */
+    function toggleManualBrush(mode) {
+      if (manualBrushMode === mode) {
+        manualBrushMode = null;
+      } else {
+        manualBrushMode = mode;
+      }
+      var canvas = document.getElementById('editPreviewCanvas');
+      var btnE = document.getElementById('btnEraseBrush');
+      var btnR = document.getElementById('btnRestoreBrush');
+
+      if (btnE) btnE.classList.toggle('active', manualBrushMode === 'erase');
+      if (btnR) btnR.classList.toggle('active', manualBrushMode === 'restore');
+      if (canvas) canvas.classList.toggle('brush-active', manualBrushMode !== null);
+    }
+
+    function setupManualTouchBrush() {
+      var canvas = document.getElementById('editPreviewCanvas');
+      if (!canvas) return;
+
+      var applyStroke = function(e) {
+        if (!manualBrushMode || !baseCroppedCanvas || !originalCropBackup) return;
+        var rect = canvas.getBoundingClientRect();
+        var x = ((e.clientX - rect.left) / rect.width) * PHOTO_W;
+        var y = ((e.clientY - rect.top) / rect.height) * PHOTO_H;
+        var radius = 22;
+
+        var ctx = baseCroppedCanvas.getContext('2d');
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(x, y, radius, 0, Math.PI * 2);
+        ctx.clip();
+
+        if (manualBrushMode === 'erase') {
+          ctx.clearRect(x - radius, y - radius, radius * 2, radius * 2);
+        } else if (manualBrushMode === 'restore') {
+          ctx.drawImage(originalCropBackup, 0, 0, PHOTO_W, PHOTO_H);
+        }
+        ctx.restore();
+        isBgRemoved = true;
+        renderPreview();
+      };
+
+      canvas.addEventListener('pointerdown', function(e) {
+        if (!manualBrushMode) return;
+        isBrushing = true;
+        canvas.setPointerCapture(e.pointerId);
+        applyStroke(e);
+      });
+      canvas.addEventListener('pointermove', function(e) {
+        if (!isBrushing || !manualBrushMode) return;
+        applyStroke(e);
+      });
+      canvas.addEventListener('pointerup', function() {
+        isBrushing = false;
+      });
     }
 
     function syncFromSlider(sliderId, inputId) {
       var val = document.getElementById(sliderId).value;
       document.getElementById(inputId).value = val;
-      renderLiveStudioCanvas();
+      renderPreview();
     }
 
     function syncFromInput(inputId, sliderId) {
@@ -1013,23 +1033,19 @@
         if (val > parseFloat(slider.max)) val = parseFloat(slider.max);
         slider.value = val;
       }
-      renderLiveStudioCanvas();
+      renderPreview();
     }
 
     /* MOUSE WHEEL SCROLL CONTROL FOR ALL SLIDERS */
     function setupScrollControls() {
       var pairs = [
         { slider: 'rSlider', input: 'rVal', step: 0.5 },
-        { slider: 'smSlider', input: 'smVal', step: 0.5 },
-        { slider: 'shSlider', input: 'shVal', step: 0.5 },
+        { slider: 'fidSlider', input: 'fidVal', step: 0.05 },
         { slider: 'bSlider', input: 'bVal', step: 2 },
+        { slider: 'cSlider', input: 'cVal', step: 2 },
         { slider: 'sSlider', input: 'sVal', step: 2 },
         { slider: 'wSlider', input: 'wVal', step: 1 },
-        { slider: 'lvlBlackSlider', input: 'lvlBlackVal', step: 2 },
-        { slider: 'lvlGammaSlider', input: 'lvlGammaVal', step: 0.03 },
-        { slider: 'lvlWhiteSlider', input: 'lvlWhiteVal', step: 2 },
-        { slider: 'crvInSlider', input: 'crvInVal', step: 3 },
-        { slider: 'crvOutSlider', input: 'crvOutVal', step: 3 }
+        { slider: 'smSlider', input: 'smVal', step: 0.5 }
       ];
 
       pairs.forEach(function(item) {
@@ -1048,7 +1064,7 @@
             if (item.slider === 'rSlider') {
               syncCropRotation();
             } else {
-              renderLiveStudioCanvas();
+              renderPreview();
             }
           }
         }
@@ -1058,182 +1074,58 @@
       });
     }
 
-    /* POINT 2: REMOVE.BG-QUALITY HAIR & EDGE MATTING (RMBG-2.0 / BIREFNET + COLOR DECONTAMINATION) */
-    async function removePhotoBackgroundAI(preferredBgColor) {
-      if (!originalCropBackup) return;
-      var btn = document.getElementById('btnBgRemove');
-      var loader = document.getElementById('aiLoader');
-      var loaderText = document.getElementById('aiLoaderText');
+    function getFilterString() {
+      var b = document.getElementById('bSlider').value;
+      var c = document.getElementById('cSlider').value;
+      var s = document.getElementById('sSlider').value;
+      var w = parseFloat(document.getElementById('wSlider').value) || 0;
+      var sm = parseFloat(document.getElementById('smSlider').value) || 0;
 
-      btn.disabled = true;
-      loaderText.innerText = "🪄 Studio HD Hair Matting (RMBG-2.0) चालू है...";
-      loader.style.display = 'flex';
-
-      var finishCutoutWithImage = function(cutoutImageObj) {
-        var outCtx = baseCroppedCanvas.getContext('2d');
-        outCtx.clearRect(0, 0, PHOTO_W, PHOTO_H);
-        outCtx.drawImage(cutoutImageObj, 0, 0, PHOTO_W, PHOTO_H);
-
-        isBgRemoved = true;
-        if (preferredBgColor) {
-          studioBgColor = preferredBgColor;
-        } else if (studioBgColor === '#ffffff') {
-          studioBgColor = '#38bdf8';
-        }
-        renderLiveStudioCanvas();
-        loader.style.display = 'none';
-        btn.disabled = false;
-      };
-
-      // Method 1: If user provided a free remove.bg API key (50 free/month), use official remove.bg API first
-      var userApiKey = (document.getElementById('removeBgKeyInput').value || '').trim();
-      if (userApiKey) {
-        try {
-          var imgBlob = await new Promise(function(res) { originalCropBackup.toBlob(res, 'image/png'); });
-          var fd = new FormData();
-          fd.append('image_file', imgBlob, 'photo.png');
-          fd.append('size', 'auto');
-
-          var rbgRes = await fetch('https://api.remove.bg/v1.0/removebg', {
-            method: 'POST',
-            headers: { 'X-Api-Key': userApiKey },
-            body: fd
-          });
-          if (rbgRes.ok) {
-            var outBlob = await rbgRes.blob();
-            var url = URL.createObjectURL(outBlob);
-            var img = new Image();
-            img.onload = function() {
-              finishCutoutWithImage(img);
-              URL.revokeObjectURL(url);
-            };
-            img.src = url;
-            return;
-          }
-        } catch (e) {}
+      if (b == 100 && c == 100 && s == 100 && w === 0 && sm === 0) {
+        return "none";
       }
 
-      // Method 2: Free Unlimited BRIA RMBG-2.0 / BiRefNet High-Res Matting Endpoint
-      try {
-        var dataUrl = originalCropBackup.toDataURL('image/png');
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 14000);
+      var filterStr = "brightness(" + b + "%) contrast(" + c + "%) saturate(" + s + "%)";
 
-        const hfRes = await fetch("https://briaai-bria-rmbg-2-0.hf.space/api/predict", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          signal: controller.signal,
-          body: JSON.stringify({ data: [dataUrl] })
-        });
-        clearTimeout(timeoutId);
-
-        if (hfRes.ok) {
-          const json = await hfRes.json();
-          if (json && json.data && json.data[0]) {
-            var outUrl = typeof json.data[0] === 'string' ? json.data[0] : json.data[0].url;
-            var rmbgImg = new Image();
-            rmbgImg.crossOrigin = "anonymous";
-            rmbgImg.onload = function() {
-              finishCutoutWithImage(rmbgImg);
-            };
-            rmbgImg.onerror = function() {
-              runLocalDecontaminatedCutout(preferredBgColor, btn, loader);
-            };
-            rmbgImg.src = outUrl;
-            return;
-          }
-        }
-        throw new Error("RMBG-2.0 busy");
-      } catch (err) {
-        // Method 3: Local MediaPipe + Edge Color Decontamination (Strips White Halo Completely)
-        runLocalDecontaminatedCutout(preferredBgColor, btn, loader);
+      if (w > 0) {
+        filterStr += " sepia(" + (w * 0.9) + "%) hue-rotate(-" + (w * 0.6) + "deg)";
+      } else if (w < 0) {
+        filterStr += " hue-rotate(" + Math.abs(w * 0.6) + "deg)";
       }
+
+      if (sm > 0) {
+        var subtleBlur = (sm * 0.05).toFixed(2);
+        filterStr += " blur(" + subtleBlur + "px)";
+      }
+
+      return filterStr;
     }
 
-    function runLocalDecontaminatedCutout(preferredBgColor, btn, loader) {
-      var applyDecontaminatedMask = function(maskSource) {
-        var maskCanvas = document.createElement('canvas');
-        maskCanvas.width = PHOTO_W;
-        maskCanvas.height = PHOTO_H;
-        var mCtx = maskCanvas.getContext('2d');
-        mCtx.imageSmoothingEnabled = true;
-        mCtx.imageSmoothingQuality = 'high';
-        mCtx.filter = 'blur(2.5px)';
-        mCtx.drawImage(maskSource, 0, 0, PHOTO_W, PHOTO_H);
-        mCtx.filter = 'none';
-
-        var mData = mCtx.getImageData(0, 0, PHOTO_W, PHOTO_H).data;
-        var origData = originalCropBackup.getContext('2d').getImageData(0, 0, PHOTO_W, PHOTO_H);
-        var px = origData.data;
-
-        // Strong inner erosion + edge decontamination so zero white wall halo remains around hair/shoulders
-        for (var i = 0; i < px.length; i += 4) {
-          var rawA = mData[i];
-          var alpha = (rawA - 145) * (255 / 95);
-          if (alpha < 0) alpha = 0;
-          if (alpha > 255) alpha = 255;
-
-          // Decontaminate semi-transparent edge pixels by darkening bright wall spill
-          if (alpha > 0 && alpha < 245) {
-            var lum = 0.299 * px[i] + 0.587 * px[i + 1] + 0.114 * px[i + 2];
-            if (lum > 150) {
-              var factor = 0.55 + 0.45 * (alpha / 255);
-              px[i] = Math.round(px[i] * factor);
-              px[i + 1] = Math.round(px[i + 1] * factor);
-              px[i + 2] = Math.round(px[i + 2] * factor);
-            }
-          }
-          px[i + 3] = Math.round(alpha);
-        }
-
-        var outCtx = baseCroppedCanvas.getContext('2d');
-        outCtx.clearRect(0, 0, PHOTO_W, PHOTO_H);
-        outCtx.putImageData(origData, 0, 0);
-
-        isBgRemoved = true;
-        if (preferredBgColor) {
-          studioBgColor = preferredBgColor;
-        } else if (studioBgColor === '#ffffff') {
-          studioBgColor = '#38bdf8';
-        }
-        renderLiveStudioCanvas();
-        loader.style.display = 'none';
-        btn.disabled = false;
-      };
-
-      if (typeof window.SelfieSegmentation === 'undefined') {
-        loader.style.display = 'none';
-        btn.disabled = false;
-        alert("AI Segmentation लोड हो रहा है, कृपया 2 सेकंड बाद पुनः प्रयास करें।");
-        return;
-      }
-
-      var segmentation = new window.SelfieSegmentation({
-        locateFile: function(file) {
-          return 'https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation/' + file;
-        }
-      });
-      segmentation.setOptions({ modelSelection: 1 });
-      segmentation.onResults(function(results) {
-        if (results && results.segmentationMask) {
-          applyDecontaminatedMask(results.segmentationMask);
-        } else {
-          loader.style.display = 'none';
-          btn.disabled = false;
-        }
-      });
-      segmentation.send({ image: originalCropBackup });
-    }
-
-    /* NATURAL AI FACE BEAUTIFY (NO OVER-GLOW) */
-    async function runRealAIBeautify() {
+    function renderPreview() {
       if (!baseCroppedCanvas) return;
+      var canvas = document.getElementById('editPreviewCanvas');
+      canvas.width = PHOTO_W;
+      canvas.height = PHOTO_H;
+      var ctx = canvas.getContext('2d');
+
+      ctx.fillStyle = studioBgColor;
+      ctx.fillRect(0, 0, PHOTO_W, PHOTO_H);
+
+      ctx.filter = getFilterString();
+      ctx.drawImage(baseCroppedCanvas, 0, 0, PHOTO_W, PHOTO_H);
+      ctx.filter = 'none';
+    }
+
+    /* CODEFORMER AI ENGINE INTEGRATION */
+    async function runCodeFormerAI() {
+      if (!baseCroppedCanvas) return;
+      var fidelity = parseFloat(document.getElementById('fidSlider').value) || 0.7;
       var btn = document.getElementById('btnAiEnhance');
       var loader = document.getElementById('aiLoader');
       var loaderText = document.getElementById('aiLoaderText');
 
       btn.disabled = true;
-      loaderText.innerText = "🔮 नेचुरल AI Face Beautify चालू है...";
+      loaderText.innerText = "🔮 AI Face Restoration चालू है...";
       loader.style.display = 'flex';
 
       try {
@@ -1247,18 +1139,17 @@
 
         var base64Data = tempComp.toDataURL('image/jpeg', 0.94);
 
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 9000);
-
         const response = await fetch("https://sczhou-codeformer.hf.space/api/predict", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          signal: controller.signal,
           body: JSON.stringify({
-            data: [base64Data, 0.78, true]
+            data: [
+              base64Data,
+              fidelity,
+              true
+            ]
           })
         });
-        clearTimeout(timeoutId);
 
         const resJson = await response.json();
         if (resJson && resJson.data && resJson.data[0]) {
@@ -1273,58 +1164,104 @@
             } else {
               ctx.drawImage(enhancedImg, 0, 0, PHOTO_W, PHOTO_H);
             }
-            applyStudioPreset();
+            renderPreview();
             loader.style.display = 'none';
             btn.disabled = false;
           };
           enhancedImg.src = resJson.data[0];
         } else {
-          throw new Error("Local natural retouch");
+          throw new Error("AI enhancement returned empty response");
         }
       } catch (err) {
-        applyStudioPreset();
+        adaptiveAutoBeautify();
         loader.style.display = 'none';
         btn.disabled = false;
       }
     }
 
-    function applyStudioPreset() {
+    /* ADAPTIVE AUTO BEAUTIFY (CONTROLLED NATURAL TUNING) */
+    function adaptiveAutoBeautify() {
       if (!baseCroppedCanvas) return;
 
-      setValPair('smSlider', 'smVal', 2.5);
-      setValPair('shSlider', 'shVal', 2.0);
-      setValPair('bSlider', 'bVal', 100);
-      setValPair('sSlider', 'sVal', 104);
-      setValPair('wSlider', 'wVal', 1);
-      setValPair('lvlBlackSlider', 'lvlBlackVal', 4);
-      setValPair('lvlGammaSlider', 'lvlGammaVal', 1.01);
-      setValPair('lvlWhiteSlider', 'lvlWhiteVal', 253);
-      setValPair('crvInSlider', 'crvInVal', 126);
-      setValPair('crvOutSlider', 'crvOutVal', 130);
+      var ctx = baseCroppedCanvas.getContext('2d');
+      var imgData = ctx.getImageData(0, 0, PHOTO_W, PHOTO_H);
+      var data = imgData.data;
 
-      renderLiveStudioCanvas();
-    }
+      var totalLuminance = 0;
+      var rSum = 0, gSum = 0, bSum = 0;
+      var sampleCount = 0;
 
-    function setValPair(sId, iId, val) {
-      document.getElementById(sId).value = val;
-      document.getElementById(iId).value = val;
+      var startY = Math.floor(PHOTO_H * 0.15);
+      var endY = Math.floor(PHOTO_H * 0.75);
+      var startX = Math.floor(PHOTO_W * 0.20);
+      var endX = Math.floor(PHOTO_W * 0.80);
+
+      for (var y = startY; y < endY; y += 4) {
+        for (var x = startX; x < endX; x += 4) {
+          var idx = (y * PHOTO_W + x) * 4;
+          if (data[idx + 3] < 200) continue;
+          var r = data[idx], g = data[idx + 1], b = data[idx + 2];
+          var lum = 0.299 * r + 0.587 * g + 0.114 * b;
+          totalLuminance += lum;
+          rSum += r;
+          gSum += g;
+          bSum += b;
+          sampleCount++;
+        }
+      }
+
+      var avgLum = sampleCount > 0 ? (totalLuminance / sampleCount) : 120;
+      var avgR = sampleCount > 0 ? (rSum / sampleCount) : 120;
+      var avgB = sampleCount > 0 ? (bSum / sampleCount) : 120;
+
+      var targetBright = avgLum < 95 ? 110 : (avgLum < 125 ? 104 : 100);
+      var targetContrast = (avgLum < 100 || avgLum > 170) ? 108 : 104;
+      var targetWarmth = avgB > avgR + 8 ? 4 : (avgR > avgB + 20 ? -2 : 1);
+      var targetSaturate = avgLum < 100 ? 106 : 103;
+      var targetSmooth = 1.0;
+
+      document.getElementById('bSlider').value = targetBright;
+      document.getElementById('bVal').value = targetBright;
+      document.getElementById('cSlider').value = targetContrast;
+      document.getElementById('cVal').value = targetContrast;
+      document.getElementById('sSlider').value = targetSaturate;
+      document.getElementById('sVal').value = targetSaturate;
+      document.getElementById('wSlider').value = targetWarmth;
+      document.getElementById('wVal').value = targetWarmth;
+      document.getElementById('smSlider').value = targetSmooth;
+      document.getElementById('smVal').value = targetSmooth;
+
+      renderPreview();
     }
 
     function resetSingle(type) {
-      if (type === 'smooth') setValPair('smSlider', 'smVal', 0);
-      if (type === 'sharp') setValPair('shSlider', 'shVal', 0);
-      if (type === 'bright') setValPair('bSlider', 'bVal', 100);
-      if (type === 'saturate') setValPair('sSlider', 'sVal', 100);
-      if (type === 'warmth') setValPair('wSlider', 'wVal', 0);
-      if (type === 'lvlBlack') setValPair('lvlBlackSlider', 'lvlBlackVal', 0);
-      if (type === 'lvlGamma') setValPair('lvlGammaSlider', 'lvlGammaVal', 1.0);
-      if (type === 'lvlWhite') setValPair('lvlWhiteSlider', 'lvlWhiteVal', 255);
-      if (type === 'crvIn') setValPair('crvInSlider', 'crvInVal', 128);
-      if (type === 'crvOut') setValPair('crvOutSlider', 'crvOutVal', 128);
-      renderLiveStudioCanvas();
+      if (type === 'fidelity') {
+        document.getElementById('fidSlider').value = 0.7;
+        document.getElementById('fidVal').value = 0.7;
+      }
+      if (type === 'bright') {
+        document.getElementById('bSlider').value = 100;
+        document.getElementById('bVal').value = 100;
+      }
+      if (type === 'contrast') {
+        document.getElementById('cSlider').value = 100;
+        document.getElementById('cVal').value = 100;
+      }
+      if (type === 'saturate') {
+        document.getElementById('sSlider').value = 100;
+        document.getElementById('sVal').value = 100;
+      }
+      if (type === 'warmth') {
+        document.getElementById('wSlider').value = 0;
+        document.getElementById('wVal').value = 0;
+      }
+      if (type === 'smooth') {
+        document.getElementById('smSlider').value = 0;
+        document.getElementById('smVal').value = 0;
+      }
+      renderPreview();
     }
 
-    /* POINT 1: 100% NEUTRAL DEFAULT STATE SO UPLOADED PHOTO STAYS COMPLETELY REAL */
     function resetAllFilters() {
       if (originalCropBackup && baseCroppedCanvas) {
         baseCroppedCanvas.getContext('2d').clearRect(0, 0, PHOTO_W, PHOTO_H);
@@ -1332,387 +1269,36 @@
         isBgRemoved = false;
         studioBgColor = '#ffffff';
       }
-      setValPair('smSlider', 'smVal', 0);
-      setValPair('shSlider', 'shVal', 0);
-      setValPair('bSlider', 'bVal', 100);
-      setValPair('sSlider', 'sVal', 100);
-      setValPair('wSlider', 'wVal', 0);
-      setValPair('lvlBlackSlider', 'lvlBlackVal', 0);
-      setValPair('lvlGammaSlider', 'lvlGammaVal', 1.00);
-      setValPair('lvlWhiteSlider', 'lvlWhiteVal', 255);
-      setValPair('crvInSlider', 'crvInVal', 128);
-      setValPair('crvOutSlider', 'crvOutVal', 128);
-      renderLiveStudioCanvas();
+      document.getElementById('fidSlider').value = 0.7;
+      document.getElementById('fidVal').value = 0.7;
+      document.getElementById('bSlider').value = 100;
+      document.getElementById('bVal').value = 100;
+      document.getElementById('cSlider').value = 100;
+      document.getElementById('cVal').value = 100;
+      document.getElementById('sSlider').value = 100;
+      document.getElementById('sVal').value = 100;
+      document.getElementById('wSlider').value = 0;
+      document.getElementById('wVal').value = 0;
+      document.getElementById('smSlider').value = 0;
+      document.getElementById('smVal').value = 0;
+      renderPreview();
     }
 
-    /* BUILD COMBINED LEVELS (CTRL+L) + SINGLE-POINT QUADRATIC BEZIER CURVE (CTRL+M) LUT */
-    function buildToneLUT() {
-      var lvlBlack = parseFloat(document.getElementById('lvlBlackSlider').value) || 0;
-      var lvlGamma = parseFloat(document.getElementById('lvlGammaSlider').value) || 1.0;
-      var lvlWhite = parseFloat(document.getElementById('lvlWhiteSlider').value) || 255;
-
-      var x1 = parseFloat(document.getElementById('crvInSlider').value) || 128;
-      var y1 = parseFloat(document.getElementById('crvOutSlider').value) || 128;
-
-      var cx = 2 * x1 - 127.5;
-      var cy = 2 * y1 - 127.5;
-
-      var curveMap = new Float32Array(256);
-      for (var i = 0; i <= 1024; i++) {
-        var t = i / 1024;
-        var mt = 1 - t;
-        var bx = 2 * mt * t * cx + t * t * 255;
-        var by = 2 * mt * t * cy + t * t * 255;
-        var idx = Math.max(0, Math.min(255, Math.round(bx)));
-        curveMap[idx] = Math.max(0, Math.min(255, by));
-      }
-
-      var lut = new Uint8ClampedArray(256);
-      var range = Math.max(1, lvlWhite - lvlBlack);
-      var invGamma = 1 / lvlGamma;
-
-      for (var k = 0; k < 256; k++) {
-        var norm = (k - lvlBlack) / range;
-        if (norm < 0) norm = 0;
-        if (norm > 1) norm = 1;
-        var afterLevels = Math.pow(norm, invGamma) * 255;
-
-        var cIdx = Math.max(0, Math.min(255, Math.round(afterLevels)));
-        var finalVal = curveMap[cIdx];
-
-        lut[k] = finalVal < 0 ? 0 : (finalVal > 255 ? 255 : Math.round(finalVal));
-      }
-      return lut;
-    }
-
-    /* DRAW REAL PHOTOSHOP SINGLE-DOT 2D CURVE & LEVELS GRAPHS */
-    function drawInteractiveGraphs() {
-      var lut = buildToneLUT();
-
-      // 1. Levels Graph (Ctrl + L)
-      var lvlCanvas = document.getElementById('levelsGraphCanvas');
-      if (lvlCanvas) {
-        var ctx = lvlCanvas.getContext('2d');
-        var W = lvlCanvas.width, H = lvlCanvas.height;
-        ctx.clearRect(0, 0, W, H);
-
-        ctx.strokeStyle = '#1e293b';
-        ctx.lineWidth = 1;
-        for (var g = 1; g < 4; g++) {
-          ctx.beginPath(); ctx.moveTo((W / 4) * g, 0); ctx.lineTo((W / 4) * g, H); ctx.stroke();
-          ctx.beginPath(); ctx.moveTo(0, (H / 4) * g); ctx.lineTo(W, (H / 4) * g); ctx.stroke();
-        }
-
-        var maxBin = Math.max.apply(null, histogramBins) || 1;
-        ctx.fillStyle = 'rgba(148, 163, 184, 0.25)';
-        var binW = W / 64;
-        for (var b = 0; b < 64; b++) {
-          var barH = (histogramBins[b] / maxBin) * (H - 12);
-          ctx.fillRect(b * binW, H - barH, binW - 0.5, barH);
-        }
-
-        ctx.strokeStyle = '#334155';
-        ctx.setLineDash([4, 4]);
-        ctx.beginPath(); ctx.moveTo(0, H); ctx.lineTo(W, 0); ctx.stroke();
-        ctx.setLineDash([]);
-
-        ctx.strokeStyle = '#38bdf8';
-        ctx.lineWidth = 2.5;
-        ctx.beginPath();
-        for (var x = 0; x < 256; x += 2) {
-          var px = (x / 255) * W;
-          var py = H - (lut[x] / 255) * H;
-          if (x === 0) ctx.moveTo(px, py);
-          else ctx.lineTo(px, py);
-        }
-        ctx.stroke();
-
-        var lvlBlack = parseFloat(document.getElementById('lvlBlackSlider').value) || 0;
-        var lvlWhite = parseFloat(document.getElementById('lvlWhiteSlider').value) || 255;
-        var midX = (lvlBlack + lvlWhite) / 2;
-
-        var pts = [
-          { x: (lvlBlack / 255) * W, y: H - 6, color: '#0f172a', stroke: '#ffffff' },
-          { x: (midX / 255) * W, y: H - (lut[Math.round(midX)] / 255) * H, color: '#38bdf8', stroke: '#ffffff' },
-          { x: (lvlWhite / 255) * W, y: 6, color: '#ffffff', stroke: '#38bdf8' }
-        ];
-        pts.forEach(function(pt) {
-          ctx.beginPath();
-          ctx.arc(pt.x, pt.y, 6, 0, Math.PI * 2);
-          ctx.fillStyle = pt.color;
-          ctx.fill();
-          ctx.lineWidth = 2;
-          ctx.strokeStyle = pt.stroke;
-          ctx.stroke();
-        });
-      }
-
-      // 2. Curves Graph (Ctrl + M) — Single Free-2D Anchor Dot Like Real Photoshop
-      var crvCanvas = document.getElementById('curvesGraphCanvas');
-      if (crvCanvas) {
-        var cCtx = crvCanvas.getContext('2d');
-        var CW = crvCanvas.width, CH = crvCanvas.height;
-        cCtx.clearRect(0, 0, CW, CH);
-
-        cCtx.strokeStyle = '#1e293b';
-        cCtx.lineWidth = 1;
-        for (var cg = 1; cg < 4; cg++) {
-          cCtx.beginPath(); cCtx.moveTo((CW / 4) * cg, 0); cCtx.lineTo((CW / 4) * cg, CH); cCtx.stroke();
-          cCtx.beginPath(); cCtx.moveTo(0, (CH / 4) * cg); cCtx.lineTo(CW, (CH / 4) * cg); cCtx.stroke();
-        }
-
-        var maxB = Math.max.apply(null, histogramBins) || 1;
-        cCtx.fillStyle = 'rgba(148, 163, 184, 0.22)';
-        var bW = CW / 64;
-        for (var hb = 0; hb < 64; hb++) {
-          var bH = (histogramBins[hb] / maxB) * (CH - 12);
-          cCtx.fillRect(hb * bW, CH - bH, bW - 0.5, bH);
-        }
-
-        cCtx.strokeStyle = '#334155';
-        cCtx.setLineDash([4, 4]);
-        cCtx.beginPath(); cCtx.moveTo(0, CH); cCtx.lineTo(CW, 0); cCtx.stroke();
-        cCtx.setLineDash([]);
-
-        cCtx.strokeStyle = '#38bdf8';
-        cCtx.lineWidth = 2.6;
-        cCtx.beginPath();
-        for (var cx = 0; cx < 256; cx += 2) {
-          var cpx = (cx / 255) * CW;
-          var cpy = CH - (lut[cx] / 255) * CH;
-          if (cx === 0) cCtx.moveTo(cpx, cpy);
-          else cCtx.lineTo(cpx, cpy);
-        }
-        cCtx.stroke();
-
-        var inVal = parseFloat(document.getElementById('crvInSlider').value) || 128;
-        var outVal = parseFloat(document.getElementById('crvOutSlider').value) || 128;
-        var nx = (inVal / 255) * CW;
-        var ny = CH - (outVal / 255) * CH;
-
-        cCtx.strokeStyle = 'rgba(56, 189, 248, 0.28)';
-        cCtx.lineWidth = 1;
-        cCtx.beginPath();
-        cCtx.moveTo(nx, 0); cCtx.lineTo(nx, CH);
-        cCtx.moveTo(0, ny); cCtx.lineTo(CW, ny);
-        cCtx.stroke();
-
-        cCtx.beginPath();
-        cCtx.arc(nx, ny, 7, 0, Math.PI * 2);
-        cCtx.fillStyle = '#0d6efd';
-        cCtx.fill();
-        cCtx.lineWidth = 2.2;
-        cCtx.strokeStyle = '#ffffff';
-        cCtx.stroke();
-      }
-    }
-
-    function setupInteractiveCurveEvents() {
-      var crvCanvas = document.getElementById('curvesGraphCanvas');
-      var isDraggingCurve = false;
-
-      if (crvCanvas) {
-        crvCanvas.addEventListener('pointerdown', function(e) {
-          isDraggingCurve = true;
-          crvCanvas.setPointerCapture(e.pointerId);
-          updateFree2DCurveFromPointer(e, crvCanvas);
-        });
-
-        crvCanvas.addEventListener('pointermove', function(e) {
-          if (!isDraggingCurve) return;
-          updateFree2DCurveFromPointer(e, crvCanvas);
-        });
-
-        crvCanvas.addEventListener('pointerup', function() {
-          isDraggingCurve = false;
-        });
-      }
-
-      function updateFree2DCurveFromPointer(e, canvas) {
-        var rect = canvas.getBoundingClientRect();
-        var relX = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
-        var relY = 1 - Math.max(0, Math.min(1, (e.clientY - rect.top) / rect.height));
-
-        var newIn = Math.round(15 + relX * 225);
-        var newOut = Math.round(15 + relY * 225);
-
-        setValPair('crvInSlider', 'crvInVal', newIn);
-        setValPair('crvOutSlider', 'crvOutVal', newOut);
-
-        renderLiveStudioCanvas();
-      }
-
-      var lvlCanvas = document.getElementById('levelsGraphCanvas');
-      var activeLvlNode = null;
-
-      if (lvlCanvas) {
-        lvlCanvas.addEventListener('pointerdown', function(e) {
-          var rect = lvlCanvas.getBoundingClientRect();
-          var relX = (e.clientX - rect.left) / rect.width;
-          if (relX < 0.30) activeLvlNode = 0;
-          else if (relX < 0.72) activeLvlNode = 1;
-          else activeLvlNode = 2;
-          lvlCanvas.setPointerCapture(e.pointerId);
-          updateLevelsFromPointer(e, lvlCanvas, activeLvlNode);
-        });
-
-        lvlCanvas.addEventListener('pointermove', function(e) {
-          if (activeLvlNode === null) return;
-          updateLevelsFromPointer(e, lvlCanvas, activeLvlNode);
-        });
-
-        lvlCanvas.addEventListener('pointerup', function() {
-          activeLvlNode = null;
-        });
-      }
-
-      function updateLevelsFromPointer(e, canvas, nodeIdx) {
-        var rect = canvas.getBoundingClientRect();
-        var relX = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
-        var relY = 1 - Math.max(0, Math.min(1, (e.clientY - rect.top) / rect.height));
-
-        if (nodeIdx === 0) {
-          var blackVal = Math.max(0, Math.min(100, Math.round(relX * 150)));
-          setValPair('lvlBlackSlider', 'lvlBlackVal', blackVal);
-        } else if (nodeIdx === 1) {
-          var gammaVal = Math.max(0.50, Math.min(1.60, Math.round((0.50 + relY * 1.10) * 100) / 100));
-          setValPair('lvlGammaSlider', 'lvlGammaVal', gammaVal);
-        } else {
-          var whiteVal = Math.max(175, Math.min(255, Math.round(175 + relX * 80)));
-          setValPair('lvlWhiteSlider', 'lvlWhiteVal', whiteVal);
-        }
-
-        renderLiveStudioCanvas();
-      }
-    }
-
-    function processStudioPixels(ctx, width, height) {
-      var lvlBlack = parseFloat(document.getElementById('lvlBlackSlider').value) || 0;
-      var lvlGamma = parseFloat(document.getElementById('lvlGammaSlider').value) || 1.0;
-      var lvlWhite = parseFloat(document.getElementById('lvlWhiteSlider').value) || 255;
-      var crvIn = parseFloat(document.getElementById('crvInSlider').value) || 128;
-      var crvOut = parseFloat(document.getElementById('crvOutSlider').value) || 128;
-      var smoothVal = parseFloat(document.getElementById('smSlider').value) || 0;
-      var sharpVal = parseFloat(document.getElementById('shSlider').value) || 0;
-
-      // Skip pixel loop completely when all tonal adjustments are at neutral default
-      var hasToneChange = (lvlBlack !== 0 || lvlGamma !== 1.0 || lvlWhite !== 255 || crvIn !== 128 || crvOut !== 128);
-      if (!hasToneChange && smoothVal === 0 && sharpVal === 0) return;
-
-      var imgData = ctx.getImageData(0, 0, width, height);
-      var src = imgData.data;
-
-      if (hasToneChange) {
-        var lut = buildToneLUT();
-        for (var p = 0; p < src.length; p += 4) {
-          src[p] = lut[src[p]];
-          src[p + 1] = lut[src[p + 1]];
-          src[p + 2] = lut[src[p + 2]];
-        }
-      }
-
-      if (smoothVal > 0) {
-        var copy = new Uint8ClampedArray(src);
-        var threshold = 16 + smoothVal * 2.2;
-        var blend = Math.min(0.65, smoothVal * 0.065);
-
-        for (var y = 2; y < height - 2; y++) {
-          for (var x = 2; x < width - 2; x++) {
-            var idx = (y * width + x) * 4;
-            var r0 = copy[idx], g0 = copy[idx + 1], b0 = copy[idx + 2];
-
-            if (r0 > 65 && g0 > 40 && b0 > 25 && r0 > g0 && r0 > b0 && (r0 - b0) > 12) {
-              var sumR = 0, sumG = 0, sumB = 0, wTotal = 0;
-              for (var dy = -2; dy <= 2; dy += 2) {
-                for (var dx = -2; dx <= 2; dx += 2) {
-                  var nIdx = ((y + dy) * width + (x + dx)) * 4;
-                  var diff = Math.abs(copy[nIdx] - r0) + Math.abs(copy[nIdx + 1] - g0) + Math.abs(copy[nIdx + 2] - b0);
-                  if (diff < threshold * 3) {
-                    sumR += copy[nIdx];
-                    sumG += copy[nIdx + 1];
-                    sumB += copy[nIdx + 2];
-                    wTotal++;
-                  }
-                }
-              }
-              if (wTotal > 1) {
-                src[idx] = r0 * (1 - blend) + (sumR / wTotal) * blend;
-                src[idx + 1] = g0 * (1 - blend) + (sumG / wTotal) * blend;
-                src[idx + 2] = b0 * (1 - blend) + (sumB / wTotal) * blend;
-              }
-            }
-          }
-        }
-      }
-
-      if (sharpVal > 0) {
-        var sCopy = new Uint8ClampedArray(src);
-        var amt = sharpVal * 0.20;
-        var centerW = 1 + 4 * amt;
-        var sideW = -amt;
-
-        for (var sy = 1; sy < height - 1; sy++) {
-          for (var sx = 1; sx < width - 1; sx++) {
-            var sIdx = (sy * width + sx) * 4;
-            var up = ((sy - 1) * width + sx) * 4;
-            var dn = ((sy + 1) * width + sx) * 4;
-            var lf = (sy * width + (sx - 1)) * 4;
-            var rt = (sy * width + (sx + 1)) * 4;
-
-            for (var c = 0; c < 3; c++) {
-              var sharpPixel = sCopy[sIdx + c] * centerW +
-                               (sCopy[up + c] + sCopy[dn + c] + sCopy[lf + c] + sCopy[rt + c]) * sideW;
-              src[sIdx + c] = sharpPixel < 0 ? 0 : (sharpPixel > 255 ? 255 : sharpPixel);
-            }
-          }
-        }
-      }
-
-      ctx.putImageData(imgData, 0, 0);
-    }
-
-    function renderLiveStudioCanvas() {
-      if (!baseCroppedCanvas) return;
-
-      var previewCanvas = document.getElementById('editPreviewCanvas');
-      previewCanvas.width = PHOTO_W;
-      previewCanvas.height = PHOTO_H;
-      var ctx = previewCanvas.getContext('2d');
-
-      ctx.fillStyle = studioBgColor;
-      ctx.fillRect(0, 0, PHOTO_W, PHOTO_H);
-
-      var b = parseFloat(document.getElementById('bSlider').value) || 100;
-      var s = parseFloat(document.getElementById('sSlider').value) || 100;
-      var w = parseFloat(document.getElementById('wSlider').value) || 0;
-
-      if (b !== 100 || s !== 100 || w !== 0) {
-        var filterStr = "brightness(" + b + "%) saturate(" + s + "%)";
-        if (w > 0) {
-          filterStr += " sepia(" + (w * 0.85) + "%) hue-rotate(-" + (w * 0.55) + "deg)";
-        } else if (w < 0) {
-          filterStr += " hue-rotate(" + Math.abs(w * 0.55) + "deg)";
-        }
-        ctx.filter = filterStr;
-      }
-      ctx.drawImage(baseCroppedCanvas, 0, 0, PHOTO_W, PHOTO_H);
-      ctx.filter = 'none';
-
-      processStudioPixels(ctx, PHOTO_W, PHOTO_H);
-
-      renderedStudioCanvas = previewCanvas;
-      drawInteractiveGraphs();
-    }
-
+    /* SAVE 600 DPI CRISP PHOTO & GENERATE PREVIEW */
     function saveAndFinalize() {
       if (!baseCroppedCanvas) return;
-      renderLiveStudioCanvas();
 
       var finalCanvas = document.createElement('canvas');
       finalCanvas.width = PHOTO_W;
       finalCanvas.height = PHOTO_H;
       var fCtx = finalCanvas.getContext('2d');
-      fCtx.drawImage(renderedStudioCanvas, 0, 0, PHOTO_W, PHOTO_H);
+
+      fCtx.fillStyle = studioBgColor;
+      fCtx.fillRect(0, 0, PHOTO_W, PHOTO_H);
+
+      fCtx.filter = getFilterString();
+      fCtx.drawImage(baseCroppedCanvas, 0, 0, PHOTO_W, PHOTO_H);
+      fCtx.filter = 'none';
 
       cutoutCanvas = finalCanvas;
       finalPhotoData = finalCanvas.toDataURL('image/png');
@@ -1723,6 +1309,7 @@
       closeAllModals();
     }
 
+    /* 4x6 MULTI-PHOTO 600 DPI PSD EXPORT (2400 x 3600 px) */
     function downloadFullSheetPSD() {
       if (!cutoutCanvas || !finalPhotoData) {
         alert("कृपया पहले फोटो क्रॉप और तैयार करें!");
@@ -1790,7 +1377,7 @@
             canvas: photosCanvas
           },
           {
-            name: "Crisp Cutting Borders",
+            name: "Hairline 2px Borders",
             canvas: borderCanvas
           }
         ]
@@ -1818,6 +1405,7 @@
       }
     }
 
+    /* 100% LOSSLESS 600 DPI SINGLE-SHEET PRINT */
     function printPhotosSingleSheet() {
       if (!finalPhotoData || !cutoutCanvas) {
         alert("कृपया पहले फोटो सेट करें!");
