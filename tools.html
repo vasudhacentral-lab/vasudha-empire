@@ -30,13 +30,71 @@
     p { margin: 0 0 16px; font-size: 13px; color: #64748b; }
     
     .section-title { font-size: 14px; font-weight: 800; color: #0f172a; margin: 18px 0 10px; display: flex; align-items: center; gap: 6px; }
-    .field-box { background: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: 10px; padding: 12px; margin-bottom: 12px; }
+    .field-box { background: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: 10px; padding: 12px; margin-bottom: 12px; transition: border-color 0.2s, background 0.2s; }
+    .field-box.drag-hover { border-color: #0d6efd; background: #eff6ff; border-style: dashed; }
     .field-label { display: block; font-size: 13px; font-weight: 700; color: #1e293b; margin-bottom: 6px; }
     input[type="file"] { width: 100%; font-size: 13px; cursor: pointer; }
+    .drop-hint { font-size: 11px; color: #64748b; margin-top: 4px; }
     
-    .pdf-mini-preview-wrap { display: none; margin-top: 10px; padding: 8px; background: #ffffff; border: 1.5px solid #0d6efd; border-radius: 8px; text-align: center; }
+    .pan-type-selector {
+      width: 100%;
+      padding: 11px 12px;
+      border: 2px solid #0d6efd;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 700;
+      color: #0f172a;
+      background: #f0f7ff;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .pdf-mini-preview-wrap { display: none; margin-top: 10px; padding: 8px; background: #ffffff; border: 1.5px solid #0d6efd; border-radius: 8px; text-align: center; cursor: zoom-in; transition: transform 0.15s; }
+    .pdf-mini-preview-wrap:hover { background: #f8fafc; }
     .pdf-mini-preview-canvas { max-width: 100%; height: auto; max-height: 220px; border: 1px solid #e2e8f0; border-radius: 4px; box-shadow: 0 2px 6px rgba(0,0,0,0.08); }
     .pdf-mini-title { font-size: 12px; font-weight: 700; color: #0284c7; margin-bottom: 6px; }
+
+    /* Big PDF Preview Modal */
+    #bigPdfModal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.94);
+      z-index: 100000;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 14px;
+    }
+    .big-pdf-header {
+      width: 100%;
+      max-width: 900px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: #fff;
+      font-weight: 700;
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
+    .big-pdf-body {
+      width: 100%;
+      max-width: 900px;
+      flex: 1;
+      overflow: auto;
+      background: #1e293b;
+      border-radius: 10px;
+      padding: 12px;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+    }
+    #bigPdfCanvas {
+      max-width: 100%;
+      height: auto;
+      background: #fff;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+    }
 
     /* Auto-Zoomed Previews */
     .preview-thumb { width: 95px; height: 115px; object-fit: cover; border-radius: 8px; border: 2px solid #0d6efd; margin-top: 10px; display: none; background: #fff; box-shadow: 0 4px 10px rgba(13,110,253,0.18); transition: transform 0.2s; }
@@ -47,10 +105,47 @@
     .btn-submit:disabled { background: #94a3b8; cursor: not-allowed; }
     #statusBox { margin-top: 12px; font-size: 13px; font-weight: 600; text-align: center; }
 
-    /* Modal for Cropping & Adjustment */
-    #cropModal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.94); z-index: 99999; flex-direction: column; justify-content: space-between; padding: 12px 14px 20px; }
-    #cropContainer { flex: 1; max-height: 60vh; display: flex; align-items: center; justify-content: center; position: relative; }
-    #cropImageEl { max-width: 100%; max-height: 60vh; }
+    /* Modal for Cropping & Right-Side Compact Control Panel */
+    #cropModal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 99999; flex-direction: column; padding: 10px 12px; }
+    .crop-workspace {
+      flex: 1;
+      display: flex;
+      flex-direction: row;
+      gap: 12px;
+      min-height: 0;
+      width: 100%;
+    }
+    #cropContainer {
+      flex: 1;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      background: #090d16;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    #cropImageEl { max-width: 100%; max-height: 100%; }
+
+    .crop-right-sidebar {
+      width: 250px;
+      min-width: 230px;
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 12px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 10px;
+      overflow-y: auto;
+      margin-left: auto;
+    }
+    @media (max-width: 640px) {
+      .crop-workspace { flex-direction: column; }
+      .crop-right-sidebar { width: 100%; min-width: 100%; max-height: 36vh; }
+    }
     
     /* Improved Modern Crop Box */
     .cropper-view-box { outline: 2.5px solid #38bdf8 !important; outline-color: #38bdf8 !important; }
@@ -58,13 +153,14 @@
     .cropper-point { width: 12px !important; height: 12px !important; background-color: #0d6efd !important; border: 1.5px solid #ffffff !important; border-radius: 50% !important; }
     .cropper-point.point-se { width: 16px !important; height: 16px !important; }
 
-    /* Widely Spaced Non-Overlapping Sliders */
-    .slider-box { background: rgba(255,255,255,0.08); padding: 14px 16px; border-radius: 12px; margin: 10px 0; display: flex; flex-direction: column; gap: 14px; }
-    .slider-row { display: flex; align-items: center; justify-content: space-between; color: #ffffff; font-size: 13px; font-weight: 700; gap: 12px; height: 32px; }
-    .slider-row input[type="range"] { flex: 1; height: 18px; cursor: pointer; accent-color: #38bdf8; margin: 0; padding: 0; touch-action: pan-x; }
+    /* Compact Sliders Inside Right Sidebar */
+    .slider-box { background: rgba(15, 23, 42, 0.65); padding: 10px; border-radius: 10px; display: flex; flex-direction: column; gap: 12px; }
+    .slider-row { display: flex; flex-direction: column; color: #ffffff; font-size: 12px; font-weight: 700; gap: 4px; }
+    .slider-row-head { display: flex; justify-content: space-between; align-items: center; }
+    .slider-row input[type="range"] { width: 100%; height: 16px; cursor: pointer; accent-color: #38bdf8; margin: 0; padding: 0; touch-action: pan-x; }
     
-    .crop-actions { display: flex; gap: 10px; margin-top: 6px; }
-    .crop-actions button { flex: 1; padding: 12px; border: none; border-radius: 10px; font-weight: 700; font-size: 14px; cursor: pointer; }
+    .crop-actions { display: flex; flex-direction: column; gap: 8px; }
+    .crop-actions button { width: 100%; padding: 10px; border: none; border-radius: 8px; font-weight: 700; font-size: 13px; cursor: pointer; }
     .tag-clean { display: inline-block; font-size: 11px; background: #e0f2fe; color: #0369a1; padding: 2px 6px; border-radius: 4px; font-weight: 600; margin-left: 6px; }
     .tag-opt { font-size: 11px; font-weight: 500; color: #64748b; background: #e2e8f0; padding: 1px 6px; border-radius: 4px; margin-left: 6px; }
   </style>
@@ -72,54 +168,69 @@
 <body>
 
   <div class="card">
-    <h2>📄 PAN 49A & दस्तावेज मर्जर डेस्क</h2>
-    <p>फॉर्म 49A स्टैम्पिंग के साथ ओरिजिनल कलर में साफ दस्तावेज जोड़ें (साइज 2 MB के अंदर)।</p>
+    <h2>📄 PAN स्टैम्पिंग एवं दस्तावेज मर्जर डेस्क</h2>
+    <p>पैन फॉर्म (New 49A अथवा CSF Correction) स्टैम्पिंग के साथ ओरिजिनल कलर में साफ दस्तावेज जोड़ें (साइज 2 MB के अंदर)।</p>
 
-    <!-- SECTION 1: PAN 49A STAMPING -->
-    <div class="section-title">📌 1. पैन फॉर्म एवं आवेदक विवरण</div>
+    <!-- SECTION 0: SELECT PAN FORM APPLICATION TYPE -->
+    <div class="section-title">📝 पैन फॉर्म का प्रकार (Select Form Type)</div>
+    <div class="field-box" style="background:#eff6ff; border-color:#93c5fd;">
+      <label class="field-label" for="panFormType">पैन आवेदन मोड चुनें:</label>
+      <select id="panFormType" class="pan-type-selector" onchange="updatePanFormLabels()">
+        <option value="NEW_PAN" selected>1. NEW PAN (फॉर्म 49A - नया पैन कार्ड)</option>
+        <option value="CSF_PAN">2. CSF PAN (पैन सुधार / Correction / Changes Form)</option>
+      </select>
+    </div>
 
-    <div class="field-box">
-      <label class="field-label">1. फॉर्म 49A PDF चुनें (2 Page PDF) *</label>
+    <!-- SECTION 1: PAN STAMPING -->
+    <div class="section-title" id="secTitle1">📌 1. पैन फॉर्म एवं आवेदक विवरण</div>
+
+    <div class="field-box" data-drop-target="pdf">
+      <label class="field-label" id="lblPdfInput">1. फॉर्म 49A PDF चुनें (2 Page PDF) *</label>
       <input type="file" id="pdfInput" accept="application/pdf" onchange="previewUploadedPdf(this)">
-      <div id="pdfMiniPreviewWrap" class="pdf-mini-preview-wrap">
-        <div class="pdf-mini-title">🔍 अपलोड किए गए फॉर्म का पेज 1 प्रीव्यू:</div>
+      <div id="pdfMiniPreviewWrap" class="pdf-mini-preview-wrap" onclick="openBigPdfPreview()" title="बड़े साइज में देखने के लिए क्लिक करें">
+        <div class="pdf-mini-title">🔍 अपलोड किए गए फॉर्म का पेज 1 प्रीव्यू (क्लिक करके बड़ा देखें):</div>
         <canvas id="pdfMiniPreviewCanvas" class="pdf-mini-preview-canvas"></canvas>
       </div>
     </div>
 
-    <div class="field-box">
+    <div class="field-box" data-drop-target="photo">
       <label class="field-label">2. आवेदक की Photo (Passport 3.5 × 4.5 Ratio) *</label>
       <input type="file" id="photoInput" accept="image/*" onchange="initCrop(this, 'photo')">
+      <div class="drop-hint">💡 WhatsApp से फोटो सीधे यहाँ Drag & Drop करें</div>
       <img id="photoThumb" class="preview-thumb" alt="Cropped Photo">
     </div>
 
-    <div class="field-box">
+    <div class="field-box" data-drop-target="sign">
       <label class="field-label">
         3. आवेदक का Signature / अंगूठा * 
         <span class="tag-clean">✨ Auto Ink Extractor</span>
       </label>
       <input type="file" id="signInput" accept="image/*" onchange="initCrop(this, 'sign')">
+      <div class="drop-hint">💡 WhatsApp से सिग्नेचर फोटो सीधे यहाँ Drag & Drop करें</div>
       <img id="signThumb" class="preview-sign-thumb" alt="Cropped Sign">
     </div>
 
     <!-- SECTION 2: ATTACHED DOCUMENTS -->
     <div class="section-title">📎 2. सहायक दस्तावेज (रंगीन एवं साफ)</div>
 
-    <div class="field-box">
+    <div class="field-box" data-drop-target="aadhaar">
       <label class="field-label">4. आधार कार्ड (Aadhaar Card) *</label>
       <input type="file" id="docAadhaarInput" accept="image/*" capture="environment" onchange="initCrop(this, 'aadhaar')">
+      <div class="drop-hint">💡 WhatsApp से आधार फोटो सीधे यहाँ Drag & Drop करें</div>
       <img id="docAadhaarThumb" class="preview-doc-thumb" alt="Color Aadhaar">
     </div>
 
-    <div class="field-box">
+    <div class="field-box" data-drop-target="support1">
       <label class="field-label">5. Supportive Docs 1 <span class="tag-opt">ऐच्छिक (Optional)</span></label>
       <input type="file" id="docSupport1Input" accept="image/*" capture="environment" onchange="initCrop(this, 'support1')">
+      <div class="drop-hint">💡 WhatsApp से दस्तावेज फोटो सीधे यहाँ Drag & Drop करें</div>
       <img id="docSupport1Thumb" class="preview-doc-thumb" alt="Color Support 1">
     </div>
 
-    <div class="field-box">
+    <div class="field-box" data-drop-target="support2">
       <label class="field-label">6. Supportive Docs 2 <span class="tag-opt">ऐच्छिक (Optional)</span></label>
       <input type="file" id="docSupport2Input" accept="image/*" capture="environment" onchange="initCrop(this, 'support2')">
+      <div class="drop-hint">💡 WhatsApp से दस्तावेज फोटो सीधे यहाँ Drag & Drop करें</div>
       <img id="docSupport2Thumb" class="preview-doc-thumb" alt="Color Support 2">
     </div>
 
@@ -130,31 +241,52 @@
     <div id="statusBox"></div>
   </div>
 
-  <!-- Crop Modal with Live Sliders & Double Click Enable -->
-  <div id="cropModal">
-    <div style="color:#fff; font-size:14px; font-weight:bold; text-align:center; padding-bottom:4px;" id="cropTitle">क्रॉप एवं एडजस्ट करें</div>
-    <div style="color:#94a3b8; font-size:11px; text-align:center; margin-bottom:6px;">💡 डबल-क्लिक (या डबल-टैप) करके तुरंत सेव कर सकते हैं</div>
-    
-    <div id="cropContainer"><img id="cropImageEl" src=""></div>
-    
-    <!-- Widely Spaced Distinct Sliders -->
-    <div class="slider-box" id="sliderControls">
-      <div class="slider-row">
-        <span>☀️ Brightness</span>
-        <input type="range" id="sliderBright" min="70" max="150" value="100" oninput="applyLiveFilter()">
-        <span id="valBright" style="width:42px; text-align:right;">100%</span>
-      </div>
-      <div class="slider-row">
-        <span>🌓 Contrast</span>
-        <input type="range" id="sliderContrast" min="80" max="170" value="100" oninput="applyLiveFilter()">
-        <span id="valContrast" style="width:42px; text-align:right;">100%</span>
-      </div>
+  <!-- Big PDF Preview Modal -->
+  <div id="bigPdfModal" onclick="if(event.target === this) closeBigPdfPreview()">
+    <div class="big-pdf-header">
+      <span>📄 अपलोड किए गए फॉर्म का बड़ा प्रीव्यू (Page 1)</span>
+      <button type="button" onclick="closeBigPdfPreview()" style="background:#ef4444; color:#fff; border:none; padding:6px 14px; border-radius:6px; font-weight:bold; cursor:pointer;">✕ बंद करें</button>
     </div>
+    <div class="big-pdf-body">
+      <canvas id="bigPdfCanvas"></canvas>
+    </div>
+  </div>
 
-    <div class="crop-actions">
-      <button onclick="rotateCrop(-90)" style="background:#334155; color:#fff;">↺ घुमाएं</button>
-      <button onclick="closeCropper()" style="background:#ef4444; color:#fff;">रद्द करें</button>
-      <button onclick="confirmCrop()" style="background:#10b981; color:#fff;">✅ सेव करें</button>
+  <!-- Crop Modal with Right-Side Compact Controls -->
+  <div id="cropModal">
+    <div style="display:flex; justify-content:space-between; align-items:center; padding-bottom:6px;">
+      <div style="color:#fff; font-size:13px; font-weight:bold;" id="cropTitle">क्रॉप एवं एडजस्ट करें</div>
+      <div style="color:#94a3b8; font-size:11px;">💡 डबल-क्लिक करके सेव करें</div>
+    </div>
+    
+    <div class="crop-workspace">
+      <div id="cropContainer"><img id="cropImageEl" src=""></div>
+      
+      <div class="crop-right-sidebar">
+        <div class="slider-box" id="sliderControls">
+          <div class="slider-row">
+            <div class="slider-row-head">
+              <span>☀️ Brightness</span>
+              <span id="valBright" style="color:#38bdf8;">100%</span>
+            </div>
+            <input type="range" id="sliderBright" min="70" max="150" value="100" oninput="applyLiveFilter()">
+          </div>
+          <div class="slider-row">
+            <div class="slider-row-head">
+              <span>🌓 Contrast</span>
+              <span id="valContrast" style="color:#38bdf8;">100%</span>
+            </div>
+            <input type="range" id="sliderContrast" min="80" max="170" value="100" oninput="applyLiveFilter()">
+          </div>
+          <div style="font-size:10.5px; color:#94a3b8; text-align:center;">🖱️ स्लाइडर पर माउस व्हील से भी एडजस्ट करें</div>
+        </div>
+
+        <div class="crop-actions">
+          <button type="button" onclick="confirmCrop()" style="background:#10b981; color:#fff;">✅ सेव करें</button>
+          <button type="button" onclick="rotateCrop(-90)" style="background:#334155; color:#fff;">↺ 90° घुमाएं</button>
+          <button type="button" onclick="closeCropper()" style="background:#ef4444; color:#fff;">✕ रद्द करें</button>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -182,14 +314,46 @@
     let finalAadhaarImg = null;
     let finalSupport1Img = null;
     let finalSupport2Img = null;
+    let currentLoadedPdfDoc = null;
+    let droppedPdfFile = null;
+
+    // Point 1: Mouse Wheel Scroll Support on Control Sliders
+    ['sliderBright', 'sliderContrast'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.addEventListener('wheel', function(e) {
+          e.preventDefault();
+          const step = 2;
+          const delta = e.deltaY < 0 ? step : -step;
+          const min = parseFloat(this.min);
+          const max = parseFloat(this.max);
+          let val = parseFloat(this.value) + delta;
+          if (val < min) val = min;
+          if (val > max) val = max;
+          this.value = val;
+          applyLiveFilter();
+        }, { passive: false });
+      }
+    });
+
+    function updatePanFormLabels() {
+      const formType = document.getElementById('panFormType').value;
+      const lblPdf = document.getElementById('lblPdfInput');
+      if (formType === 'CSF_PAN') {
+        lblPdf.innerText = "1. CSF Correction PDF चुनें (2 Page PDF) *";
+      } else {
+        lblPdf.innerText = "1. फॉर्म 49A PDF चुनें (2 Page PDF) *";
+      }
+    }
 
     async function previewUploadedPdf(input) {
-      if (!input.files || !input.files[0]) return;
-      const file = input.files[0];
+      const file = (input && input.files && input.files[0]) ? input.files[0] : droppedPdfFile;
+      if (!file) return;
       try {
         const arrayBuffer = await readFileAsArrayBuffer(file);
         const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
         const pdf = await loadingTask.promise;
+        currentLoadedPdfDoc = pdf;
         const page = await pdf.getPage(1);
 
         const viewport = page.getViewport({ scale: 0.8 });
@@ -205,87 +369,167 @@
       }
     }
 
-    function initCrop(input, target) {
-      if (!input.files || !input.files[0]) return;
+    async function openBigPdfPreview() {
+      if (!currentLoadedPdfDoc) return;
+      try {
+        const page = await currentLoadedPdfDoc.getPage(1);
+        const viewport = page.getViewport({ scale: 1.8 });
+        const canvas = document.getElementById('bigPdfCanvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = viewport.width;
+        canvas.height = viewport.height;
+
+        document.getElementById('bigPdfModal').style.display = 'flex';
+        await page.render({ canvasContext: ctx, viewport: viewport }).promise;
+      } catch (err) {
+        console.error("Big PDF Preview Error:", err);
+      }
+    }
+
+    function closeBigPdfPreview() {
+      document.getElementById('bigPdfModal').style.display = 'none';
+    }
+
+    function openCropWithSrc(imageSrc, target) {
       currentCropTarget = target;
+      const image = document.getElementById('cropImageEl');
+      image.src = imageSrc;
       
-      const file = input.files[0];
-      const reader = new FileReader();
+      let defaultB = 100, defaultC = 100;
+      if (target !== 'photo' && target !== 'sign') {
+        defaultB = 105;
+        defaultC = 115;
+      }
+
+      document.getElementById('sliderBright').value = defaultB;
+      document.getElementById('sliderContrast').value = defaultC;
+      document.getElementById('valBright').innerText = defaultB + "%";
+      document.getElementById('valContrast').innerText = defaultC + "%";
+
+      let title = "दस्तावेज क्रॉप एवं एडजस्ट करें";
+      let ratio = NaN;
+
+      // Point 2: Always keep sliders visible on right sidebar including Sign section
+      const sliderBox = document.getElementById('sliderControls');
+      sliderBox.style.display = 'flex';
+
+      if (target === 'photo') {
+        title = "📷 पासपोर्ट फोटो (3.5 × 4.5)";
+        ratio = 3.5 / 4.5;
+      } else if (target === 'sign') {
+        title = "✍️ सिग्नेचर बॉक्स (2 : 1)";
+        ratio = 2 / 1;
+      } else {
+        title = "📄 दस्तावेज क्रॉप करें";
+      }
+
+      document.getElementById('cropTitle').innerText = title;
+      document.getElementById('cropModal').style.display = 'flex';
       
-      reader.onload = function(e) {
-        const image = document.getElementById('cropImageEl');
-        image.src = e.target.result;
-        
-        let defaultB = 100, defaultC = 100;
-        if (target !== 'photo' && target !== 'sign') {
-          defaultB = 105;
-          defaultC = 115;
-        }
+      if (cropper) cropper.destroy();
 
-        document.getElementById('sliderBright').value = defaultB;
-        document.getElementById('sliderContrast').value = defaultC;
-        document.getElementById('valBright').innerText = defaultB + "%";
-        document.getElementById('valContrast').innerText = defaultC + "%";
+      // Point 3: 100% full page selected by default (autoCropArea: 1.0)
+      cropper = new Cropper(image, {
+        aspectRatio: ratio,
+        viewMode: 1,
+        autoCropArea: 1.0,
+        background: false,
+        movable: true,
+        zoomable: true,
+        rotatable: true,
+        scalable: false,
+        ready: function() {
+          applyLiveFilter();
+          
+          const cropBox = document.querySelector('.cropper-crop-box');
+          if (cropBox) {
+            cropBox.addEventListener('dblclick', function(ev) {
+              ev.preventDefault();
+              confirmCrop();
+            });
 
-        let title = "दस्तावेज क्रॉप एवं एडजस्ट करें";
-        let ratio = NaN;
-
-        const sliderBox = document.getElementById('sliderControls');
-        if (target === 'photo') {
-          title = "📷 पासपोर्ट फोटो साइज (3.5 × 4.5 Ratio)";
-          ratio = 3.5 / 4.5;
-          sliderBox.style.display = 'flex';
-        } else if (target === 'sign') {
-          title = "✍️ सिग्नेचर बॉक्स (2 : 1 Ratio)";
-          ratio = 2 / 1;
-          sliderBox.style.display = 'none';
-        } else {
-          title = "📄 दस्तावेज क्रॉप करें (Brightness / Contrast सेट करें)";
-          sliderBox.style.display = 'flex';
-        }
-
-        document.getElementById('cropTitle').innerText = title;
-        document.getElementById('cropModal').style.display = 'flex';
-        
-        if (cropper) cropper.destroy();
-
-        cropper = new Cropper(image, {
-          aspectRatio: ratio,
-          viewMode: 1,
-          autoCropArea: 0.95,
-          background: false,
-          movable: true,
-          zoomable: true,
-          rotatable: true,
-          scalable: false,
-          ready: function() {
-            applyLiveFilter();
-            
-            // Feature 1: Double Click / Double Tap to Confirm Crop
-            const cropBox = document.querySelector('.cropper-crop-box');
-            if (cropBox) {
-              cropBox.addEventListener('dblclick', function(ev) {
+            let lastTap = 0;
+            cropBox.addEventListener('touchend', function(ev) {
+              const now = new Date().getTime();
+              const diff = now - lastTap;
+              if (diff < 350 && diff > 0) {
                 ev.preventDefault();
                 confirmCrop();
-              });
-
-              let lastTap = 0;
-              cropBox.addEventListener('touchend', function(ev) {
-                const now = new Date().getTime();
-                const diff = now - lastTap;
-                if (diff < 350 && diff > 0) {
-                  ev.preventDefault();
-                  confirmCrop();
-                }
-                lastTap = now;
-              });
-            }
+              }
+              lastTap = now;
+            });
           }
-        });
+        }
+      });
+    }
+
+    function initCrop(input, target) {
+      if (!input.files || !input.files[0]) return;
+      const file = input.files[0];
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        openCropWithSrc(e.target.result, target);
       };
       reader.readAsDataURL(file);
     }
 
+    // WhatsApp Direct Drag & Drop and Clipboard Paste Support
+    document.querySelectorAll('.field-box[data-drop-target]').forEach(box => {
+      const target = box.getAttribute('data-drop-target');
+
+      box.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        box.classList.add('drag-hover');
+      });
+
+      box.addEventListener('dragleave', function() {
+        box.classList.remove('drag-hover');
+      });
+
+      box.addEventListener('drop', function(e) {
+        e.preventDefault();
+        box.classList.remove('drag-hover');
+
+        if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+          const file = e.dataTransfer.files[0];
+          if (target === 'pdf' && file.type === 'application/pdf') {
+            droppedPdfFile = file;
+            previewUploadedPdf(null);
+            return;
+          }
+          if (target !== 'pdf' && file.type.startsWith('image/')) {
+            const reader = new FileReader();
+            reader.onload = ev => openCropWithSrc(ev.target.result, target);
+            reader.readAsDataURL(file);
+            return;
+          }
+        }
+
+        if (target !== 'pdf') {
+          const html = e.dataTransfer.getData('text/html');
+          const match = html && html.match(/src="?([^"\s]+)"?/);
+          if (match && match[1]) {
+            openCropWithSrc(match[1], target);
+          }
+        }
+      });
+    });
+
+    window.addEventListener('paste', function(e) {
+      const items = (e.clipboardData || e.originalEvent.clipboardData).items;
+      for (let item of items) {
+        if (item.type.indexOf('image') !== -1) {
+          const blob = item.getAsFile();
+          const target = !finalPhotoImg ? 'photo' : (!finalSignImg ? 'sign' : (!finalAadhaarImg ? 'aadhaar' : (!finalSupport1Img ? 'support1' : 'support2')));
+          const reader = new FileReader();
+          reader.onload = ev => openCropWithSrc(ev.target.result, target);
+          reader.readAsDataURL(blob);
+          break;
+        }
+      }
+    });
+
+    // Point 2: Apply live brightness/contrast filter to ALL targets including sign
     function applyLiveFilter() {
       const b = document.getElementById('sliderBright').value;
       const c = document.getElementById('sliderContrast').value;
@@ -293,7 +537,7 @@
       document.getElementById('valContrast').innerText = c + "%";
 
       const container = document.querySelector('.cropper-container');
-      if (container && currentCropTarget !== 'sign') {
+      if (container) {
         const cropperImg = container.querySelector('.cropper-view-box img');
         const cropperCanvas = container.querySelector('.cropper-canvas img');
         const filterVal = `brightness(${b}%) contrast(${c}%)`;
@@ -317,7 +561,6 @@
       const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
       const data = imgData.data;
 
-      // 1. Calculate Average Paper Luminance
       let sum = 0, count = 0;
       for (let i = 0; i < data.length; i += 16) {
         sum += (data[i] * 0.299 + data[i + 1] * 0.587 + data[i + 2] * 0.114);
@@ -326,7 +569,6 @@
       const avgLum = count > 0 ? (sum / count) : 180;
       const paperCutoff = Math.max(145, avgLum - 18);
 
-      // 2. Clear Background while preserving pure original ink
       for (let i = 0; i < data.length; i += 4) {
         const r = data[i];
         const g = data[i + 1];
@@ -372,6 +614,7 @@
 
       } else if (currentCropTarget === 'sign') {
         let canvas = cropper.getCroppedCanvas({ width: 400, height: 200 });
+        canvas = applyColorDocumentFilter(canvas, b, c);
         canvas = removePaperBackground(canvas);
         const img = new Image();
         img.onload = () => { finalSignImg = img; };
@@ -418,7 +661,6 @@
       });
     }
 
-    // Converts PDF Form Page to Grayscale/Black-and-White background
     async function renderPageToGrayscaleCanvas(page) {
       const viewport = page.getViewport({ scale: 1.75 });
       const canvas = document.createElement('canvas');
@@ -463,13 +705,55 @@
       pdfInstance.addImage(imgObj.src, 'JPEG', posX, posY, renderW, renderH, undefined, 'FAST');
     }
 
+    // Offline Queue & Auto-Upload When Internet Restored
+    const PENDING_UPLOAD_KEY = "vk_pending_pan_drive_uploads";
+
+    function savePendingDriveUpload(item) {
+      try {
+        const list = JSON.parse(localStorage.getItem(PENDING_UPLOAD_KEY) || "[]");
+        list.push(item);
+        localStorage.setItem(PENDING_UPLOAD_KEY, JSON.stringify(list));
+      } catch (e) {}
+    }
+
+    function flushPendingDriveUploads() {
+      if (!navigator.onLine) return;
+      if (!(window.google && google.script && google.script.run)) return;
+
+      let list = [];
+      try {
+        list = JSON.parse(localStorage.getItem(PENDING_UPLOAD_KEY) || "[]");
+      } catch (e) { return; }
+
+      if (list.length === 0) return;
+
+      const nextItem = list[0];
+      google.script.run
+        .withSuccessHandler(function() {
+          list.shift();
+          localStorage.setItem(PENDING_UPLOAD_KEY, JSON.stringify(list));
+          const status = document.getElementById('statusBox');
+          if (status) {
+            status.style.color = "#15803d";
+            status.innerText = "✅ इंटरनेट बहाल होने पर पेंडिंग फाइल (" + nextItem.fileName + ") ड्राइव में सेव हो गई!";
+          }
+          if (list.length > 0) flushPendingDriveUploads();
+        })
+        .withFailureHandler(function() {})
+        .uploadFinalPanPdfToDrive(nextItem);
+    }
+
+    window.addEventListener('online', flushPendingDriveUploads);
+    window.addEventListener('load', flushPendingDriveUploads);
+
     async function processAndStampPdf() {
-      const pdfFile = document.getElementById('pdfInput').files[0];
+      const pdfFile = document.getElementById('pdfInput').files[0] || droppedPdfFile;
+      const formType = document.getElementById('panFormType').value;
       const status = document.getElementById('statusBox');
       const btn = document.getElementById('btnProcess');
 
       if (!pdfFile || !finalPhotoImg || !finalSignImg) {
-        alert("कृपया 49A PDF चुनें और फोटो व सिग्नेचर क्रॉप करके सेट करें!");
+        alert("कृपया PDF चुनें और फोटो व सिग्नेचर क्रॉप करके सेट करें!");
         return;
       }
 
@@ -482,7 +766,7 @@
         btn.disabled = true;
         btn.innerText = "⏳ फाइलें प्रोसेस एवं ड्राइव पर अपलोड हो रही हैं...";
         status.style.color = "#0284c7";
-        status.innerText = "PAN फॉर्म को B&W में बदलकर रंगीन फोटो व सिग्नेचर स्टैम्प किए जा रहे हैं...";
+        status.innerText = (formType === 'CSF_PAN' ? "CSF Correction" : "PAN 49A") + " फॉर्म को B&W में बदलकर रंगीन फोटो व सिग्नेचर स्टैम्प किए जा रहे हैं...";
 
         const fileBytes = await readFileAsArrayBuffer(pdfFile);
         const loadingTask = pdfjsLib.getDocument({ data: fileBytes });
@@ -492,32 +776,32 @@
         const { jsPDF } = window.jspdf;
         const finalPdf = new jsPDF({ orientation: 'p', unit: 'pt', format: 'a4', compress: true });
 
-        // 1. Process 2-Page Form 49A (Form in Grayscale + Photos & Sign in Original Color)
         for (let i = 1; i <= numPages; i++) {
           const page = await pdf.getPage(i);
           const { canvas, width, height } = await renderPageToGrayscaleCanvas(page);
           const ctx = canvas.getContext('2d');
 
+          const sx = width / 595.28;
+          const sy = height / 841.89;
+
           if (i === 1) {
-            const sx = width / 595.28;
-            const sy = height / 841.89;
-
-            // Page 1 Left Photo (Coloured)
-            ctx.drawImage(finalPhotoImg, 13 * sx, 110 * sy, 98 * sx, 126 * sy);
-
-            // Page 1 Cross Sign/Thumb (Coloured 2:1)
-            ctx.drawImage(finalSignImg, 10 * sx, 192 * sy, 104 * sx, 52 * sy);
-
-            // Page 1 Right Photo (Coloured)
-            ctx.drawImage(finalPhotoImg, 484 * sx, 110 * sy, 98 * sx, 126 * sy);
+            if (formType === 'CSF_PAN') {
+              ctx.drawImage(finalPhotoImg, 16 * sx, 125 * sy, 97 * sx, 125 * sy);
+              ctx.drawImage(finalSignImg, 17 * sx, 207 * sy, 103 * sx, 50 * sy);
+              ctx.drawImage(finalPhotoImg, 483 * sx, 125 * sy, 97 * sx, 125 * sy);
+            } else {
+              // Exact working Form 49A coordinates
+              ctx.drawImage(finalPhotoImg, 13 * sx, 110 * sy, 98 * sx, 126 * sy);
+              ctx.drawImage(finalSignImg, 10 * sx, 192 * sy, 104 * sx, 52 * sy);
+              ctx.drawImage(finalPhotoImg, 484 * sx, 110 * sy, 98 * sx, 126 * sy);
+            }
           }
-
           if (i === 2) {
-            const sx = width / 595.28;
-            const sy = height / 841.89;
-
-            // Page 2 Declaration Signature Line (Coloured 2:1)
-            ctx.drawImage(finalSignImg, 400 * sx, 730 * sy, 120 * sx, 60 * sy);
+            if (formType === 'CSF_PAN') {
+              ctx.drawImage(finalSignImg, 335 * sx, 325 * sy, 104 * sx, 52 * sy);
+            } else {
+              ctx.drawImage(finalSignImg, 400 * sx, 730 * sy, 120 * sx, 60 * sy);
+            }
           }
 
           const pageDataUrl = canvas.toDataURL('image/jpeg', 0.82);
@@ -525,7 +809,6 @@
           finalPdf.addImage(pageDataUrl, 'JPEG', 0, 0, 595.28, 841.89, undefined, 'FAST');
         }
 
-        // 2. Append Color Supporting Document Pages
         appendScannedDocToPdf(finalPdf, finalAadhaarImg);
 
         if (finalSupport1Img) {
@@ -536,37 +819,48 @@
           appendScannedDocToPdf(finalPdf, finalSupport2Img);
         }
 
-        // Output File Name = <OriginalName>_final upload.pdf
         const rawBaseName = pdfFile.name.replace(/\.pdf$/i, '');
         const outFileName = rawBaseName + "_final upload.pdf";
 
-        // Download to Device
         finalPdf.save(outFileName);
 
-        // Background Auto-Upload to Google Drive Target Folder
         status.innerText = "✅ फाइल डाउनलोड हो गई! गूगल ड्राइव फोल्डर में सुरक्षित सेव किया जा रहा है...";
         const finalPdfBase64 = finalPdf.output('datauristring');
+        const uploadPayload = { fileName: outFileName, base64Data: finalPdfBase64 };
 
-        google.script.run
-          .withSuccessHandler(function(uploadRes) {
-            status.style.color = "#15803d";
-            status.innerText = "✅ सम्पूर्ण सेट डाउनलोड हो गया और ड्राइव में सुरक्षित सेव हो गया!";
-            
-            setTimeout(function() {
-              window.location.reload();
-            }, 2500);
-          })
-          .withFailureHandler(function(err) {
+        if (window.google && google.script && google.script.run) {
+          if (!navigator.onLine) {
+            savePendingDriveUpload(uploadPayload);
             status.style.color = "#f59e0b";
-            status.innerText = "✅ फाइल डाउनलोड हो गई! (ड्राइव बैकअप चेतावनी: " + err.message + ")";
-            setTimeout(function() {
-              window.location.reload();
-            }, 3000);
-          })
-          .uploadFinalPanPdfToDrive({
-            fileName: outFileName,
-            base64Data: finalPdfBase64
-          });
+            status.innerText = "✅ फाइल डाउनलोड हो गई! इंटरनेट ऑफलाइन है — ऑनलाइन आते ही ड्राइव पर अपलोड हो जाएगी।";
+            btn.disabled = false;
+            btn.innerText = "⚡ प्रोसेस करें एवं सम्पूर्ण PDF डाउनलोड करें (< 2 MB)";
+            return;
+          }
+
+          google.script.run
+            .withSuccessHandler(function() {
+              status.style.color = "#15803d";
+              status.innerText = "✅ सम्पूर्ण सेट डाउनलोड हो गया और ड्राइव में सुरक्षित सेव हो गया!";
+              setTimeout(function() {
+                window.location.reload();
+              }, 2500);
+            })
+            .withFailureHandler(function() {
+              savePendingDriveUpload(uploadPayload);
+              status.style.color = "#f59e0b";
+              status.innerText = "✅ फाइल डाउनलोड हो गई! नेटवर्क त्रुटि के कारण कतार (Queue) में सेव है — इंटरनेट सही होते ही अपलोड होगी।";
+              btn.disabled = false;
+              btn.innerText = "⚡ प्रोसेस करें एवं सम्पूर्ण PDF डाउनलोड करें (< 2 MB)";
+            })
+            .uploadFinalPanPdfToDrive(uploadPayload);
+        } else {
+          status.style.color = "#15803d";
+          status.innerText = "✅ फाइल सफलतापूर्वक डाउनलोड हो गई!";
+          setTimeout(function() {
+            window.location.reload();
+          }, 2500);
+        }
 
       } catch (err) {
         console.error(err);
