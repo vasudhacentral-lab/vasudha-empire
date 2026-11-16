@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Passport Photo Studio (2.1 × 2.4) - 600 DPI</title>
 
-  <!-- Cropper.js, AG-PSD & Google MediaPipe Selfie Segmentation -->
+  <!-- Cropper.js & AG-PSD -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css"/>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/ag-psd/dist/bundle.js"></script>
@@ -302,7 +302,7 @@
       .edit-controls-col { max-width: 100%; }
     }
 
-    /* STUDIO TABS: AI & BG / LEVELS (CTRL+L) / CURVES (CTRL+M) */
+    /* STUDIO TABS */
     .studio-tabs {
       display: flex;
       gap: 4px;
@@ -417,7 +417,7 @@
     }
     .btn-reset-single:hover { background: #475569; color: #fff; }
 
-    /* REAL PHOTOSHOP INTERACTIVE SINGLE-POINT 2D CURVE & HISTOGRAM CANVAS */
+    /* REAL PHOTOSHOP INTERACTIVE CURVE & HISTOGRAM GRAPH CANVAS */
     .ps-graph-wrap {
       margin-top: 4px;
       background: #090d16;
@@ -431,13 +431,16 @@
     }
     .ps-graph-canvas {
       width: 100%;
-      max-width: 250px;
-      height: 195px;
+      max-width: 270px;
+      height: 185px;
       background: #0f172a;
       border: 1px solid #475569;
       border-radius: 4px;
-      cursor: crosshair;
+      cursor: grab;
       touch-action: none;
+    }
+    .ps-graph-canvas:active {
+      cursor: grabbing;
     }
     .ps-graph-hint {
       font-size: 10.5px;
@@ -475,6 +478,24 @@
       border: none;
     }
     .btn-ai:hover, .btn-bg-remove:hover { opacity: 0.92; }
+
+    .api-key-bar {
+      display: flex;
+      gap: 5px;
+      align-items: center;
+      background: #0b1120;
+      border: 1px solid #1e293b;
+      border-radius: 6px;
+      padding: 4px 8px;
+    }
+    .api-key-bar input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: #e2e8f0;
+      font-size: 11px;
+      outline: none;
+    }
 
     .compact-action-bar {
       display: flex;
@@ -537,7 +558,7 @@
     </div>
 
     <h2>✨ पासपोर्ट फोटो स्टूडियो (2.1 × 2.4 — 600 DPI HD)</h2>
-    <p>AI बैकग्राउंड रिमूवर, रियल Photoshop 2D Curve (Ctrl+M) & Levels (Ctrl+L), और नेचुरल AI ब्यूटीफाई के साथ 600 DPI प्रिंट निकालें।</p>
+    <p>अपलोड करने पर फोटो 100% ओरिजिनल रहेगी; RMBG-2.0 स्टूडियो कटआउट, 2D Curve (Ctrl+M) & Levels (Ctrl+L) से मनचाहा लुक दें।</p>
 
     <label for="photoInput" class="upload-zone-label" id="dropLabel">
       <span class="upload-label">📷 फोटो चुनें, कैमरा ऑन करें या WhatsApp से Drag/Paste करें</span>
@@ -599,11 +620,11 @@
     </div>
   </div>
 
-  <!-- STAGE 2: STUDIO EDITING, BG REMOVER, LEVELS (CTRL+L) & CURVES (CTRL+M) -->
+  <!-- STAGE 2: STUDIO EDITING, RMBG-2.0 CUTOUT, LEVELS (CTRL+L) & CURVES (CTRL+M) -->
   <div id="editModal" class="studio-modal" tabindex="0">
     <div class="modal-inner">
       <div class="modal-header-bar">
-        <span>Step 2: ✨ AI Studio Pro (BG Remover, Ctrl+L Levels, Ctrl+M Curves)</span>
+        <span>Step 2: ✨ AI Studio Pro (RMBG-2.0 Hair Cutout, Ctrl+L Levels, Ctrl+M Curves)</span>
         <button type="button" onclick="backToCropStage()" style="background:#334155; color:#38bdf8; border:none; padding:4px 8px; border-radius:4px; cursor:pointer; font-size:11px;">← वापस क्रॉप</button>
       </div>
 
@@ -631,10 +652,16 @@
         <div class="edit-controls-col">
           <!-- AI & BACKGROUND REMOVAL ACTION BUTTONS -->
           <div class="ai-tools-grid">
-            <button type="button" class="btn-preset btn-bg-remove" onclick="removePhotoBackgroundAI()" id="btnBgRemove">🪄 Remove BG (AI)</button>
-            <button type="button" class="btn-preset btn-ai" onclick="runRealAIBeautify()" id="btnAiEnhance">🔮 Natural AI Beautify</button>
-            <button type="button" class="btn-preset" onclick="applyStudioPreset()">📸 Balanced Studio Look</button>
-            <button type="button" class="btn-preset" style="color:#cbd5e1; border-color:#64748b;" onclick="resetAllFilters()">↺ सभी रीसेट</button>
+            <button type="button" class="btn-preset btn-bg-remove" onclick="removePhotoBackgroundAI()" id="btnBgRemove">🪄 Remove BG (Studio HD)</button>
+            <button type="button" class="btn-preset btn-ai" onclick="runRealAIBeautify()" id="btnAiEnhance">🔮 AI Natural Beautify</button>
+            <button type="button" class="btn-preset" onclick="applyStudioPreset()">📸 Subtle Studio Look</button>
+            <button type="button" class="btn-preset" style="color:#cbd5e1; border-color:#64748b;" onclick="resetAllFilters()">↺ सभी रीसेट (Original)</button>
+          </div>
+
+          <!-- Optional Free remove.bg API Key (50 free calls/month) for 100% remove.bg exact output -->
+          <div class="api-key-bar">
+            <span style="font-size:10.5px; color:#94a3b8; white-space:nowrap;">🔑 remove.bg Key (Optional):</span>
+            <input type="password" id="removeBgKeyInput" placeholder="Free API key डालें या खाली छोड़ें (Free AI Auto)" onchange="localStorage.setItem('vk_removebg_key', this.value.trim())">
           </div>
 
           <!-- TABS FOR STUDIO SLIDERS -->
@@ -644,33 +671,33 @@
             <button type="button" class="studio-tab-btn" id="tabBtnCurves" onclick="switchStudioTab('curves')">📈 Curves (Ctrl+M)</button>
           </div>
 
-          <!-- TAB 1: SKIN RETOUCH, FACE GLOW & STUDIO SHARPNESS -->
+          <!-- TAB 1: SKIN RETOUCH & SHARPNESS (DEFAULT 100% NEUTRAL / REAL) -->
           <div class="tab-pane active" id="paneRetouch">
-            <div class="section-badge">Natural Face Retouch & Studio Clarity</div>
+            <div class="section-badge">Original-First Face Retouch & Clarity</div>
 
             <div class="slider-row">
               <span class="label-text">✨ Skin Smooth</span>
-              <input type="range" id="smSlider" min="0" max="10" value="1.5" step="0.5" oninput="syncFromSlider('smSlider','smVal')">
+              <input type="range" id="smSlider" min="0" max="10" value="0" step="0.5" oninput="syncFromSlider('smSlider','smVal')">
               <div class="val-input-wrap">
-                <input type="number" id="smVal" class="val-input" value="1.5" min="0" max="10" step="0.5" oninput="syncFromInput('smVal','smSlider')">
+                <input type="number" id="smVal" class="val-input" value="0" min="0" max="10" step="0.5" oninput="syncFromInput('smVal','smSlider')">
               </div>
               <button type="button" class="btn-reset-single" onclick="resetSingle('smooth')">↺</button>
             </div>
 
             <div class="slider-row">
               <span class="label-text">🔍 HD Sharpness</span>
-              <input type="range" id="shSlider" min="0" max="10" value="2.0" step="0.5" oninput="syncFromSlider('shSlider','shVal')">
+              <input type="range" id="shSlider" min="0" max="10" value="0" step="0.5" oninput="syncFromSlider('shSlider','shVal')">
               <div class="val-input-wrap">
-                <input type="number" id="shVal" class="val-input" value="2.0" min="0" max="10" step="0.5" oninput="syncFromInput('shVal','shSlider')">
+                <input type="number" id="shVal" class="val-input" value="0" min="0" max="10" step="0.5" oninput="syncFromInput('shVal','shSlider')">
               </div>
               <button type="button" class="btn-reset-single" onclick="resetSingle('sharp')">↺</button>
             </div>
 
             <div class="slider-row">
               <span class="label-text">☀️ Brightness</span>
-              <input type="range" id="bSlider" min="75" max="135" value="100" oninput="syncFromSlider('bSlider','bVal')">
+              <input type="range" id="bSlider" min="70" max="140" value="100" oninput="syncFromSlider('bSlider','bVal')">
               <div class="val-input-wrap">
-                <input type="number" id="bVal" class="val-input" value="100" min="75" max="135" oninput="syncFromInput('bVal','bSlider')">
+                <input type="number" id="bVal" class="val-input" value="100" min="70" max="140" oninput="syncFromInput('bVal','bSlider')">
                 <span class="val-unit">%</span>
               </div>
               <button type="button" class="btn-reset-single" onclick="resetSingle('bright')">↺</button>
@@ -678,9 +705,9 @@
 
             <div class="slider-row">
               <span class="label-text">🎨 Vibrance / Sat</span>
-              <input type="range" id="sSlider" min="60" max="150" value="102" oninput="syncFromSlider('sSlider','sVal')">
+              <input type="range" id="sSlider" min="60" max="150" value="100" oninput="syncFromSlider('sSlider','sVal')">
               <div class="val-input-wrap">
-                <input type="number" id="sVal" class="val-input" value="102" min="60" max="150" oninput="syncFromInput('sVal','sSlider')">
+                <input type="number" id="sVal" class="val-input" value="100" min="60" max="150" oninput="syncFromInput('sVal','sSlider')">
                 <span class="val-unit">%</span>
               </div>
               <button type="button" class="btn-reset-single" onclick="resetSingle('saturate')">↺</button>
@@ -688,17 +715,17 @@
 
             <div class="slider-row">
               <span class="label-text">🧑 Skin Warmth</span>
-              <input type="range" id="wSlider" min="-20" max="25" value="0" step="1" oninput="syncFromSlider('wSlider','wVal')">
+              <input type="range" id="wSlider" min="-25" max="25" value="0" step="1" oninput="syncFromSlider('wSlider','wVal')">
               <div class="val-input-wrap">
-                <input type="number" id="wVal" class="val-input" value="0" min="-20" max="25" oninput="syncFromInput('wVal','wSlider')">
+                <input type="number" id="wVal" class="val-input" value="0" min="-25" max="25" oninput="syncFromInput('wVal','wSlider')">
               </div>
               <button type="button" class="btn-reset-single" onclick="resetSingle('warmth')">↺</button>
             </div>
           </div>
 
-          <!-- TAB 2: PHOTOSHOP LEVELS (CTRL + L) WITH REAL-TIME HISTOGRAM & SINGLE-POINT 2D CURVE -->
+          <!-- TAB 2: PHOTOSHOP LEVELS (CTRL + L) WITH REAL-TIME HISTOGRAM & CURVE -->
           <div class="tab-pane" id="paneLevels">
-            <div class="section-badge">Photoshop Levels (Ctrl + L) — Bidirectional Sync</div>
+            <div class="section-badge">Photoshop Levels (Ctrl + L) — Bidirectional Graph</div>
 
             <div class="slider-row">
               <span class="label-text">⬛ Black In (Shadows)</span>
@@ -711,35 +738,34 @@
 
             <div class="slider-row">
               <span class="label-text">🌗 Midtones (Gamma)</span>
-              <input type="range" id="lvlGammaSlider" min="0.50" max="1.80" value="1.00" step="0.02" oninput="syncFromSlider('lvlGammaSlider','lvlGammaVal')">
+              <input type="range" id="lvlGammaSlider" min="0.50" max="1.60" value="1.00" step="0.02" oninput="syncFromSlider('lvlGammaSlider','lvlGammaVal')">
               <div class="val-input-wrap">
-                <input type="number" id="lvlGammaVal" class="val-input" value="1.00" min="0.50" max="1.80" step="0.02" oninput="syncFromInput('lvlGammaVal','lvlGammaSlider')">
+                <input type="number" id="lvlGammaVal" class="val-input" value="1.00" min="0.50" max="1.60" step="0.02" oninput="syncFromInput('lvlGammaVal','lvlGammaSlider')">
               </div>
               <button type="button" class="btn-reset-single" onclick="resetSingle('lvlGamma')">↺</button>
             </div>
 
             <div class="slider-row">
               <span class="label-text">⬜ White In (Highlights)</span>
-              <input type="range" id="lvlWhiteSlider" min="160" max="255" value="255" step="1" oninput="syncFromSlider('lvlWhiteSlider','lvlWhiteVal')">
+              <input type="range" id="lvlWhiteSlider" min="175" max="255" value="255" step="1" oninput="syncFromSlider('lvlWhiteSlider','lvlWhiteVal')">
               <div class="val-input-wrap">
-                <input type="number" id="lvlWhiteVal" class="val-input" value="255" min="160" max="255" oninput="syncFromInput('lvlWhiteVal','lvlWhiteSlider')">
+                <input type="number" id="lvlWhiteVal" class="val-input" value="255" min="175" max="255" oninput="syncFromInput('lvlWhiteVal','lvlWhiteSlider')">
               </div>
               <button type="button" class="btn-reset-single" onclick="resetSingle('lvlWhite')">↺</button>
             </div>
 
-            <!-- Interactive Levels Curve & Histogram Canvas -->
             <div class="ps-graph-wrap">
-              <canvas id="levelsGraphCanvas" class="ps-graph-canvas" width="250" height="195"></canvas>
-              <div class="ps-graph-hint">🖱️ कर्व के डॉट को किसी भी दिशा (Left/Right/Up/Down) में घुमाएं</div>
+              <canvas id="levelsGraphCanvas" class="ps-graph-canvas" width="270" height="185"></canvas>
+              <div class="ps-graph-hint">🖱️ ग्राफ के डॉट्स ड्रैग करें — ऊपर के स्लाइडर रियल-टाइम सिंक होंगे</div>
             </div>
           </div>
 
-          <!-- TAB 3: PHOTOSHOP CURVES (CTRL + M) WITH SINGLE FREE-2D POINT -->
+          <!-- TAB 3: PHOTOSHOP CURVES (CTRL + M) — SINGLE FREE-MOVING DOT LIKE REAL PHOTOSHOP -->
           <div class="tab-pane" id="paneCurves">
-            <div class="section-badge">Photoshop Curves (Ctrl + M) — Free 2D Control Point</div>
+            <div class="section-badge">Photoshop Curves (Ctrl + M) — Single Free 2D Point</div>
 
             <div class="slider-row">
-              <span class="label-text">↔️ Input (X-Axis)</span>
+              <span class="label-text">↔️ Input (Left / Right)</span>
               <input type="range" id="crvInSlider" min="15" max="240" value="128" step="1" oninput="syncFromSlider('crvInSlider','crvInVal')">
               <div class="val-input-wrap">
                 <input type="number" id="crvInVal" class="val-input" value="128" min="15" max="240" oninput="syncFromInput('crvInVal','crvInSlider')">
@@ -748,18 +774,17 @@
             </div>
 
             <div class="slider-row">
-              <span class="label-text">↕️ Output (Y-Axis)</span>
-              <input type="range" id="crvOutSlider" min="0" max="255" value="128" step="1" oninput="syncFromSlider('crvOutSlider','crvOutVal')">
+              <span class="label-text">↕️ Output (Up / Down)</span>
+              <input type="range" id="crvOutSlider" min="15" max="240" value="128" step="1" oninput="syncFromSlider('crvOutSlider','crvOutVal')">
               <div class="val-input-wrap">
-                <input type="number" id="crvOutVal" class="val-input" value="128" min="0" max="255" oninput="syncFromInput('crvOutVal','crvOutSlider')">
+                <input type="number" id="crvOutVal" class="val-input" value="128" min="15" max="240" oninput="syncFromInput('crvOutVal','crvOutSlider')">
               </div>
               <button type="button" class="btn-reset-single" onclick="resetSingle('crvOut')">↺</button>
             </div>
 
-            <!-- Single-Dot Free 2D Photoshop Curve Canvas -->
             <div class="ps-graph-wrap">
-              <canvas id="curvesGraphCanvas" class="ps-graph-canvas" width="250" height="195"></canvas>
-              <div class="ps-graph-hint">🖱️ एक ही डॉट को पूरे बॉक्स में कहीं भी ले जाएं (Sliders अपने आप सिंक होंगे)</div>
+              <canvas id="curvesGraphCanvas" class="ps-graph-canvas" width="270" height="185"></canvas>
+              <div class="ps-graph-hint">🖱️ कर्व के सिंगल डॉट को चारों दिशाओं (Up/Down/Left/Right) में कहीं भी खींचें</div>
             </div>
           </div>
 
@@ -800,7 +825,7 @@
       drawInteractiveGraphs();
     }
 
-    // Keyboard shortcuts Ctrl+L (Levels) & Ctrl+M (Curves)
+    // Keyboard shortcuts Ctrl+L (Levels) & Ctrl+M (Curves) inside Edit Modal
     window.addEventListener('keydown', function(e) {
       if (document.getElementById('editModal').style.display === 'flex') {
         if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'l') {
@@ -820,6 +845,11 @@
     }
 
     document.addEventListener('DOMContentLoaded', function() {
+      var savedKey = localStorage.getItem('vk_removebg_key');
+      if (savedKey && document.getElementById('removeBgKeyInput')) {
+        document.getElementById('removeBgKeyInput').value = savedKey;
+      }
+
       var dropLabel = document.getElementById('dropLabel');
       if (dropLabel) {
         dropLabel.addEventListener('dragover', function(e) {
@@ -909,7 +939,7 @@
       cropper.rotateTo(baseAngle + fineDeg);
     }
 
-    /* STEP 1 -> STEP 2 TRANSITION AT 600 DPI (730 x 834) */
+    /* STEP 1 -> STEP 2 TRANSITION (100% REAL ORIGINAL IMAGE ON OPEN) */
     function proceedToEditing() {
       if (!cropper) return;
 
@@ -926,6 +956,8 @@
       originalCropBackup.getContext('2d').drawImage(baseCroppedCanvas, 0, 0);
 
       isBgRemoved = false;
+      studioBgColor = '#ffffff';
+      resetAllFilters();
       computeImageHistogram(originalCropBackup);
 
       document.getElementById('cropModal').style.display = 'none';
@@ -996,8 +1028,8 @@
         { slider: 'lvlBlackSlider', input: 'lvlBlackVal', step: 2 },
         { slider: 'lvlGammaSlider', input: 'lvlGammaVal', step: 0.03 },
         { slider: 'lvlWhiteSlider', input: 'lvlWhiteVal', step: 2 },
-        { slider: 'crvInSlider', input: 'crvInVal', step: 4 },
-        { slider: 'crvOutSlider', input: 'crvOutVal', step: 4 }
+        { slider: 'crvInSlider', input: 'crvInVal', step: 3 },
+        { slider: 'crvOutSlider', input: 'crvOutVal', step: 3 }
       ];
 
       pairs.forEach(function(item) {
@@ -1026,7 +1058,7 @@
       });
     }
 
-    /* POINT 1: CLEAN STUDIO HAIR & SHOULDER EDGE AI BACKGROUND REMOVER */
+    /* POINT 2: REMOVE.BG-QUALITY HAIR & EDGE MATTING (RMBG-2.0 / BIREFNET + COLOR DECONTAMINATION) */
     async function removePhotoBackgroundAI(preferredBgColor) {
       if (!originalCropBackup) return;
       var btn = document.getElementById('btnBgRemove');
@@ -1034,33 +1066,124 @@
       var loaderText = document.getElementById('aiLoaderText');
 
       btn.disabled = true;
-      loaderText.innerText = "🪄 Studio Hair-Edge AI बैकग्राउंड हटा रहा है...";
+      loaderText.innerText = "🪄 Studio HD Hair Matting (RMBG-2.0) चालू है...";
       loader.style.display = 'flex';
 
-      var applySmoothStudioCutout = function(maskSource) {
-        // 1. Render segmentation mask with smooth 3.2px Gaussian feathering to remove jagged pixel halos
+      var finishCutoutWithImage = function(cutoutImageObj) {
+        var outCtx = baseCroppedCanvas.getContext('2d');
+        outCtx.clearRect(0, 0, PHOTO_W, PHOTO_H);
+        outCtx.drawImage(cutoutImageObj, 0, 0, PHOTO_W, PHOTO_H);
+
+        isBgRemoved = true;
+        if (preferredBgColor) {
+          studioBgColor = preferredBgColor;
+        } else if (studioBgColor === '#ffffff') {
+          studioBgColor = '#38bdf8';
+        }
+        renderLiveStudioCanvas();
+        loader.style.display = 'none';
+        btn.disabled = false;
+      };
+
+      // Method 1: If user provided a free remove.bg API key (50 free/month), use official remove.bg API first
+      var userApiKey = (document.getElementById('removeBgKeyInput').value || '').trim();
+      if (userApiKey) {
+        try {
+          var imgBlob = await new Promise(function(res) { originalCropBackup.toBlob(res, 'image/png'); });
+          var fd = new FormData();
+          fd.append('image_file', imgBlob, 'photo.png');
+          fd.append('size', 'auto');
+
+          var rbgRes = await fetch('https://api.remove.bg/v1.0/removebg', {
+            method: 'POST',
+            headers: { 'X-Api-Key': userApiKey },
+            body: fd
+          });
+          if (rbgRes.ok) {
+            var outBlob = await rbgRes.blob();
+            var url = URL.createObjectURL(outBlob);
+            var img = new Image();
+            img.onload = function() {
+              finishCutoutWithImage(img);
+              URL.revokeObjectURL(url);
+            };
+            img.src = url;
+            return;
+          }
+        } catch (e) {}
+      }
+
+      // Method 2: Free Unlimited BRIA RMBG-2.0 / BiRefNet High-Res Matting Endpoint
+      try {
+        var dataUrl = originalCropBackup.toDataURL('image/png');
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 14000);
+
+        const hfRes = await fetch("https://briaai-bria-rmbg-2-0.hf.space/api/predict", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          signal: controller.signal,
+          body: JSON.stringify({ data: [dataUrl] })
+        });
+        clearTimeout(timeoutId);
+
+        if (hfRes.ok) {
+          const json = await hfRes.json();
+          if (json && json.data && json.data[0]) {
+            var outUrl = typeof json.data[0] === 'string' ? json.data[0] : json.data[0].url;
+            var rmbgImg = new Image();
+            rmbgImg.crossOrigin = "anonymous";
+            rmbgImg.onload = function() {
+              finishCutoutWithImage(rmbgImg);
+            };
+            rmbgImg.onerror = function() {
+              runLocalDecontaminatedCutout(preferredBgColor, btn, loader);
+            };
+            rmbgImg.src = outUrl;
+            return;
+          }
+        }
+        throw new Error("RMBG-2.0 busy");
+      } catch (err) {
+        // Method 3: Local MediaPipe + Edge Color Decontamination (Strips White Halo Completely)
+        runLocalDecontaminatedCutout(preferredBgColor, btn, loader);
+      }
+    }
+
+    function runLocalDecontaminatedCutout(preferredBgColor, btn, loader) {
+      var applyDecontaminatedMask = function(maskSource) {
         var maskCanvas = document.createElement('canvas');
         maskCanvas.width = PHOTO_W;
         maskCanvas.height = PHOTO_H;
         var mCtx = maskCanvas.getContext('2d');
-        mCtx.filter = 'blur(3.2px)';
+        mCtx.imageSmoothingEnabled = true;
+        mCtx.imageSmoothingQuality = 'high';
+        mCtx.filter = 'blur(2.5px)';
         mCtx.drawImage(maskSource, 0, 0, PHOTO_W, PHOTO_H);
         mCtx.filter = 'none';
 
+        var mData = mCtx.getImageData(0, 0, PHOTO_W, PHOTO_H).data;
         var origData = originalCropBackup.getContext('2d').getImageData(0, 0, PHOTO_W, PHOTO_H);
-        var maskData = mCtx.getImageData(0, 0, PHOTO_W, PHOTO_H).data;
-        var outPixels = origData.data;
+        var px = origData.data;
 
-        // 2. Apply S-Curve Alpha Matte Refinement (sharpens core subject while keeping hair edges silky smooth)
-        for (var i = 0; i < outPixels.length; i += 4) {
-          var rawAlpha = maskData[i] / 255;
-          // Remap [0.22 .. 0.78] to [0 .. 1] to clean background fringe without biting into hair
-          var refined = (rawAlpha - 0.22) / 0.56;
-          if (refined < 0) refined = 0;
-          if (refined > 1) refined = 1;
-          // Smoothstep interpolation
-          refined = refined * refined * (3 - 2 * refined);
-          outPixels[i + 3] = Math.round(refined * 255);
+        // Strong inner erosion + edge decontamination so zero white wall halo remains around hair/shoulders
+        for (var i = 0; i < px.length; i += 4) {
+          var rawA = mData[i];
+          var alpha = (rawA - 145) * (255 / 95);
+          if (alpha < 0) alpha = 0;
+          if (alpha > 255) alpha = 255;
+
+          // Decontaminate semi-transparent edge pixels by darkening bright wall spill
+          if (alpha > 0 && alpha < 245) {
+            var lum = 0.299 * px[i] + 0.587 * px[i + 1] + 0.114 * px[i + 2];
+            if (lum > 150) {
+              var factor = 0.55 + 0.45 * (alpha / 255);
+              px[i] = Math.round(px[i] * factor);
+              px[i + 1] = Math.round(px[i + 1] * factor);
+              px[i + 2] = Math.round(px[i + 2] * factor);
+            }
+          }
+          px[i + 3] = Math.round(alpha);
         }
 
         var outCtx = baseCroppedCanvas.getContext('2d');
@@ -1078,95 +1201,31 @@
         btn.disabled = false;
       };
 
-      var runLocalFloodFillFallback = function() {
-        var srcCtx = originalCropBackup.getContext('2d');
-        var imgData = srcCtx.getImageData(0, 0, PHOTO_W, PHOTO_H);
-        var d = imgData.data;
-
-        var bgR = (d[0] + d[(PHOTO_W - 1) * 4]) / 2;
-        var bgG = (d[1] + d[(PHOTO_W - 1) * 4 + 1]) / 2;
-        var bgB = (d[2] + d[(PHOTO_W - 1) * 4 + 2]) / 2;
-
-        var visited = new Uint8Array(PHOTO_W * PHOTO_H);
-        var stack = [];
-        for (var x = 0; x < PHOTO_W; x += 2) stack.push(x);
-        for (var y = 0; y < PHOTO_H * 0.75; y += 2) {
-          stack.push(y * PHOTO_W);
-          stack.push(y * PHOTO_W + (PHOTO_W - 1));
-        }
-
-        while (stack.length > 0) {
-          var pos = stack.pop();
-          if (pos < 0 || pos >= PHOTO_W * PHOTO_H || visited[pos]) continue;
-          visited[pos] = 1;
-
-          var idx = pos * 4;
-          var dist = Math.abs(d[idx] - bgR) + Math.abs(d[idx + 1] - bgG) + Math.abs(d[idx + 2] - bgB);
-          if (dist < 90) {
-            d[idx + 3] = 0;
-            var px = pos % PHOTO_W;
-            var py = (pos - px) / PHOTO_W;
-            if (px > 0) stack.push(pos - 1);
-            if (px < PHOTO_W - 1) stack.push(pos + 1);
-            if (py > 0) stack.push(pos - PHOTO_W);
-            if (py < PHOTO_H - 1) stack.push(pos + PHOTO_W);
-          }
-        }
-
-        var outCtx = baseCroppedCanvas.getContext('2d');
-        outCtx.clearRect(0, 0, PHOTO_W, PHOTO_H);
-        outCtx.putImageData(imgData, 0, 0);
-
-        isBgRemoved = true;
-        if (preferredBgColor) {
-          studioBgColor = preferredBgColor;
-        } else if (studioBgColor === '#ffffff') {
-          studioBgColor = '#38bdf8';
-        }
-        renderLiveStudioCanvas();
+      if (typeof window.SelfieSegmentation === 'undefined') {
         loader.style.display = 'none';
         btn.disabled = false;
-      };
-
-      try {
-        if (typeof window.SelfieSegmentation === 'undefined') {
-          runLocalFloodFillFallback();
-          return;
-        }
-
-        var segmentation = new window.SelfieSegmentation({
-          locateFile: function(file) {
-            return 'https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation/' + file;
-          }
-        });
-        segmentation.setOptions({ modelSelection: 1 });
-
-        var finished = false;
-        var safetyTimer = setTimeout(function() {
-          if (!finished) {
-            finished = true;
-            runLocalFloodFillFallback();
-          }
-        }, 8000);
-
-        segmentation.onResults(function(results) {
-          if (finished) return;
-          finished = true;
-          clearTimeout(safetyTimer);
-          if (results && results.segmentationMask) {
-            applySmoothStudioCutout(results.segmentationMask);
-          } else {
-            runLocalFloodFillFallback();
-          }
-        });
-
-        await segmentation.send({ image: originalCropBackup });
-      } catch (err) {
-        runLocalFloodFillFallback();
+        alert("AI Segmentation लोड हो रहा है, कृपया 2 सेकंड बाद पुनः प्रयास करें।");
+        return;
       }
+
+      var segmentation = new window.SelfieSegmentation({
+        locateFile: function(file) {
+          return 'https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation/' + file;
+        }
+      });
+      segmentation.setOptions({ modelSelection: 1 });
+      segmentation.onResults(function(results) {
+        if (results && results.segmentationMask) {
+          applyDecontaminatedMask(results.segmentationMask);
+        } else {
+          loader.style.display = 'none';
+          btn.disabled = false;
+        }
+      });
+      segmentation.send({ image: originalCropBackup });
     }
 
-    /* POINT 3: NATURAL BALANCED AI BEAUTIFY & STUDIO PORTRAIT (NO OVER-GLOW / OVER-LIGHT) */
+    /* NATURAL AI FACE BEAUTIFY (NO OVER-GLOW) */
     async function runRealAIBeautify() {
       if (!baseCroppedCanvas) return;
       var btn = document.getElementById('btnAiEnhance');
@@ -1174,7 +1233,7 @@
       var loaderText = document.getElementById('aiLoaderText');
 
       btn.disabled = true;
-      loaderText.innerText = "🔮 Natural AI Beautify & Clarity चालू है...";
+      loaderText.innerText = "🔮 नेचुरल AI Face Beautify चालू है...";
       loader.style.display = 'flex';
 
       try {
@@ -1196,11 +1255,7 @@
           headers: { "Content-Type": "application/json" },
           signal: controller.signal,
           body: JSON.stringify({
-            data: [
-              base64Data,
-              0.72,
-              true
-            ]
+            data: [base64Data, 0.78, true]
           })
         });
         clearTimeout(timeoutId);
@@ -1211,14 +1266,20 @@
           enhancedImg.crossOrigin = "anonymous";
           enhancedImg.onload = function() {
             var ctx = baseCroppedCanvas.getContext('2d');
-            ctx.drawImage(enhancedImg, 0, 0, PHOTO_W, PHOTO_H);
+            if (isBgRemoved) {
+              ctx.globalCompositeOperation = 'source-in';
+              ctx.drawImage(enhancedImg, 0, 0, PHOTO_W, PHOTO_H);
+              ctx.globalCompositeOperation = 'source-over';
+            } else {
+              ctx.drawImage(enhancedImg, 0, 0, PHOTO_W, PHOTO_H);
+            }
             applyStudioPreset();
             loader.style.display = 'none';
             btn.disabled = false;
           };
           enhancedImg.src = resJson.data[0];
         } else {
-          throw new Error("Fallback to balanced local beautifier");
+          throw new Error("Local natural retouch");
         }
       } catch (err) {
         applyStudioPreset();
@@ -1230,32 +1291,16 @@
     function applyStudioPreset() {
       if (!baseCroppedCanvas) return;
 
-      // Measure face brightness so we NEVER blow out highlights or cause over-glow
-      var ctx = baseCroppedCanvas.getContext('2d');
-      var imgData = ctx.getImageData(Math.floor(PHOTO_W * 0.25), Math.floor(PHOTO_H * 0.20), Math.floor(PHOTO_W * 0.5), Math.floor(PHOTO_H * 0.5)).data;
-      var lumSum = 0, count = 0;
-      for (var i = 0; i < imgData.length; i += 16) {
-        if (imgData[i + 3] > 200) {
-          lumSum += 0.299 * imgData[i] + 0.587 * imgData[i + 1] + 0.114 * imgData[i + 2];
-          count++;
-        }
-      }
-      var avgLum = count > 0 ? (lumSum / count) : 125;
-
-      // Keep brightness & gamma strictly controlled (no washed-out glare)
-      var safeBright = avgLum < 90 ? 105 : (avgLum > 145 ? 97 : 100);
-      var safeGamma = avgLum < 90 ? 1.08 : (avgLum > 145 ? 0.96 : 1.02);
-
-      setValPair('smSlider', 'smVal', 3.0);
-      setValPair('shSlider', 'shVal', 3.0);
-      setValPair('bSlider', 'bVal', safeBright);
-      setValPair('sSlider', 'sVal', 105);
-      setValPair('wSlider', 'wVal', 2);
-      setValPair('lvlBlackSlider', 'lvlBlackVal', 5);
-      setValPair('lvlGammaSlider', 'lvlGammaVal', safeGamma);
-      setValPair('lvlWhiteSlider', 'lvlWhiteVal', 252);
-      setValPair('crvInSlider', 'crvInVal', 128);
-      setValPair('crvOutSlider', 'crvOutVal', 131);
+      setValPair('smSlider', 'smVal', 2.5);
+      setValPair('shSlider', 'shVal', 2.0);
+      setValPair('bSlider', 'bVal', 100);
+      setValPair('sSlider', 'sVal', 104);
+      setValPair('wSlider', 'wVal', 1);
+      setValPair('lvlBlackSlider', 'lvlBlackVal', 4);
+      setValPair('lvlGammaSlider', 'lvlGammaVal', 1.01);
+      setValPair('lvlWhiteSlider', 'lvlWhiteVal', 253);
+      setValPair('crvInSlider', 'crvInVal', 126);
+      setValPair('crvOutSlider', 'crvOutVal', 130);
 
       renderLiveStudioCanvas();
     }
@@ -1272,13 +1317,14 @@
       if (type === 'saturate') setValPair('sSlider', 'sVal', 100);
       if (type === 'warmth') setValPair('wSlider', 'wVal', 0);
       if (type === 'lvlBlack') setValPair('lvlBlackSlider', 'lvlBlackVal', 0);
-      if (type === 'lvlGamma') setValPair('lvlGammaSlider', 'lvlGammaVal', 1.00);
+      if (type === 'lvlGamma') setValPair('lvlGammaSlider', 'lvlGammaVal', 1.0);
       if (type === 'lvlWhite') setValPair('lvlWhiteSlider', 'lvlWhiteVal', 255);
       if (type === 'crvIn') setValPair('crvInSlider', 'crvInVal', 128);
       if (type === 'crvOut') setValPair('crvOutSlider', 'crvOutVal', 128);
       renderLiveStudioCanvas();
     }
 
+    /* POINT 1: 100% NEUTRAL DEFAULT STATE SO UPLOADED PHOTO STAYS COMPLETELY REAL */
     function resetAllFilters() {
       if (originalCropBackup && baseCroppedCanvas) {
         baseCroppedCanvas.getContext('2d').clearRect(0, 0, PHOTO_W, PHOTO_H);
@@ -1286,10 +1332,10 @@
         isBgRemoved = false;
         studioBgColor = '#ffffff';
       }
-      setValPair('smSlider', 'smVal', 1.5);
-      setValPair('shSlider', 'shVal', 2.0);
+      setValPair('smSlider', 'smVal', 0);
+      setValPair('shSlider', 'shVal', 0);
       setValPair('bSlider', 'bVal', 100);
-      setValPair('sSlider', 'sVal', 102);
+      setValPair('sSlider', 'sVal', 100);
       setValPair('wSlider', 'wVal', 0);
       setValPair('lvlBlackSlider', 'lvlBlackVal', 0);
       setValPair('lvlGammaSlider', 'lvlGammaVal', 1.00);
@@ -1299,58 +1345,47 @@
       renderLiveStudioCanvas();
     }
 
-    /* NATURAL CUBIC SPLINE INTERPOLATION THROUGH (0,0) -> (crvIn, crvOut) -> (255,255) */
-    function evaluateSinglePointCurve(x, px, py) {
-      if (x <= 0) return 0;
-      if (x >= 255) return 255;
-      // Smooth Fritsch-Carlson / Quadratic Bezier-like monotone spline passing exactly through (px, py)
-      var t;
-      if (x <= px) {
-        t = px > 0 ? (x / px) : 0;
-        // Blend linear with smooth quadratic
-        var linearY = t * py;
-        var quadY = py * (t * (2 - t));
-        var ratio = py / Math.max(1, px);
-        return ratio >= 1 ? (linearY * 0.4 + quadY * 0.6) : (linearY * 0.4 + (py * t * t) * 0.6);
-      } else {
-        t = (255 - px) > 0 ? ((x - px) / (255 - px)) : 1;
-        var remY = 255 - py;
-        var linY2 = py + t * remY;
-        var quadY2 = py + remY * (t * (2 - t));
-        var ratio2 = remY / Math.max(1, 255 - px);
-        return ratio2 <= 1 ? (linY2 * 0.4 + quadY2 * 0.6) : (linY2 * 0.4 + (py + remY * t * t) * 0.6);
-      }
-    }
-
-    /* BUILD COMBINED LEVELS (CTRL+L) + SINGLE-POINT 2D CURVE (CTRL+M) LUT */
+    /* BUILD COMBINED LEVELS (CTRL+L) + SINGLE-POINT QUADRATIC BEZIER CURVE (CTRL+M) LUT */
     function buildToneLUT() {
       var lvlBlack = parseFloat(document.getElementById('lvlBlackSlider').value) || 0;
       var lvlGamma = parseFloat(document.getElementById('lvlGammaSlider').value) || 1.0;
       var lvlWhite = parseFloat(document.getElementById('lvlWhiteSlider').value) || 255;
 
-      var crvIn = parseFloat(document.getElementById('crvInSlider').value) || 128;
-      var crvOut = parseFloat(document.getElementById('crvOutSlider').value) || 128;
+      var x1 = parseFloat(document.getElementById('crvInSlider').value) || 128;
+      var y1 = parseFloat(document.getElementById('crvOutSlider').value) || 128;
+
+      var cx = 2 * x1 - 127.5;
+      var cy = 2 * y1 - 127.5;
+
+      var curveMap = new Float32Array(256);
+      for (var i = 0; i <= 1024; i++) {
+        var t = i / 1024;
+        var mt = 1 - t;
+        var bx = 2 * mt * t * cx + t * t * 255;
+        var by = 2 * mt * t * cy + t * t * 255;
+        var idx = Math.max(0, Math.min(255, Math.round(bx)));
+        curveMap[idx] = Math.max(0, Math.min(255, by));
+      }
 
       var lut = new Uint8ClampedArray(256);
       var range = Math.max(1, lvlWhite - lvlBlack);
       var invGamma = 1 / lvlGamma;
 
-      for (var i = 0; i < 256; i++) {
-        // 1. Levels (Ctrl + L)
-        var norm = (i - lvlBlack) / range;
+      for (var k = 0; k < 256; k++) {
+        var norm = (k - lvlBlack) / range;
         if (norm < 0) norm = 0;
         if (norm > 1) norm = 1;
-        var val = Math.pow(norm, invGamma) * 255;
+        var afterLevels = Math.pow(norm, invGamma) * 255;
 
-        // 2. Single-Point Free-2D Curve (Ctrl + M)
-        val = evaluateSinglePointCurve(val, crvIn, crvOut);
+        var cIdx = Math.max(0, Math.min(255, Math.round(afterLevels)));
+        var finalVal = curveMap[cIdx];
 
-        lut[i] = val < 0 ? 0 : (val > 255 ? 255 : Math.round(val));
+        lut[k] = finalVal < 0 ? 0 : (finalVal > 255 ? 255 : Math.round(finalVal));
       }
       return lut;
     }
 
-    /* POINT 2: DRAW REAL PHOTOSHOP SINGLE-DOT FREE-2D CURVE & LEVELS GRAPHS */
+    /* DRAW REAL PHOTOSHOP SINGLE-DOT 2D CURVE & LEVELS GRAPHS */
     function drawInteractiveGraphs() {
       var lut = buildToneLUT();
 
@@ -1394,27 +1429,31 @@
 
         var lvlBlack = parseFloat(document.getElementById('lvlBlackSlider').value) || 0;
         var lvlWhite = parseFloat(document.getElementById('lvlWhiteSlider').value) || 255;
-        var midX = Math.round((lvlBlack + lvlWhite) / 2);
+        var midX = (lvlBlack + lvlWhite) / 2;
 
-        var ptX = (midX / 255) * W;
-        var ptY = H - (lut[midX] / 255) * H;
-        ctx.beginPath();
-        ctx.arc(ptX, ptY, 7, 0, Math.PI * 2);
-        ctx.fillStyle = '#38bdf8';
-        ctx.fill();
-        ctx.lineWidth = 2;
-        ctx.strokeStyle = '#ffffff';
-        ctx.stroke();
+        var pts = [
+          { x: (lvlBlack / 255) * W, y: H - 6, color: '#0f172a', stroke: '#ffffff' },
+          { x: (midX / 255) * W, y: H - (lut[Math.round(midX)] / 255) * H, color: '#38bdf8', stroke: '#ffffff' },
+          { x: (lvlWhite / 255) * W, y: 6, color: '#ffffff', stroke: '#38bdf8' }
+        ];
+        pts.forEach(function(pt) {
+          ctx.beginPath();
+          ctx.arc(pt.x, pt.y, 6, 0, Math.PI * 2);
+          ctx.fillStyle = pt.color;
+          ctx.fill();
+          ctx.lineWidth = 2;
+          ctx.strokeStyle = pt.stroke;
+          ctx.stroke();
+        });
       }
 
-      // 2. Real Photoshop Single-Dot Free-2D Curves Graph (Ctrl + M)
+      // 2. Curves Graph (Ctrl + M) — Single Free-2D Anchor Dot Like Real Photoshop
       var crvCanvas = document.getElementById('curvesGraphCanvas');
       if (crvCanvas) {
         var cCtx = crvCanvas.getContext('2d');
         var CW = crvCanvas.width, CH = crvCanvas.height;
         cCtx.clearRect(0, 0, CW, CH);
 
-        // 4x4 Photoshop Grid
         cCtx.strokeStyle = '#1e293b';
         cCtx.lineWidth = 1;
         for (var cg = 1; cg < 4; cg++) {
@@ -1422,7 +1461,6 @@
           cCtx.beginPath(); cCtx.moveTo(0, (CH / 4) * cg); cCtx.lineTo(CW, (CH / 4) * cg); cCtx.stroke();
         }
 
-        // Background Histogram
         var maxB = Math.max.apply(null, histogramBins) || 1;
         cCtx.fillStyle = 'rgba(148, 163, 184, 0.22)';
         var bW = CW / 64;
@@ -1431,13 +1469,11 @@
           cCtx.fillRect(hb * bW, CH - bH, bW - 0.5, bH);
         }
 
-        // Diagonal Reference Line
         cCtx.strokeStyle = '#334155';
         cCtx.setLineDash([4, 4]);
         cCtx.beginPath(); cCtx.moveTo(0, CH); cCtx.lineTo(CW, 0); cCtx.stroke();
         cCtx.setLineDash([]);
 
-        // Active Smooth Curve
         cCtx.strokeStyle = '#38bdf8';
         cCtx.lineWidth = 2.6;
         cCtx.beginPath();
@@ -1449,23 +1485,20 @@
         }
         cCtx.stroke();
 
-        // Single Free-2D Control Dot synced with (crvInSlider, crvOutSlider)
-        var crvIn = parseFloat(document.getElementById('crvInSlider').value) || 128;
-        var crvOut = parseFloat(document.getElementById('crvOutSlider').value) || 128;
-        var dotX = (crvIn / 255) * CW;
-        var dotY = CH - (crvOut / 255) * CH;
+        var inVal = parseFloat(document.getElementById('crvInSlider').value) || 128;
+        var outVal = parseFloat(document.getElementById('crvOutSlider').value) || 128;
+        var nx = (inVal / 255) * CW;
+        var ny = CH - (outVal / 255) * CH;
 
-        // Crosshair guide lines for exact Photoshop feedback
-        cCtx.strokeStyle = 'rgba(56, 189, 248, 0.35)';
+        cCtx.strokeStyle = 'rgba(56, 189, 248, 0.28)';
         cCtx.lineWidth = 1;
         cCtx.beginPath();
-        cCtx.moveTo(dotX, 0); cCtx.lineTo(dotX, CH);
-        cCtx.moveTo(0, dotY); cCtx.lineTo(CW, dotY);
+        cCtx.moveTo(nx, 0); cCtx.lineTo(nx, CH);
+        cCtx.moveTo(0, ny); cCtx.lineTo(CW, ny);
         cCtx.stroke();
 
-        // Single Draggable Control Point
         cCtx.beginPath();
-        cCtx.arc(dotX, dotY, 7.5, 0, Math.PI * 2);
+        cCtx.arc(nx, ny, 7, 0, Math.PI * 2);
         cCtx.fillStyle = '#0d6efd';
         cCtx.fill();
         cCtx.lineWidth = 2.2;
@@ -1474,9 +1507,7 @@
       }
     }
 
-    /* FREE-2D POINTER DRAG ON CURVE & LEVELS GRAPHS (SYNCED WITH SLIDERS) */
     function setupInteractiveCurveEvents() {
-      // 1. Curves Canvas (Single Free-2D Point anywhere in box)
       var crvCanvas = document.getElementById('curvesGraphCanvas');
       var isDraggingCurve = false;
 
@@ -1484,12 +1515,12 @@
         crvCanvas.addEventListener('pointerdown', function(e) {
           isDraggingCurve = true;
           crvCanvas.setPointerCapture(e.pointerId);
-          moveCurvePointFreely(e, crvCanvas);
+          updateFree2DCurveFromPointer(e, crvCanvas);
         });
 
         crvCanvas.addEventListener('pointermove', function(e) {
           if (!isDraggingCurve) return;
-          moveCurvePointFreely(e, crvCanvas);
+          updateFree2DCurveFromPointer(e, crvCanvas);
         });
 
         crvCanvas.addEventListener('pointerup', function() {
@@ -1497,13 +1528,13 @@
         });
       }
 
-      function moveCurvePointFreely(e, canvas) {
+      function updateFree2DCurveFromPointer(e, canvas) {
         var rect = canvas.getBoundingClientRect();
-        var normX = Math.max(0.06, Math.min(0.94, (e.clientX - rect.left) / rect.width));
-        var normY = 1 - Math.max(0, Math.min(1, (e.clientY - rect.top) / rect.height));
+        var relX = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+        var relY = 1 - Math.max(0, Math.min(1, (e.clientY - rect.top) / rect.height));
 
-        var newIn = Math.round(normX * 255);
-        var newOut = Math.round(normY * 255);
+        var newIn = Math.round(15 + relX * 225);
+        var newOut = Math.round(15 + relY * 225);
 
         setValPair('crvInSlider', 'crvInVal', newIn);
         setValPair('crvOutSlider', 'crvOutVal', newOut);
@@ -1511,65 +1542,79 @@
         renderLiveStudioCanvas();
       }
 
-      // 2. Levels Canvas (Free 2D drag updates Black/White/Gamma sliders)
       var lvlCanvas = document.getElementById('levelsGraphCanvas');
-      var isDraggingLevels = false;
+      var activeLvlNode = null;
 
       if (lvlCanvas) {
         lvlCanvas.addEventListener('pointerdown', function(e) {
-          isDraggingLevels = true;
+          var rect = lvlCanvas.getBoundingClientRect();
+          var relX = (e.clientX - rect.left) / rect.width;
+          if (relX < 0.30) activeLvlNode = 0;
+          else if (relX < 0.72) activeLvlNode = 1;
+          else activeLvlNode = 2;
           lvlCanvas.setPointerCapture(e.pointerId);
-          moveLevelsPointFreely(e, lvlCanvas);
+          updateLevelsFromPointer(e, lvlCanvas, activeLvlNode);
         });
 
         lvlCanvas.addEventListener('pointermove', function(e) {
-          if (!isDraggingLevels) return;
-          moveLevelsPointFreely(e, lvlCanvas);
+          if (activeLvlNode === null) return;
+          updateLevelsFromPointer(e, lvlCanvas, activeLvlNode);
         });
 
         lvlCanvas.addEventListener('pointerup', function() {
-          isDraggingLevels = false;
+          activeLvlNode = null;
         });
       }
 
-      function moveLevelsPointFreely(e, canvas) {
+      function updateLevelsFromPointer(e, canvas, nodeIdx) {
         var rect = canvas.getBoundingClientRect();
-        var normX = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
-        var normY = 1 - Math.max(0, Math.min(1, (e.clientY - rect.top) / rect.height));
+        var relX = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+        var relY = 1 - Math.max(0, Math.min(1, (e.clientY - rect.top) / rect.height));
 
-        // Horizontal movement shifts Black/White balance; Vertical movement shifts Gamma
-        var blackVal = Math.round(Math.max(0, Math.min(100, (normX - 0.5) * 140)));
-        var whiteVal = Math.round(Math.max(160, Math.min(255, 255 - (0.5 - normX) * 140)));
-        var gammaVal = Math.round((0.50 + normY * 1.30) * 100) / 100;
-        gammaVal = Math.max(0.50, Math.min(1.80, gammaVal));
-
-        setValPair('lvlBlackSlider', 'lvlBlackVal', blackVal);
-        setValPair('lvlWhiteSlider', 'lvlWhiteVal', whiteVal);
-        setValPair('lvlGammaSlider', 'lvlGammaVal', gammaVal);
+        if (nodeIdx === 0) {
+          var blackVal = Math.max(0, Math.min(100, Math.round(relX * 150)));
+          setValPair('lvlBlackSlider', 'lvlBlackVal', blackVal);
+        } else if (nodeIdx === 1) {
+          var gammaVal = Math.max(0.50, Math.min(1.60, Math.round((0.50 + relY * 1.10) * 100) / 100));
+          setValPair('lvlGammaSlider', 'lvlGammaVal', gammaVal);
+        } else {
+          var whiteVal = Math.max(175, Math.min(255, Math.round(175 + relX * 80)));
+          setValPair('lvlWhiteSlider', 'lvlWhiteVal', whiteVal);
+        }
 
         renderLiveStudioCanvas();
       }
     }
 
-    /* PIXEL-ACCURATE LEVELS (CTRL+L), CURVES (CTRL+M), SKIN SMOOTHING & SHARPENING */
     function processStudioPixels(ctx, width, height) {
-      var lut = buildToneLUT();
+      var lvlBlack = parseFloat(document.getElementById('lvlBlackSlider').value) || 0;
+      var lvlGamma = parseFloat(document.getElementById('lvlGammaSlider').value) || 1.0;
+      var lvlWhite = parseFloat(document.getElementById('lvlWhiteSlider').value) || 255;
+      var crvIn = parseFloat(document.getElementById('crvInSlider').value) || 128;
+      var crvOut = parseFloat(document.getElementById('crvOutSlider').value) || 128;
       var smoothVal = parseFloat(document.getElementById('smSlider').value) || 0;
       var sharpVal = parseFloat(document.getElementById('shSlider').value) || 0;
+
+      // Skip pixel loop completely when all tonal adjustments are at neutral default
+      var hasToneChange = (lvlBlack !== 0 || lvlGamma !== 1.0 || lvlWhite !== 255 || crvIn !== 128 || crvOut !== 128);
+      if (!hasToneChange && smoothVal === 0 && sharpVal === 0) return;
 
       var imgData = ctx.getImageData(0, 0, width, height);
       var src = imgData.data;
 
-      for (var p = 0; p < src.length; p += 4) {
-        src[p] = lut[src[p]];
-        src[p + 1] = lut[src[p + 1]];
-        src[p + 2] = lut[src[p + 2]];
+      if (hasToneChange) {
+        var lut = buildToneLUT();
+        for (var p = 0; p < src.length; p += 4) {
+          src[p] = lut[src[p]];
+          src[p + 1] = lut[src[p + 1]];
+          src[p + 2] = lut[src[p + 2]];
+        }
       }
 
       if (smoothVal > 0) {
         var copy = new Uint8ClampedArray(src);
-        var threshold = 18 + smoothVal * 2.5;
-        var blend = Math.min(0.75, smoothVal * 0.075);
+        var threshold = 16 + smoothVal * 2.2;
+        var blend = Math.min(0.65, smoothVal * 0.065);
 
         for (var y = 2; y < height - 2; y++) {
           for (var x = 2; x < width - 2; x++) {
@@ -1602,7 +1647,7 @@
 
       if (sharpVal > 0) {
         var sCopy = new Uint8ClampedArray(src);
-        var amt = sharpVal * 0.22;
+        var amt = sharpVal * 0.20;
         var centerW = 1 + 4 * amt;
         var sideW = -amt;
 
@@ -1634,34 +1679,31 @@
       previewCanvas.height = PHOTO_H;
       var ctx = previewCanvas.getContext('2d');
 
-      // 1. Paint Studio Background Color
       ctx.fillStyle = studioBgColor;
       ctx.fillRect(0, 0, PHOTO_W, PHOTO_H);
 
-      // 2. Apply Brightness, Saturation & Warmth
-      var b = document.getElementById('bSlider').value;
-      var s = document.getElementById('sSlider').value;
+      var b = parseFloat(document.getElementById('bSlider').value) || 100;
+      var s = parseFloat(document.getElementById('sSlider').value) || 100;
       var w = parseFloat(document.getElementById('wSlider').value) || 0;
 
-      var filterStr = "brightness(" + b + "%) saturate(" + s + "%)";
-      if (w > 0) {
-        filterStr += " sepia(" + (w * 0.85) + "%) hue-rotate(-" + (w * 0.55) + "deg)";
-      } else if (w < 0) {
-        filterStr += " hue-rotate(" + Math.abs(w * 0.55) + "deg)";
+      if (b !== 100 || s !== 100 || w !== 0) {
+        var filterStr = "brightness(" + b + "%) saturate(" + s + "%)";
+        if (w > 0) {
+          filterStr += " sepia(" + (w * 0.85) + "%) hue-rotate(-" + (w * 0.55) + "deg)";
+        } else if (w < 0) {
+          filterStr += " hue-rotate(" + Math.abs(w * 0.55) + "deg)";
+        }
+        ctx.filter = filterStr;
       }
-
-      ctx.filter = filterStr;
       ctx.drawImage(baseCroppedCanvas, 0, 0, PHOTO_W, PHOTO_H);
       ctx.filter = 'none';
 
-      // 3. Apply Photoshop Levels (Ctrl+L), Curves (Ctrl+M), Skin Retouch & HD Sharpness
       processStudioPixels(ctx, PHOTO_W, PHOTO_H);
 
       renderedStudioCanvas = previewCanvas;
       drawInteractiveGraphs();
     }
 
-    /* SAVE 600 DPI STUDIO PHOTO & GENERATE PREVIEW */
     function saveAndFinalize() {
       if (!baseCroppedCanvas) return;
       renderLiveStudioCanvas();
@@ -1681,7 +1723,6 @@
       closeAllModals();
     }
 
-    /* 4x6 MULTI-PHOTO 600 DPI PSD EXPORT (2400 x 3600 px) */
     function downloadFullSheetPSD() {
       if (!cutoutCanvas || !finalPhotoData) {
         alert("कृपया पहले फोटो क्रॉप और तैयार करें!");
@@ -1777,7 +1818,6 @@
       }
     }
 
-    /* 100% LOSSLESS 600 DPI SINGLE-SHEET PRINT */
     function printPhotosSingleSheet() {
       if (!finalPhotoData || !cutoutCanvas) {
         alert("कृपया पहले फोटो सेट करें!");
