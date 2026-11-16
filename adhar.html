@@ -9,6 +9,14 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css"/>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
 
+  <!-- PDF.js for Multi-Page & Password-Protected PDFs -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script>
+    if (window.pdfjsLib) {
+      pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    }
+  </script>
+
   <style>
     * { 
       box-sizing: border-box; 
@@ -25,7 +33,7 @@
     }
     .card { 
       background: #ffffff; 
-      max-width: 600px; 
+      max-width: 620px; 
       width: 100%; 
       border-radius: 14px; 
       padding: 18px; 
@@ -72,6 +80,134 @@
       font-weight: 700;
       color: #0f172a;
       outline: none;
+    }
+
+    /* LAMINATION FOLD TOGGLE BAR (Point 1) */
+    .toggle-row-box {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #ffffff;
+      border: 1.5px solid #93c5fd;
+      border-radius: 8px;
+      padding: 9px 12px;
+      margin-top: 8px;
+      gap: 10px;
+    }
+    .toggle-info {
+      font-size: 12.5px;
+      font-weight: 700;
+      color: #0f172a;
+    }
+    .toggle-sub {
+      display: block;
+      font-size: 11px;
+      font-weight: 500;
+      color: #64748b;
+    }
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 46px;
+      height: 24px;
+      flex-shrink: 0;
+    }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider-switch {
+      position: absolute;
+      cursor: pointer;
+      inset: 0;
+      background-color: #cbd5e1;
+      transition: .25s;
+      border-radius: 24px;
+    }
+    .slider-switch:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: .25s;
+      border-radius: 50%;
+    }
+    input:checked + .slider-switch { background-color: #10b981; }
+    input:checked + .slider-switch:before { transform: translateX(22px); }
+
+    /* PERSISTENT PDF PAGE EXTRACTOR DRAWER (Point 2) */
+    #pdfPagesShelf {
+      display: none;
+      background: #f8fafc;
+      border: 1.5px solid #38bdf8;
+      border-radius: 10px;
+      padding: 10px;
+      margin-bottom: 12px;
+    }
+    .pdf-shelf-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      font-size: 12.5px;
+      font-weight: 800;
+      color: #0369a1;
+    }
+    .pdf-target-switch {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 8px;
+    }
+    .target-pill {
+      flex: 1;
+      padding: 6px;
+      border-radius: 6px;
+      border: 1.5px solid #cbd5e1;
+      background: #ffffff;
+      font-size: 11.5px;
+      font-weight: 700;
+      color: #475569;
+      cursor: pointer;
+      text-align: center;
+    }
+    .target-pill.active {
+      border-color: #0d6efd;
+      background: #eff6ff;
+      color: #0d6efd;
+    }
+    .pdf-thumbs-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(105px, 1fr));
+      gap: 8px;
+      max-height: 230px;
+      overflow-y: auto;
+      padding: 2px;
+    }
+    .pdf-page-card {
+      background: #ffffff;
+      border: 1.5px solid #cbd5e1;
+      border-radius: 8px;
+      padding: 5px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .pdf-page-card:hover {
+      border-color: #0d6efd;
+      transform: translateY(-1px);
+      box-shadow: 0 3px 8px rgba(13,110,253,0.15);
+    }
+    .pdf-page-card canvas {
+      width: 100%;
+      height: auto;
+      border-radius: 4px;
+      display: block;
+      margin-bottom: 4px;
+    }
+    .pdf-page-card span {
+      font-size: 11px;
+      font-weight: 700;
+      color: #1e293b;
     }
 
     .drop-zone {
@@ -153,7 +289,7 @@
       flex-shrink: 0;
     }
 
-    /* SIDE-BY-SIDE SPLIT VIEW TO PREVENT OVERLAP */
+    /* SIDE-BY-SIDE SPLIT VIEW */
     .crop-split-body {
       display: flex;
       flex: 1;
@@ -168,7 +304,6 @@
       }
     }
 
-    /* ZERO-DEAD AREA CROP CONTAINER */
     #cropContainer {
       flex: 1.4;
       background: #000;
@@ -269,14 +404,12 @@
     .preset-bar {
       display: flex;
       gap: 6px;
-      flex-direction: column;
+      flex-wrap: wrap;
       margin-top: 6px;
-    }
-    @media (min-width: 480px) {
-      .preset-bar { flex-direction: row; }
     }
     .preset-btn {
       flex: 1;
+      min-width: 105px;
       padding: 8px 6px;
       border-radius: 6px;
       font-size: 11.5px;
@@ -316,7 +449,7 @@
       body * { visibility: hidden; }
       #printArea, #printArea * { visibility: visible; }
       
-      /* Standard Card Print (Horizontal Side-by-Side 86x54mm) */
+      /* 1. Standard Card Print (Horizontal Side-by-Side 86x54mm) */
       body.mode-card #printArea {
         display: flex !important;
         position: absolute;
@@ -334,6 +467,12 @@
         align-items: flex-start !important;
         gap: 10mm !important;
       }
+
+      /* Minimum Gap Mode for Easy Folding & Lamination (Point 1) */
+      body.mode-card.fold-lamination #printArea {
+        gap: 1.5mm !important;
+      }
+
       body.mode-card .card-item {
         width: 86mm !important;
         height: 54mm !important;
@@ -342,7 +481,7 @@
         border-radius: 2mm;
       }
 
-      /* Ration / Passbook Print (Exact Half-Page Proportional - NEVER STRETCHES) */
+      /* 2. Ration / Passbook Print (Exact Half-Page Proportional) */
       body.mode-half-a4 #printArea {
         display: flex !important;
         position: absolute;
@@ -365,6 +504,51 @@
         border: 0.5px dashed #475569;
         background: #fff;
       }
+
+      /* 3. Full Page Print (Single Full A4 Page - Point 3) */
+      body.mode-full-a4 #printArea {
+        display: flex !important;
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 210mm;
+        height: 297mm;
+        background: #fff;
+        margin: 0;
+        padding: 6mm !important;
+        flex-direction: column !important;
+        justify-content: center !important;
+        align-items: center !important;
+      }
+      body.mode-full-a4 .card-item {
+        width: 198mm !important;
+        height: 285mm !important;
+        object-fit: contain !important;
+        border: none !important;
+      }
+
+      /* 4. Custom Free Crop Print */
+      body.mode-free #printArea {
+        display: flex !important;
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 210mm;
+        height: 297mm;
+        background: #fff;
+        margin: 0;
+        padding: 15mm 10mm !important;
+        flex-direction: column !important;
+        justify-content: flex-start !important;
+        align-items: center !important;
+        gap: 10mm !important;
+      }
+      body.mode-free .card-item {
+        max-width: 190mm !important;
+        max-height: 125mm !important;
+        object-fit: contain !important;
+        background: #fff;
+      }
     }
   </style>
 </head>
@@ -379,31 +563,57 @@
     </div>
 
     <h2>🆔 आधार, पैन एवं राशन/पासबुक A4 प्रिंटिंग</h2>
-    <p>दस्तावेज का प्रकार चुनें, क्रॉप व एंगल सेट करें एवं A4 पर बिना किसी खिंचाव (stretch) के प्रिंट निकालें।</p>
+    <p>दस्तावेज (Photo या PDF) चुनें, क्रॉप व शार्पनेस सेट करें एवं 300 DPI पर साफ प्रिंट निकालें।</p>
 
-    <!-- DOCUMENT PRINT TYPE -->
+    <!-- DOCUMENT PRINT TYPE (Point 3: Full Page as 3rd, Custom Free as 4th) -->
     <div class="doc-type-box">
       <label for="docFormat">📄 प्रिंट प्रारूप (Print Format Size) चुनें:</label>
       <select id="docFormat" class="doc-select" onchange="updateDocFormat()">
         <option value="card" selected>1. Standard ID Card (Aadhaar / PAN - 86 × 54 mm Proportional)</option>
         <option value="half-a4">2. Ration Card / Passbook (Free Crop & Half A4 Sheet - No Stretch)</option>
-        <option value="free">3. Custom Free Crop (Any Document Proportion)</option>
+        <option value="full-a4">3. Full Page Print (Single Full A4 Sheet)</option>
+        <option value="free">4. Custom Free Crop (Any Document Proportion)</option>
       </select>
+
+      <!-- POINT 1: LAMINATION FOLD TOGGLE BELOW CARD OPTION -->
+      <div class="toggle-row-box" id="laminationToggleBox">
+        <div class="toggle-info">
+          ✂️ Lamination Fold Mode (Minimum Gap)
+          <span class="toggle-sub">ON करने पर फ्रंट और बैक कार्ड के बीच कम से कम गैप रहेगा (मोड़कर लैमिनेट करने हेतु)</span>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="chkLaminationFold" onchange="toggleLaminationGap()">
+          <span class="slider-switch"></span>
+        </label>
+      </div>
     </div>
 
-    <!-- FRONT DROP ZONE (MANDATORY) -->
+    <!-- POINT 2: PERSISTENT MULTI-PAGE PDF EXTRACTOR SHELF -->
+    <div id="pdfPagesShelf">
+      <div class="pdf-shelf-header">
+        <span>📑 अपलोड की गई PDF के पेज (किसी भी पेज पर क्लिक करके डेटा निकालें):</span>
+        <button type="button" onclick="clearLoadedPdf()" style="background:#ef4444; color:#fff; border:none; border-radius:4px; padding:2px 7px; font-size:11px; cursor:pointer;">✕ हटाएं</button>
+      </div>
+      <div class="pdf-target-switch">
+        <button type="button" id="pillFront" class="target-pill active" onclick="setPdfExtractTarget('front')">1. फ्रंट (Front) के लिए निकालें</button>
+        <button type="button" id="pillBack" class="target-pill" onclick="setPdfExtractTarget('back')">2. बैक (Back) के लिए निकालें</button>
+      </div>
+      <div class="pdf-thumbs-grid" id="pdfThumbsGrid"></div>
+    </div>
+
+    <!-- FRONT DROP ZONE (MANDATORY - IMAGES & PDF) -->
     <div class="drop-zone" id="dropFront" onclick="document.getElementById('fFront').click()">
-      <span class="drop-label" id="lblFront">1. फ्रंट दस्तावेज (Front Side Document) * <span style="color:#ef4444; font-size:11px;">(अनिवार्य)</span></span>
-      <div class="drop-sub">📁 क्लिक करके फोटो चुनें या WhatsApp से Drag & Drop / Paste करें</div>
-      <input type="file" id="fFront" accept="image/*" style="display:none;" onchange="handleFileSelect(this, 'front')">
+      <span class="drop-label" id="lblFront">1. फ्रंट दस्तावेज (Photo / PDF) * <span style="color:#ef4444; font-size:11px;">(अनिवार्य)</span></span>
+      <div class="drop-sub">📁 क्लिक करके फोटो/PDF चुनें या WhatsApp से Drag & Drop / Paste करें</div>
+      <input type="file" id="fFront" accept="image/*,application/pdf" style="display:none;" onchange="handleFileSelect(this, 'front')">
       <img id="prev_front" class="preview-box" alt="Front Preview">
     </div>
 
-    <!-- BACK DROP ZONE (OPTIONAL) -->
+    <!-- BACK DROP ZONE (OPTIONAL - IMAGES & PDF) -->
     <div class="drop-zone optional-zone" id="dropBack" onclick="document.getElementById('fBack').click()">
-      <span class="drop-label" id="lblBack">2. बैक दस्तावेज (Back Side Document) <span style="color:#64748b; font-size:11px; font-weight:normal;">(ऐच्छिक / Optional)</span></span>
-      <div class="drop-sub">📁 क्लिक करके फोटो चुनें या WhatsApp से Drag & Drop / Paste करें</div>
-      <input type="file" id="fBack" accept="image/*" style="display:none;" onchange="handleFileSelect(this, 'back')">
+      <span class="drop-label" id="lblBack">2. बैक दस्तावेज (Photo / PDF) <span style="color:#64748b; font-size:11px; font-weight:normal;">(ऐच्छिक / Optional)</span></span>
+      <div class="drop-sub">📁 क्लिक करके फोटो/PDF चुनें या WhatsApp से Drag & Drop / Paste करें</div>
+      <input type="file" id="fBack" accept="image/*,application/pdf" style="display:none;" onchange="handleFileSelect(this, 'back')">
       <img id="prev_back" class="preview-box" alt="Back Preview">
     </div>
 
@@ -445,8 +655,8 @@
             
             <div class="slider-row">
               <span class="label-text">🔍 Sharpness</span>
-              <input type="range" id="sliderSharp" min="0" max="8" value="0" step="0.5" oninput="applyLiveFilter()">
-              <span id="valSharp" class="slider-val">0</span>
+              <input type="range" id="sliderSharp" min="0" max="8" value="1.5" step="0.5" oninput="applyLiveFilter()">
+              <span id="valSharp" class="slider-val">1.5</span>
               <button type="button" class="btn-reset-single" onclick="resetSingleSlider('sharp')">↺</button>
             </div>
             
@@ -460,6 +670,7 @@
             <div class="preset-bar">
               <button type="button" class="preset-btn" onclick="applyPreset('autoDoc')">⚡ Auto Clean</button>
               <button type="button" class="preset-btn" onclick="applyPreset('passbook')">📖 Passbook Boost</button>
+              <button type="button" class="preset-btn" onclick="applyPreset('crispPrint')">🖨️ Crisp Laser Print</button>
               <button type="button" class="preset-btn" style="color:#cbd5e1; border-color:#64748b;" onclick="resetAllFilters()">↺ सभी रीसेट</button>
             </div>
           </div>
@@ -486,18 +697,40 @@
     let currentTarget = '';
     let baseRotation = 0;
     let savedScrollY = 0;
+    let loadedPdfDoc = null;
+    let pdfExtractTarget = 'front';
     const docs = { front: '', back: '' };
+
+    function applyBodyPrintClasses() {
+      const format = document.getElementById('docFormat').value;
+      const isFold = document.getElementById('chkLaminationFold').checked;
+      let cls = 'mode-' + format;
+      if (format === 'card' && isFold) {
+        cls += ' fold-lamination';
+      }
+      document.body.className = cls;
+    }
+
+    function toggleLaminationGap() {
+      applyBodyPrintClasses();
+    }
 
     function updateDocFormat() {
       const format = document.getElementById('docFormat').value;
-      document.body.className = format === 'half-a4' ? 'mode-half-a4' : 'mode-card';
+      applyBodyPrintClasses();
+
+      // Show Lamination Fold toggle only for Card Print
+      document.getElementById('laminationToggleBox').style.display = (format === 'card') ? 'flex' : 'none';
 
       if (format === 'half-a4') {
         document.getElementById('lblFront').innerHTML = '1. राशन / पासबुक पेज 1 (Main Page) * <span style="color:#ef4444; font-size:11px;">(अनिवार्य)</span>';
         document.getElementById('lblBack').innerHTML = '2. राशन / पासबुक पेज 2 (Secondary Page) <span style="color:#64748b; font-size:11px; font-weight:normal;">(ऐच्छिक)</span>';
+      } else if (format === 'full-a4') {
+        document.getElementById('lblFront').innerHTML = '1. फुल A4 पेज दस्तावेज (Full Page) * <span style="color:#ef4444; font-size:11px;">(अनिवार्य)</span>';
+        document.getElementById('lblBack').innerHTML = '2. अतिरिक्त पेज (Optional) <span style="color:#64748b; font-size:11px; font-weight:normal;">(ऐच्छिक)</span>';
       } else {
-        document.getElementById('lblFront').innerHTML = '1. फ्रंट दस्तावेज (Front Side Document) * <span style="color:#ef4444; font-size:11px;">(अनिवार्य)</span>';
-        document.getElementById('lblBack').innerHTML = '2. बैक दस्तावेज (Back Side Document) <span style="color:#64748b; font-size:11px; font-weight:normal;">(ऐच्छिक)</span>';
+        document.getElementById('lblFront').innerHTML = '1. फ्रंट दस्तावेज (Photo / PDF) * <span style="color:#ef4444; font-size:11px;">(अनिवार्य)</span>';
+        document.getElementById('lblBack').innerHTML = '2. बैक दस्तावेज (Photo / PDF) <span style="color:#64748b; font-size:11px; font-weight:normal;">(ऐच्छिक / Optional)</span>';
       }
 
       if (cropper) {
@@ -508,8 +741,119 @@
     function getTargetAspectRatio() {
       const format = document.getElementById('docFormat').value;
       if (format === 'card') return 86 / 54;
-      // Ration/Passbook is free selection so user can crop any rectangular receipt/passbook
+      if (format === 'full-a4') return 210 / 297;
       return NaN;
+    }
+
+    function setPdfExtractTarget(target) {
+      pdfExtractTarget = target;
+      document.getElementById('pillFront').classList.toggle('active', target === 'front');
+      document.getElementById('pillBack').classList.toggle('active', target === 'back');
+    }
+
+    function clearLoadedPdf() {
+      loadedPdfDoc = null;
+      document.getElementById('pdfThumbsGrid').innerHTML = '';
+      document.getElementById('pdfPagesShelf').style.display = 'none';
+    }
+
+    // POINT 2 & 3: LOAD PDF WITH PASSWORD PROMPT & RENDER ALL PAGES PERSISTENTLY
+    async function loadPdfWithPasswordSupport(arrayBuffer, initialTarget) {
+      if (!window.pdfjsLib) {
+        alert("PDF लाइब्रेरी लोड हो रही है, कृपया 2 सेकंड बाद पुनः प्रयास करें।");
+        return;
+      }
+
+      setPdfExtractTarget(initialTarget);
+
+      const openTask = async (password) => {
+        const params = { data: arrayBuffer.slice(0) };
+        if (password !== undefined) params.password = password;
+        return await pdfjsLib.getDocument(params).promise;
+      };
+
+      let pdf = null;
+      try {
+        pdf = await openTask();
+      } catch (err) {
+        if (err && (err.name === 'PasswordException' || (err.message && err.message.toLowerCase().includes('password')))) {
+          let unlocked = false;
+          while (!unlocked) {
+            const pwd = prompt("🔒 यह PDF पासवर्ड से सुरक्षित है। कृपया PDF का पासवर्ड दर्ज करें (जैसे आधार के लिए नाम के पहले 4 अक्षर CAPS में + जन्म वर्ष):");
+            if (pwd === null) return; // User cancelled
+            try {
+              pdf = await openTask(pwd);
+              unlocked = true;
+            } catch (pwdErr) {
+              alert("❌ गलत पासवर्ड! कृपया सही पासवर्ड पुनः दर्ज करें।");
+            }
+          }
+        } else {
+          alert("PDF खोलने में त्रुटि: " + err.message);
+          return;
+        }
+      }
+
+      loadedPdfDoc = pdf;
+      const grid = document.getElementById('pdfThumbsGrid');
+      grid.innerHTML = '';
+      document.getElementById('pdfPagesShelf').style.display = 'block';
+
+      for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+        const page = await pdf.getPage(pageNum);
+        const thumbViewport = page.getViewport({ scale: 0.35 });
+        const card = document.createElement('div');
+        card.className = 'pdf-page-card';
+        card.title = 'पेज ' + pageNum + ' को क्रॉप करने के लिए क्लिक करें';
+
+        const c = document.createElement('canvas');
+        c.width = thumbViewport.width;
+        c.height = thumbViewport.height;
+        const ctx = c.getContext('2d');
+        await page.render({ canvasContext: ctx, viewport: thumbViewport }).promise;
+
+        const label = document.createElement('span');
+        label.innerText = '📄 Page ' + pageNum;
+
+        card.appendChild(c);
+        card.appendChild(label);
+
+        card.onclick = () => extractPdfPageForCrop(pageNum);
+        grid.appendChild(card);
+      }
+
+      // Automatically open Page 1 for immediate extraction if single-page PDF
+      if (pdf.numPages === 1) {
+        extractPdfPageForCrop(1);
+      }
+    }
+
+    async function extractPdfPageForCrop(pageNum) {
+      if (!loadedPdfDoc) return;
+      try {
+        const page = await loadedPdfDoc.getPage(pageNum);
+        // Render at high 3.0x scale (~220-300 DPI) for crystal clear card/text print
+        const viewport = page.getViewport({ scale: 3.0 });
+        const canvas = document.createElement('canvas');
+        canvas.width = viewport.width;
+        canvas.height = viewport.height;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        await page.render({ canvasContext: ctx, viewport: viewport }).promise;
+
+        savedScrollY = window.scrollY || window.pageYOffset || 0;
+        currentTarget = pdfExtractTarget;
+        startCropper(canvas.toDataURL('image/png'), pdfExtractTarget);
+
+        // Automatically switch next extract target to 'back' if 'front' was just selected
+        if (pdfExtractTarget === 'front') {
+          setPdfExtractTarget('back');
+        }
+      } catch (err) {
+        alert("पेज निकालने में त्रुटि: " + err.message);
+      }
     }
 
     function handleFileSelect(input, target) {
@@ -519,6 +863,15 @@
     }
 
     function processFile(file, target) {
+      if (file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf')) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          loadPdfWithPasswordSupport(e.target.result, target);
+        };
+        reader.readAsArrayBuffer(file);
+        return;
+      }
+
       savedScrollY = window.scrollY || window.pageYOffset || 0;
       currentTarget = target;
       const reader = new FileReader();
@@ -536,7 +889,13 @@
       resetAllFilters();
 
       const format = document.getElementById('docFormat').value;
-      const formatName = format === 'half-a4' ? 'राशन / पासबुक (Half A4 Free Size)' : (format === 'card' ? 'कार्ड साइज (86×54)' : 'कस्टम फ्री क्रॉप');
+      const formatMap = {
+        'card': 'कार्ड साइज (86×54)',
+        'half-a4': 'राशन / पासबुक (Half A4)',
+        'full-a4': 'फुल A4 पेज',
+        'free': 'कस्टम फ्री क्रॉप'
+      };
+      const formatName = formatMap[format] || 'कस्टम क्रॉप';
       document.getElementById('cropTitle').innerText = (target === 'front' ? "1. फ्रंट पेज सेट करें" : "2. बैक पेज सेट करें") + " [" + formatName + "]";
 
       document.body.style.overflow = 'hidden';
@@ -544,7 +903,6 @@
 
       if (cropper) cropper.destroy();
 
-      // Zero-Dead Area Auto-Fit: viewMode 1 with 98% auto crop
       cropper = new Cropper(image, {
         aspectRatio: getTargetAspectRatio(),
         viewMode: 1,
@@ -611,8 +969,8 @@
       document.getElementById('valBright').innerText = "105%";
       document.getElementById('sliderContrast').value = 115;
       document.getElementById('valContrast').innerText = "115%";
-      document.getElementById('sliderSharp').value = 0;
-      document.getElementById('valSharp').innerText = "0";
+      document.getElementById('sliderSharp').value = 1.5;
+      document.getElementById('valSharp').innerText = "1.5";
       document.getElementById('sliderRotate').value = 0;
       document.getElementById('valRotate').innerText = "0°";
       applyLiveFilter();
@@ -625,15 +983,22 @@
         document.getElementById('valBright').innerText = "110%";
         document.getElementById('sliderContrast').value = 125;
         document.getElementById('valContrast').innerText = "125%";
-        document.getElementById('sliderSharp').value = 1.5;
-        document.getElementById('valSharp').innerText = "1.5";
+        document.getElementById('sliderSharp').value = 2.5;
+        document.getElementById('valSharp').innerText = "2.5";
       } else if (preset === 'passbook') {
         document.getElementById('sliderBright').value = 114;
         document.getElementById('valBright').innerText = "114%";
         document.getElementById('sliderContrast').value = 135;
         document.getElementById('valContrast').innerText = "135%";
-        document.getElementById('sliderSharp').value = 3.0;
-        document.getElementById('valSharp').innerText = "3.0";
+        document.getElementById('sliderSharp').value = 4.0;
+        document.getElementById('valSharp').innerText = "4.0";
+      } else if (preset === 'crispPrint') {
+        document.getElementById('sliderBright').value = 118;
+        document.getElementById('valBright').innerText = "118%";
+        document.getElementById('sliderContrast').value = 148;
+        document.getElementById('valContrast').innerText = "148%";
+        document.getElementById('sliderSharp').value = 5.5;
+        document.getElementById('valSharp').innerText = "5.5";
       }
       applyLiveFilter();
     }
@@ -655,12 +1020,7 @@
     function getFilterCss() {
       const b = document.getElementById('sliderBright').value;
       const c = document.getElementById('sliderContrast').value;
-      const s = parseFloat(document.getElementById('sliderSharp').value) || 0;
-      let filter = `brightness(${b}%) contrast(${c}%)`;
-      if (s > 0) {
-        filter += ` drop-shadow(0px 0px ${ (s * 0.2).toFixed(1) }px rgba(0,0,0,0.6))`;
-      }
-      return filter;
+      return `brightness(${b}%) contrast(${c}%)`;
     }
 
     function applyLiveFilter() {
@@ -681,6 +1041,45 @@
       }
     }
 
+    // POINT 5: REAL UNSHARP MASK CONVOLUTION SHARPENING ENGINE
+    function applyRealSharpness(ctx, width, height, sharpLevel) {
+      if (sharpLevel <= 0) return;
+      const amount = sharpLevel * 0.25; // Scales smoothly from 0 to 2.0
+      const imgData = ctx.getImageData(0, 0, width, height);
+      const src = imgData.data;
+      const out = ctx.createImageData(width, height);
+      const dst = out.data;
+
+      const centerWeight = 1 + 4 * amount;
+      const sideWeight = -amount;
+
+      for (let y = 0; y < height; y++) {
+        for (let x = 0; x < width; x++) {
+          const idx = (y * width + x) * 4;
+          if (x === 0 || y === 0 || x === width - 1 || y === height - 1) {
+            dst[idx] = src[idx];
+            dst[idx + 1] = src[idx + 1];
+            dst[idx + 2] = src[idx + 2];
+            dst[idx + 3] = 255;
+            continue;
+          }
+
+          const up = ((y - 1) * width + x) * 4;
+          const down = ((y + 1) * width + x) * 4;
+          const left = (y * width + (x - 1)) * 4;
+          const right = (y * width + (x + 1)) * 4;
+
+          for (let ch = 0; ch < 3; ch++) {
+            const val = src[idx + ch] * centerWeight +
+                        (src[up + ch] + src[down + ch] + src[left + ch] + src[right + ch]) * sideWeight;
+            dst[idx + ch] = val < 0 ? 0 : (val > 255 ? 255 : val);
+          }
+          dst[idx + 3] = 255;
+        }
+      }
+      ctx.putImageData(out, 0, 0);
+    }
+
     function closeCropper() {
       document.getElementById('cropModal').style.display = 'none';
       document.body.style.overflow = '';
@@ -692,11 +1091,15 @@
       if (!cropper) return;
 
       const format = document.getElementById('docFormat').value;
-      let maxW = 1800;
-      let maxH = 1800;
+      // High-Resolution 300 DPI Target Dimensions for Sharp Print
+      let maxW = 2400;
+      let maxH = 2400;
       if (format === 'card') {
-        maxW = 1200;
-        maxH = 753; // exact 86:54 ratio
+        maxW = 1400;
+        maxH = 879; // Exact 86:54 high-res ratio
+      } else if (format === 'full-a4') {
+        maxW = 2480;
+        maxH = 3508; // Full 300 DPI A4
       }
 
       const canvas = cropper.getCroppedCanvas({ 
@@ -717,30 +1120,49 @@
       ctx.drawImage(canvas, 0, 0);
       ctx.filter = 'none';
 
-      const compressedData = filterCanvas.toDataURL('image/jpeg', 0.90);
-      docs[currentTarget] = compressedData;
+      // Apply real pixel-level sharpness convolution (Point 5)
+      const sharpVal = parseFloat(document.getElementById('sliderSharp').value) || 0;
+      if (sharpVal > 0) {
+        applyRealSharpness(ctx, filterCanvas.width, filterCanvas.height, sharpVal);
+      }
+
+      // Lossless PNG output so text edges never get JPEG compression artifacts
+      const crispData = filterCanvas.toDataURL('image/png');
+      docs[currentTarget] = crispData;
 
       const prev = document.getElementById('prev_' + currentTarget);
-      prev.src = compressedData;
+      prev.src = crispData;
       prev.style.display = 'block';
 
       closeCropper();
     }
 
-    /* 3. RESET FORM AFTER FINAL PRINT SUBMISSION */
+    /* RESET FORM & PDF SHELF AFTER FINAL PRINT SUBMISSION (Point 2) */
+    function resetPortalAfterPrint() {
+      docs.front = '';
+      docs.back = '';
+      document.getElementById('prev_front').style.display = 'none';
+      document.getElementById('prev_front').src = '';
+      document.getElementById('prev_back').style.display = 'none';
+      document.getElementById('prev_back').src = '';
+      document.getElementById('fFront').value = '';
+      document.getElementById('fBack').value = '';
+      clearLoadedPdf();
+    }
+
     function submitAndPrint() {
       if (!docs.front) {
         alert("कृपया कम से कम फ्रंट दस्तावेज सेट करें!");
         return;
       }
 
-      const format = document.getElementById('docFormat').value;
-      document.body.className = format === 'half-a4' ? 'mode-half-a4' : 'mode-card';
+      applyBodyPrintClasses();
 
       document.getElementById('printImgFront').src = docs.front;
 
       const backImg = document.getElementById('printImgBack');
-      if (docs.back) {
+      const format = document.getElementById('docFormat').value;
+      if (docs.back && format !== 'full-a4') {
         backImg.src = docs.back;
         backImg.style.display = 'block';
       } else {
@@ -751,22 +1173,12 @@
       setTimeout(function() {
         window.print();
         
-        // Reset state after dialog triggers
-        setTimeout(function() {
-          docs.front = '';
-          docs.back = '';
-          document.getElementById('prev_front').style.display = 'none';
-          document.getElementById('prev_front').src = '';
-          document.getElementById('prev_back').style.display = 'none';
-          document.getElementById('prev_back').src = '';
-          document.getElementById('fFront').value = '';
-          document.getElementById('fBack').value = '';
-        }, 500);
-
+        // Reset state & vanish PDF pages only after final print triggers
+        setTimeout(resetPortalAfterPrint, 500);
       }, 150);
     }
 
-    // Direct WhatsApp Drag & Drop & Paste Listeners
+    // Direct WhatsApp Drag & Drop & Paste Listeners (Point 4 - Kept Intact)
     ['dropFront', 'dropBack'].forEach(id => {
       const zone = document.getElementById(id);
       const target = id === 'dropFront' ? 'front' : 'back';
