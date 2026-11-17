@@ -530,7 +530,7 @@
     /* COMPACT BUTTON ROW */
     .compact-preset-bar {
       display: flex;
-      gap: 5px;
+      gap: 6px;
       align-items: center;
       border-top: 1px solid #1e293b;
       padding-top: 6px;
@@ -541,15 +541,16 @@
       background: #0f172a;
       color: #38bdf8;
       border: 1px solid #38bdf8;
-      padding: 8px 4px;
+      padding: 9px 4px;
       border-radius: 6px;
-      font-size: 11px;
+      font-size: 11.5px;
       font-weight: 700;
       cursor: pointer;
       text-align: center;
     }
     .btn-preset:hover { background: #0284c7; color: #fff; }
     .btn-ai {
+      flex: 1.4;
       background: linear-gradient(135deg, #2563eb, #7c3aed);
       color: #fff;
       border: none;
@@ -618,7 +619,7 @@
     </div>
 
     <h2>✨ पासपोर्ट फोटो स्टूडियो (2.1 × 2.4 — 600 DPI HD)</h2>
-    <p>AI फेस रेस्टोरेशन (CodeFormer + GFPGAN), YCbCr स्किन स्मूथिंग, AI बैकग्राउंड रिमूवर एवं 600 DPI प्रिंट।</p>
+    <p>ऑफलाइन YCbCr स्किन टच-अप (दाग-धब्बे रिमूव), Poof AI बैकग्राउंड रिमूवर, Photoshop Ctrl+L / Ctrl+M एवं 600 DPI प्रिंट।</p>
 
     <label for="photoInput" class="upload-zone-label" id="dropLabel">
       <span class="upload-label">📷 फोटो चुनें, कैमरा ऑन करें या WhatsApp से Drag/Paste करें</span>
@@ -684,7 +685,7 @@
   <div id="editModal" class="studio-modal" tabindex="0">
     <div class="modal-inner">
       <div class="modal-header-bar">
-        <span>Step 2: ✨ AI Studio (CodeFormer / GFPGAN, YCbCr Skin, Ctrl+L & Ctrl+M)</span>
+        <span>Step 2: ✨ AI Studio (Poof BG, YCbCr Skin Touch-Up, Ctrl+L & Ctrl+M)</span>
         <button type="button" onclick="backToCropStage()" style="background:#334155; color:#38bdf8; border:none; padding:4px 8px; border-radius:4px; cursor:pointer; font-size:11px;">← वापस क्रॉप</button>
       </div>
 
@@ -712,7 +713,7 @@
             <a href="https://www.remove.bg/upload" target="_blank" style="color:#38bdf8; text-decoration:none; font-size:10.5px; margin-left:4px;">↗️ remove.bg</a>
           </div>
 
-          <div id="aiLoader" style="display:none; position:absolute; inset:0; background:rgba(0,0,0,0.82); flex-direction:column; align-items:center; justify-content:center; color:#38bdf8; font-size:13px; font-weight:bold; border-radius:8px; text-align:center; padding:12px; z-index:20;">
+          <div id="aiLoader" style="display:none; position:absolute; inset:0; background:rgba(0,0,0,0.85); flex-direction:column; align-items:center; justify-content:center; color:#38bdf8; font-size:13px; font-weight:bold; border-radius:8px; text-align:center; padding:12px; z-index:20;">
             <div style="font-size:24px; margin-bottom:6px;">⏳</div>
             <span id="aiLoaderText">AI प्रोसेसिंग चालू है...</span>
           </div>
@@ -743,7 +744,7 @@
           <!-- TAB 1: FACE RETOUCH -->
           <div class="tab-pane active" id="paneRetouch">
             <div class="slider-row" style="background:#0f172a; padding:4px 6px; border-radius:6px; border:1px solid #1e293b;">
-              <span class="label-text" style="color:#a78bfa;" title="Low = More AI Smoothing, High = More Original Detail">🎯 Fidelity Wt</span>
+              <span class="label-text" style="color:#a78bfa;" title="Low = Stronger Skin Retouch, High = More Original Texture">🎯 Fidelity Wt</span>
               <input type="range" id="fidSlider" min="0.1" max="1.0" value="0.7" step="0.05" oninput="onFidelityChange('slider')">
               <div class="val-input-wrap">
                 <input type="number" id="fidVal" class="val-input" value="0.7" min="0.1" max="1.0" step="0.05" oninput="onFidelityChange('input')">
@@ -861,8 +862,7 @@
           </div>
 
           <div class="compact-preset-bar">
-            <button type="button" class="btn-preset btn-ai" onclick="runAIFaceBeautify()" id="btnAiEnhance">🔮 AI Face Enhance</button>
-            <button type="button" class="btn-preset" onclick="adaptiveAutoBeautify()">⚡ Auto Face Beautify</button>
+            <button type="button" class="btn-preset btn-ai" onclick="applyStudioSkinTouchUp()" id="btnAiEnhance">✨ Studio Skin Touch-Up</button>
             <button type="button" class="btn-preset" style="color:#cbd5e1; border-color:#64748b;" onclick="resetAllFilters()">↺ सभी रीसेट</button>
           </div>
 
@@ -882,15 +882,13 @@
     var finalPhotoData = '';
     var originalCropBackup = null;
     var baseCroppedCanvas = null;
-    var aiRestoredCanvas = null; // Stores full AI-restored face layer so Fidelity Wt blends smoothly in real time
     var cutoutCanvas = null;
     var studioBgColor = '#ffffff';
     var isBgRemoved = false;
-    var manualBrushMode = null; // null | 'erase' | 'restore'
+    var manualBrushMode = null;
     var isBrushing = false;
     var baseAngle = 0;
 
-    // Preview Zoom & Pan State (Laptop Scroll Zoom + Mobile Pinch Zoom)
     var previewScale = 1.0;
     var previewPanX = 0;
     var previewPanY = 0;
@@ -898,7 +896,6 @@
     var POOF_API_KEY = "pk_a2e96d6ac49a701c628187ffd990c64e";
     var WHATSAPP_NUMBER = "919905477547";
 
-    // High-DPI 600 DPI Passport Dimensions (2.1 x 2.4 ratio -> 730 x 834 px)
     var PHOTO_W = 730;
     var PHOTO_H = 834;
 
@@ -910,7 +907,6 @@
       });
     }
 
-    // Keyboard shortcuts Ctrl+L (Levels) & Ctrl+M (Curves) inside Edit Modal
     window.addEventListener('keydown', function(e) {
       if (document.getElementById('editModal').style.display === 'flex') {
         if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'l') {
@@ -961,7 +957,6 @@
                 var ctx = baseCroppedCanvas.getContext('2d');
                 ctx.clearRect(0, 0, PHOTO_W, PHOTO_H);
                 ctx.drawImage(pastedImg, 0, 0, PHOTO_W, PHOTO_H);
-                aiRestoredCanvas = null;
                 isBgRemoved = true;
                 if (studioBgColor === '#ffffff') studioBgColor = '#38bdf8';
                 renderPreview();
@@ -986,7 +981,6 @@
         baseAngle = 0;
         studioBgColor = '#ffffff';
         isBgRemoved = false;
-        aiRestoredCanvas = null;
         resetCropRotation();
         resetAllFilters();
 
@@ -1008,7 +1002,6 @@
       reader.readAsDataURL(file);
     }
 
-    /* ROTATION IN STEP 1 */
     function syncCropRotation() {
       if (!cropper) return;
       var deg = parseFloat(document.getElementById('rSlider').value) || 0;
@@ -1036,7 +1029,6 @@
       cropper.rotateTo(baseAngle + fineDeg);
     }
 
-    /* STEP 1 -> STEP 2 TRANSITION (100% REAL ORIGINAL IMAGE ON OPEN) */
     function proceedToEditing() {
       if (!cropper) return;
 
@@ -1052,7 +1044,6 @@
       originalCropBackup.height = PHOTO_H;
       originalCropBackup.getContext('2d').drawImage(baseCroppedCanvas, 0, 0);
 
-      aiRestoredCanvas = null;
       isBgRemoved = false;
       studioBgColor = '#ffffff';
       toggleManualBrush(null);
@@ -1079,7 +1070,6 @@
       if (cropper) cropper.destroy();
     }
 
-    /* ZOOM IN / ZOOM OUT (LAPTOP MOUSE WHEEL + MOBILE PINCH-TO-ZOOM + PAN) */
     function applyPreviewTransform() {
       var canvas = document.getElementById('editPreviewCanvas');
       var label = document.getElementById('zoomLevelText');
@@ -1288,7 +1278,6 @@
       segmentation.send({ image: originalCropBackup });
     }
 
-    /* MANUAL EDGE TOUCH-UP BRUSH WITH ADJUSTABLE SIZE SLIDER */
     function updateBrushSizeDisplay() {
       var val = document.getElementById('brushSizeSlider').value;
       document.getElementById('brushSizeVal').innerText = val + 'px';
@@ -1359,7 +1348,7 @@
       });
     }
 
-    /* LIVE WORKING FIDELITY WEIGHT SLIDER HANDLER */
+    /* FIDELITY WEIGHT SLIDER -> DYNAMICALLY CONTROLS OFFLINE YCbCr SKIN SMOOTHNESS */
     function onFidelityChange(source) {
       if (source === 'slider') {
         document.getElementById('fidVal').value = document.getElementById('fidSlider').value;
@@ -1370,15 +1359,11 @@
           document.getElementById('fidSlider').value = val;
         }
       }
-
-      // If AI Enhance hasn't been clicked yet, Fidelity dynamically scales local YCbCr skin retouch strength
-      if (!aiRestoredCanvas) {
-        var fid = parseFloat(document.getElementById('fidSlider').value) || 0.7;
-        // Lower fidelity (e.g. 0.2) -> stronger smooth skin (up to 7.0); higher fidelity (1.0) -> natural detail (0)
-        var dynamicSmooth = Math.round(((1.0 - fid) * 8.0) * 2) / 2;
-        document.getElementById('smSlider').value = dynamicSmooth;
-        document.getElementById('smVal').value = dynamicSmooth;
-      }
+      var fid = parseFloat(document.getElementById('fidSlider').value) || 0.7;
+      // Lower fidelity (0.1) -> stronger smooth skin (8.0); Higher fidelity (1.0) -> natural texture (0.0)
+      var dynamicSmooth = Math.round(((1.0 - fid) * 8.5) * 2) / 2;
+      document.getElementById('smSlider').value = dynamicSmooth;
+      document.getElementById('smVal').value = dynamicSmooth;
       renderPreview();
     }
 
@@ -1399,7 +1384,6 @@
       renderPreview();
     }
 
-    /* MOUSE WHEEL SCROLL CONTROL FOR ALL SLIDERS */
     function setupScrollControls() {
       var pairs = [
         { slider: 'rSlider', input: 'rVal', step: 0.5 },
@@ -1477,7 +1461,7 @@
       return filterStr;
     }
 
-    /* YCbCr SKIN-ONLY EDGE-PRESERVING BILATERAL BEAUTIFIER (SMOOTH SKIN, RAZOR-SHARP EYES/HAIR) */
+    /* 100% OFFLINE YCbCr SKIN-ONLY BILATERAL BLEMISH REMOVER & TOUCH-UP */
     function applyYCbCrSkinBeautifier(ctx, width, height, smoothLevel) {
       if (smoothLevel <= 0) return;
 
@@ -1496,7 +1480,7 @@
 
           var r0 = copy[idx], g0 = copy[idx + 1], b0 = copy[idx + 2];
 
-          // Convert RGB to YCbCr to isolate human skin tones accurately across all complexions
+          // Isolate human skin pixels in YCbCr color space (leaves eyes, hair, eyebrows & clothes untouched)
           var cb = 128 - 0.168736 * r0 - 0.331264 * g0 + 0.5 * b0;
           var cr = 128 + 0.5 * r0 - 0.418688 * g0 - 0.081312 * b0;
 
@@ -1509,7 +1493,7 @@
                 var nr = copy[nIdx], ng = copy[nIdx + 1], nb = copy[nIdx + 2];
                 var diff = Math.abs(nr - r0) + Math.abs(ng - g0) + Math.abs(nb - b0);
 
-                // Preserve sharp edges (eyebrows, eyelashes, nostrils, lip borders, bindi)
+                // Stop at sharp facial edges (eyelashes, eyebrows, nostrils, lip lines, bindi)
                 if (diff < colorThreshold * 3) {
                   var w = 1.0 - (diff / (colorThreshold * 3.2));
                   sumR += nr * w;
@@ -1525,7 +1509,6 @@
               var avgG = sumG / weightSum;
               var avgB = sumB / weightSum;
 
-              // Subtle even-tone radiance + gentle edge-preserving micro-sharpening
               src[idx] = Math.min(255, Math.round(r0 * (1 - blendFactor) + avgR * blendFactor + 1.5));
               src[idx + 1] = Math.min(255, Math.round(g0 * (1 - blendFactor) + avgG * blendFactor + 1.0));
               src[idx + 2] = Math.min(255, Math.round(b0 * (1 - blendFactor) + avgB * blendFactor + 0.5));
@@ -1537,7 +1520,6 @@
       ctx.putImageData(imgData, 0, 0);
     }
 
-    /* PHOTOSHOP LEVELS (CTRL+L) & CURVES (CTRL+M) PIXEL LUT ENGINE */
     function applyLevelsAndCurvesLUT(ctx, width, height) {
       var lvlBlack = parseFloat(document.getElementById('lvlBlackSlider').value) || 0;
       var lvlGamma = parseFloat(document.getElementById('lvlGammaSlider').value) || 1.0;
@@ -1581,49 +1563,19 @@
       ctx.putImageData(imgData, 0, 0);
     }
 
-    /* COMPOSITE BASE + FIDELITY-BLENDED AI LAYER + SKIN SMOOTH + LEVELS/CURVES */
     function compositeCurrentPhoto(targetCtx) {
       targetCtx.fillStyle = studioBgColor;
       targetCtx.fillRect(0, 0, PHOTO_W, PHOTO_H);
 
-      // Build subject layer with real-time Fidelity Weight blending if AI restoration ran
-      var subjectCanvas = document.createElement('canvas');
-      subjectCanvas.width = PHOTO_W;
-      subjectCanvas.height = PHOTO_H;
-      var sCtx = subjectCanvas.getContext('2d');
-
-      var fidelity = parseFloat(document.getElementById('fidSlider').value) || 0.7;
-
-      if (aiRestoredCanvas) {
-        // Fidelity = 1.0 -> 100% original detail; Fidelity = 0.1 -> 90% full AI face restoration
-        sCtx.drawImage(aiRestoredCanvas, 0, 0, PHOTO_W, PHOTO_H);
-        if (fidelity > 0.1) {
-          sCtx.globalAlpha = fidelity;
-          sCtx.drawImage(baseCroppedCanvas, 0, 0, PHOTO_W, PHOTO_H);
-          sCtx.globalAlpha = 1.0;
-        }
-        // Preserve cutout transparency mask if BG was removed
-        if (isBgRemoved) {
-          sCtx.globalCompositeOperation = 'destination-in';
-          sCtx.drawImage(baseCroppedCanvas, 0, 0, PHOTO_W, PHOTO_H);
-          sCtx.globalCompositeOperation = 'source-over';
-        }
-      } else {
-        sCtx.drawImage(baseCroppedCanvas, 0, 0, PHOTO_W, PHOTO_H);
-      }
-
-      // Draw onto target with Glow/Contrast/Saturation/Warmth filters
       targetCtx.filter = getFilterString();
-      targetCtx.drawImage(subjectCanvas, 0, 0, PHOTO_W, PHOTO_H);
+      targetCtx.drawImage(baseCroppedCanvas, 0, 0, PHOTO_W, PHOTO_H);
       targetCtx.filter = 'none';
 
-      // Apply YCbCr Edge-Preserving Skin Beautifier
       var smoothVal = parseFloat(document.getElementById('smSlider').value) || 0;
       if (smoothVal > 0) {
         applyYCbCrSkinBeautifier(targetCtx, PHOTO_W, PHOTO_H, smoothVal);
       }
 
-      // Apply Photoshop Levels (Ctrl+L) & Curves (Ctrl+M)
       applyLevelsAndCurvesLUT(targetCtx, PHOTO_W, PHOTO_H);
     }
 
@@ -1636,151 +1588,13 @@
       compositeCurrentPhoto(ctx);
     }
 
-    /* DUAL AI FACE RESTORATION ENGINE (1. CodeFormer -> 2. GFPGAN v1.4 -> 3. Studio YCbCr Bilateral) */
-    async function runAIFaceBeautify() {
+    /* ONE-CLICK STUDIO SKIN TOUCH-UP (OFFLINE YCbCr BLEMISH & PORES CLEANUP) */
+    function applyStudioSkinTouchUp() {
       if (!baseCroppedCanvas) return;
-      var fidelity = parseFloat(document.getElementById('fidSlider').value) || 0.7;
-      var btn = document.getElementById('btnAiEnhance');
-      var loader = document.getElementById('aiLoader');
-      var loaderText = document.getElementById('aiLoaderText');
-
-      btn.disabled = true;
-      loaderText.innerText = "🔮 AI Face Restoration (CodeFormer / GFPGAN) चालू है...";
-      loader.style.display = 'flex';
-
-      var tempComp = document.createElement('canvas');
-      tempComp.width = PHOTO_W;
-      tempComp.height = PHOTO_H;
-      var tCtx = tempComp.getContext('2d');
-      tCtx.fillStyle = studioBgColor;
-      tCtx.fillRect(0, 0, PHOTO_W, PHOTO_H);
-      tCtx.drawImage(baseCroppedCanvas, 0, 0);
-      var base64Data = tempComp.toDataURL('image/jpeg', 0.94);
-
-      var storeEnhancedResult = function(imgUrl) {
-        return new Promise(function(resolve, reject) {
-          var enhancedImg = new Image();
-          enhancedImg.crossOrigin = "anonymous";
-          enhancedImg.onload = function() {
-            aiRestoredCanvas = document.createElement('canvas');
-            aiRestoredCanvas.width = PHOTO_W;
-            aiRestoredCanvas.height = PHOTO_H;
-            aiRestoredCanvas.getContext('2d').drawImage(enhancedImg, 0, 0, PHOTO_W, PHOTO_H);
-            resolve();
-          };
-          enhancedImg.onerror = reject;
-          enhancedImg.src = imgUrl;
-        });
-      };
-
-      // Engine 1: CodeFormer (request at low fidelity 0.25 so slider can blend smoothly from 0.1 to 1.0)
-      try {
-        const c1 = new AbortController();
-        const t1 = setTimeout(() => c1.abort(), 9000);
-        const res1 = await fetch("https://sczhou-codeformer.hf.space/api/predict", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          signal: c1.signal,
-          body: JSON.stringify({ data: [base64Data, 0.25, true] })
-        });
-        clearTimeout(t1);
-        const j1 = await res1.json();
-        if (j1 && j1.data && j1.data[0]) {
-          await storeEnhancedResult(j1.data[0]);
-          renderPreview();
-          loader.style.display = 'none';
-          btn.disabled = false;
-          return;
-        }
-      } catch (e1) {}
-
-      // Engine 2: GFPGAN v1.4 Fallback
-      try {
-        loaderText.innerText = "🔮 GFPGAN v1.4 Face Enhancer से प्रोसेस हो रहा है...";
-        const c2 = new AbortController();
-        const t2 = setTimeout(() => c2.abort(), 9000);
-        const res2 = await fetch("https://tencentarc-gfpgan.hf.space/api/predict", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          signal: c2.signal,
-          body: JSON.stringify({ data: [base64Data, "v1.4", 2] })
-        });
-        clearTimeout(t2);
-        const j2 = await res2.json();
-        if (j2 && j2.data && j2.data[0]) {
-          await storeEnhancedResult(j2.data[0]);
-          renderPreview();
-          loader.style.display = 'none';
-          btn.disabled = false;
-          return;
-        }
-      } catch (e2) {}
-
-      // Engine 3: Instant Offline Studio YCbCr Skin-Only Bilateral Beautifier
-      aiRestoredCanvas = null;
-      var targetSmooth = Math.max(3.5, Math.round(((1.0 - fidelity) * 8.5) * 2) / 2);
+      var fid = parseFloat(document.getElementById('fidSlider').value) || 0.7;
+      var targetSmooth = Math.max(4.0, Math.round(((1.0 - fid) * 8.5) * 2) / 2);
       document.getElementById('smSlider').value = targetSmooth;
       document.getElementById('smVal').value = targetSmooth;
-      adaptiveAutoBeautify(true);
-
-      loader.style.display = 'none';
-      btn.disabled = false;
-    }
-
-    /* ADAPTIVE AUTO BEAUTIFY */
-    function adaptiveAutoBeautify(keepExistingSmooth) {
-      if (!baseCroppedCanvas) return;
-
-      var ctx = baseCroppedCanvas.getContext('2d');
-      var imgData = ctx.getImageData(0, 0, PHOTO_W, PHOTO_H);
-      var data = imgData.data;
-
-      var totalLuminance = 0;
-      var rSum = 0, gSum = 0, bSum = 0;
-      var sampleCount = 0;
-
-      var startY = Math.floor(PHOTO_H * 0.15);
-      var endY = Math.floor(PHOTO_H * 0.75);
-      var startX = Math.floor(PHOTO_W * 0.20);
-      var endX = Math.floor(PHOTO_W * 0.80);
-
-      for (var y = startY; y < endY; y += 4) {
-        for (var x = startX; x < endX; x += 4) {
-          var idx = (y * PHOTO_W + x) * 4;
-          if (data[idx + 3] < 200) continue;
-          var r = data[idx], g = data[idx + 1], b = data[idx + 2];
-          var lum = 0.299 * r + 0.587 * g + 0.114 * b;
-          totalLuminance += lum;
-          rSum += r;
-          gSum += g;
-          bSum += b;
-          sampleCount++;
-        }
-      }
-
-      var avgLum = sampleCount > 0 ? (totalLuminance / sampleCount) : 120;
-      var avgR = sampleCount > 0 ? (rSum / sampleCount) : 120;
-      var avgB = sampleCount > 0 ? (bSum / sampleCount) : 120;
-
-      var targetBright = avgLum < 95 ? 108 : (avgLum < 125 ? 104 : 100);
-      var targetContrast = (avgLum < 100 || avgLum > 170) ? 107 : 104;
-      var targetWarmth = avgB > avgR + 8 ? 4 : (avgR > avgB + 20 ? -2 : 1);
-      var targetSaturate = avgLum < 100 ? 106 : 103;
-
-      document.getElementById('bSlider').value = targetBright;
-      document.getElementById('bVal').value = targetBright;
-      document.getElementById('cSlider').value = targetContrast;
-      document.getElementById('cVal').value = targetContrast;
-      document.getElementById('sSlider').value = targetSaturate;
-      document.getElementById('sVal').value = targetSaturate;
-      document.getElementById('wSlider').value = targetWarmth;
-      document.getElementById('wVal').value = targetWarmth;
-
-      if (!keepExistingSmooth) {
-        document.getElementById('smSlider').value = 3.5;
-        document.getElementById('smVal').value = 3.5;
-      }
-
       renderPreview();
     }
 
@@ -1788,7 +1602,9 @@
       if (type === 'fidelity') {
         document.getElementById('fidSlider').value = 0.7;
         document.getElementById('fidVal').value = 0.7;
-        onFidelityChange('slider');
+        document.getElementById('smSlider').value = 0;
+        document.getElementById('smVal').value = 0;
+        renderPreview();
         return;
       }
       if (type === 'bright') { document.getElementById('bSlider').value = 100; document.getElementById('bVal').value = 100; }
@@ -1806,15 +1622,13 @@
     }
 
     function resetAllFilters() {
-      aiRestoredCanvas = null;
       if (originalCropBackup && baseCroppedCanvas) {
         baseCroppedCanvas.getContext('2d').clearRect(0, 0, PHOTO_W, PHOTO_H);
         baseCroppedCanvas.getContext('2d').drawImage(originalCropBackup, 0, 0);
         isBgRemoved = false;
         studioBgColor = '#ffffff';
       }
-      document.getElementById('fidSlider').value = 0.7;
-      document.getElementById('fidVal').value = 0.7;
+      resetSingle('fidelity');
       resetSingle('bright');
       resetSingle('contrast');
       resetSingle('saturate');
@@ -1829,7 +1643,6 @@
       renderPreview();
     }
 
-    /* SAVE 600 DPI CRISP PHOTO & GENERATE PREVIEW */
     function saveAndFinalize() {
       if (!baseCroppedCanvas) return;
 
@@ -1849,7 +1662,6 @@
       closeAllModals();
     }
 
-    /* 4x6 MULTI-PHOTO 600 DPI PSD EXPORT (2400 x 3600 px) */
     function downloadFullSheetPSD() {
       if (!cutoutCanvas || !finalPhotoData) {
         alert("कृपया पहले फोटो क्रॉप और तैयार करें!");
@@ -1945,7 +1757,6 @@
       }
     }
 
-    /* 100% LOSSLESS 600 DPI SINGLE-SHEET PRINT */
     function printPhotosSingleSheet() {
       if (!finalPhotoData || !cutoutCanvas) {
         alert("कृपया पहले फोटो सेट करें!");
